@@ -8,7 +8,7 @@ from .models import Conta, Movimentacao
 from django.conf import settings
 
 
-endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+endpoint_secret = settings.CORE_WEBHOOK_SECRET
 
 
 # Stripe webhook handler
