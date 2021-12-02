@@ -11,7 +11,7 @@ from django.conf import settings
   Model called Socio representing a profile of each User.
 """
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = settings.STRIPE_API_KEY
 
 
 class Socio(models.Model):
