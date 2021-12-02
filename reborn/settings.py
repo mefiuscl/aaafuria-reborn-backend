@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import django_heroku
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -152,9 +153,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
 
-CORE_WEBHOOK_SECRET = os.environ.get('CORE_WEBHOOK_SECRET')
-ECOMMERCE_WEBHOOK_SECRET = os.environ.get('ECOMMERCE_WEBHOOK_SECRET')
-BANK_WEBHOOK_SECRET = os.environ.get('BANK_WEBHOOK_SECRET')
+CORE_WEBHOOK_SECRET = config('CORE_WEBHOOK_SECRET')
+ECOMMERCE_WEBHOOK_SECRET = config('ECOMMERCE_WEBHOOK_SECRET')
+BANK_WEBHOOK_SECRET = config('BANK_WEBHOOK_SECRET')
 
 
 # Configure Django App for Heroku.
