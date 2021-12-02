@@ -31,7 +31,7 @@ def bank_webhook(request):
         return HttpResponse(content=e, status=400)
 
     def create_movimentacao(checkout_session, socio):
-        aaafuria = Socio.objects.get(id=1)
+        aaafuria = Socio.objects.get(apelido="@aaafuria")
         conta, _ = Conta.objects.get_or_create(socio=socio)
         conta.save()
 
