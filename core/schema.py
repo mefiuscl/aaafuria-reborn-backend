@@ -6,6 +6,12 @@ from graphene_django.filter import DjangoFilterConnectionField
 from .models import Socio, Pagamento, TipoPlano
 
 
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+        filter_fields = '__all__'
+
+
 class SocioType(DjangoObjectType):
     class Meta:
         model = Socio
