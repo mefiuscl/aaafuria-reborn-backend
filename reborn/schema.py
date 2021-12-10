@@ -19,8 +19,11 @@ class Mutation(graphene.ObjectType):
 
     adicionar_ao_carrinho = ecommerce.schema.AdicionarAoCarrinho.Field()
     remover_do_carrinho = ecommerce.schema.RemoverDoCarrinho.Field()
+    adicionar_ao_carrinho_plantao = ecommerce.schema.AdicionarAoCarrinhoPlantao.Field()
+    remover_do_carrinho_plantao = ecommerce.schema.RemoverDoCarrinhoPlantao.Field()
 
     stripe_checkout = ecommerce.schema.StripeCheckout.Field()
+    stripe_checkout_plantao = ecommerce.schema.StripeCheckoutPlantao.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

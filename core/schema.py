@@ -35,6 +35,7 @@ class SocioRelay(DjangoObjectType):
 class NovoUser(graphene.Mutation):
     class Arguments:
         matricula = graphene.String(required=True)
+        turma = graphene.String(required=True)
         pin = graphene.String(required=True)
         email = graphene.String(required=True)
         nome = graphene.String(required=True)
@@ -47,11 +48,11 @@ class NovoUser(graphene.Mutation):
     ok = graphene.Boolean()
     socio = graphene.Field(SocioType)
 
-    def mutate(self, info, matricula, pin, email, nome, apelido, cpf, rg, data_nascimento, whatsapp):
+    def mutate(self, info, matricula, turma, pin, email, nome, apelido, cpf, rg, data_nascimento, whatsapp):
         user = User.objects.create_user(
             username=matricula, password=pin, email=email)
         user.save()
-        socio = Socio(user=user, nome=nome, cpf=cpf,
+        socio = Socio(user=user, turma=turma, nome=nome, cpf=cpf,
                       data_nascimento=data_nascimento, whatsapp=whatsapp, rg=rg, apelido=apelido)
         socio.save()
         ok = True

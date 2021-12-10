@@ -11,12 +11,11 @@ from django.conf import settings
   Model called Socio representing a profile of each User.
 """
 
-stripe.api_key = settings.STRIPE_API_KEY
-
 
 class Socio(models.Model):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     matricula = models.CharField(max_length=8, default="00000000")
+    turma = models.CharField(max_length=2, default="00")
     nome = models.CharField(max_length=100)
     email = models.CharField(max_length=100, null=True, blank=True)
     apelido = models.CharField(max_length=100, null=True, blank=True)
@@ -37,14 +36,9 @@ class Socio(models.Model):
     def __str__(self):
         return self.apelido or self.nome
 
-    # Method that returns the active plano of the Socio.
-    def get_active_plano(self):
-        plano = self.planos.filter(ativo=True).first()
-        if plano.is_active():
-            return plano
-
-    def create_stripe_customer(self, *args, **kwargs):
+    def create_stripe_customer(self, api_key=settings.STRIPE_API_TEST_KEY, *args, **kwargs):
         if not self.stripe_customer_id:
+            stripe.api_key = api_key
             customer = stripe.Customer.create(
                 name=self.nome,
                 email=self.user.email,
@@ -52,14 +46,8 @@ class Socio(models.Model):
             )
             self.stripe_customer_id = customer.id
 
-    def delete_stripe_customer(self, *args, **kwargs):
-        try:
-            customer = stripe.Customer.retrieve(self.stripe_customer_id)
-            customer.delete()
-        except Exception as e:
-            pass
-
-    def create_stripe_portal_url(self, *args, **kwargs):
+    def create_stripe_portal_url(self, api_key=settings.STRIPE_API_TEST_KEY, *args, **kwargs):
+        stripe.api_key = api_key
         session = stripe.billing_portal.Session.create(
             customer=self.stripe_customer_id,
             return_url="https://aaafuria.site/areasocio",
@@ -68,7 +56,8 @@ class Socio(models.Model):
         self.stripe_portal_url = session.url
 
     # Method that check if the subscription is active.
-    def check_stripe_subscription(self):
+    def check_stripe_subscription(self, api_key=settings.STRIPE_API_TEST_KEY,):
+        stripe.api_key = api_key
         if self.stripe_subscription_id:
             try:
                 subscription = stripe.Subscription.retrieve(
@@ -98,7 +87,6 @@ class Socio(models.Model):
 
     # Method that before deleting a Socio, deletes the Stripe customer.
     def delete(self, *args, **kwargs):
-        self.delete_stripe_customer()
         super().delete(*args, **kwargs)
 
 
@@ -123,7 +111,8 @@ class Pagamento(models.Model):
     def __str__(self):
         return self.socio.nome
 
-    def create_stripe_checkout(self, *args, **kwargs):
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY, *args, **kwargs):
+        stripe.api_key = api_key
         checkout_session = stripe.checkout.Session.create(
             customer=self.socio.stripe_customer_id,
             success_url="https://aaafuria.site/areasocio",
@@ -136,10 +125,12 @@ class Pagamento(models.Model):
             ],
             mode='subscription',
         )
+
         self.checkout_url = checkout_session.url
         self.checkout_id = checkout_session.id
 
-    def check_status(self, *args, **kwargs):
+    def check_status(self, api_key=settings.STRIPE_API_TEST_KEY, *args, **kwargs):
+        stripe.api_key = api_key
         try:
             checkout = stripe.checkout.Session.retrieve(self.checkout_id)
             self.status = checkout.status

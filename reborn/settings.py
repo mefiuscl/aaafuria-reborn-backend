@@ -152,12 +152,16 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 STRIPE_API_KEY = config('STRIPE_API_KEY')
+STRIPE_API_TEST_KEY = config('STRIPE_API_TEST_KEY')
 
 CORE_WEBHOOK_SECRET = config('CORE_WEBHOOK_SECRET', default='')
 ECOMMERCE_WEBHOOK_SECRET = config(
     'ECOMMERCE_WEBHOOK_SECRET', default=' ')
 BANK_WEBHOOK_SECRET = config('BANK_WEBHOOK_SECRET', default='')
 
+
+BITLY_LOGIN = config('BITLY_LOGIN')
+BITLY_API_KEY = config('BITLY_API_KEY')
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())

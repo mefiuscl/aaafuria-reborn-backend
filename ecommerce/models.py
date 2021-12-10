@@ -2,8 +2,8 @@ from django.conf import settings
 import stripe
 from django.db import models
 from django.utils import timezone
-
-stripe.api_key = settings.STRIPE_API_KEY
+from decouple import config
+import requests
 
 
 class Produto(models.Model):
@@ -90,6 +90,9 @@ class Carrinho(models.Model):
     stripe_checkout_url = models.CharField(
         max_length=500, null=True, blank=True)
 
+    stripe_short_checkout_url = models.CharField(
+        max_length=400, null=True, blank=True)
+
     data_pedido = models.DateTimeField(auto_now_add=True)
     data_pago = models.DateTimeField(null=True, blank=True)
     data_entrega = models.DateTimeField(null=True, blank=True)
@@ -116,9 +119,26 @@ class Carrinho(models.Model):
         self.save()
         return total
 
+    def set_short_stripe_link(self, long_url):
+        url = "https://api-ssl.bitly.com/v4/shorten"
+        headers = {
+            "Host": "api-ssl.bitly.com",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {config('BITLY_API_KEY')}"
+        }
+        payload = {
+            "long_url": long_url
+        }
+        # constructing this request took a good amount of guess
+        # and check. thanks Postman!
+        r = requests.post(url, headers=headers, json=payload)
+        self.stripe_short_checkout_url = r.json()[u'id']
+        self.save()
+
     # Method that creates a new checkout session on Stripe
 
-    def create_stripe_checkout_session(self):
+    def create_stripe_checkout_session(self, api_key=settings.STRIPE_API_TEST_KEY):
+        stripe.api_key = api_key
         session = stripe.checkout.Session.create(
             success_url='https://aaafuria.site/',
             cancel_url='https://aaafuria.site/carrinho',
