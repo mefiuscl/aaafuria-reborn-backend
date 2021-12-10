@@ -15,7 +15,7 @@ from django.conf import settings
 class Socio(models.Model):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     matricula = models.CharField(max_length=8, default="00000000")
-    turma = models.CharField(max_length=2, default="00")
+    turma = models.CharField(max_length=10, default="MED: 00")
     nome = models.CharField(max_length=100)
     email = models.CharField(max_length=100, null=True, blank=True)
     apelido = models.CharField(max_length=100, null=True, blank=True)
