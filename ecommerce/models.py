@@ -16,6 +16,7 @@ class Produto(models.Model):
     estoque = models.IntegerField(default=0)
     imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
     has_variations = models.BooleanField(default=False)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome
@@ -120,20 +121,21 @@ class Carrinho(models.Model):
         return total
 
     def set_short_stripe_link(self, long_url):
-        url = "https://api-ssl.bitly.com/v4/shorten"
-        headers = {
-            "Host": "api-ssl.bitly.com",
-            "Accept": "application/json",
-            "Authorization": f"Bearer {config('BITLY_API_KEY')}"
-        }
-        payload = {
-            "long_url": long_url
-        }
-        # constructing this request took a good amount of guess
-        # and check. thanks Postman!
-        r = requests.post(url, headers=headers, json=payload)
-        self.stripe_short_checkout_url = r.json()[u'id']
-        self.save()
+        if not self.stripe_short_checkout_url:
+            url = "https://api-ssl.bitly.com/v4/shorten"
+            headers = {
+                "Host": "api-ssl.bitly.com",
+                "Accept": "application/json",
+                "Authorization": f"Bearer {config('BITLY_API_KEY')}"
+            }
+            payload = {
+                "long_url": long_url
+            }
+            # constructing this request took a good amount of guess
+            # and check. thanks Postman!
+            r = requests.post(url, headers=headers, json=payload)
+            self.stripe_short_checkout_url = r.json()[u'id']
+            self.save()
 
     # Method that creates a new checkout session on Stripe
 
