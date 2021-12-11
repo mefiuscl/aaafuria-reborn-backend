@@ -33,16 +33,16 @@ def ecommerce_webhook(request):
         carrinho = Carrinho.objects.filter(
             stripe_checkout_id=checkout_session['id']).first()
 
-        for produto in carrinho.produtos.all():
-            if not produto.produto.variacao:
-                produto.produto.estoque -= produto.quantidade
-                produto.produto.save()
+        for produto_pedido in carrinho.produtos.all():
+            if not produto_pedido.produto.has_variations:
+                produto_pedido.produto.estoque -= produto_pedido.quantidade
+                produto_pedido.produto.save()
             else:
-                produto.variacao.estoque -= produto.quantidade
-                produto.variacao.save()
+                produto_pedido.variacao.estoque -= produto_pedido.quantidade
+                produto_pedido.variacao.save()
 
-            produto.ordered = True
-            produto.save()
+            produto_pedido.ordered = True
+            produto_pedido.save()
 
         carrinho.set_paid()
         carrinho.save()
