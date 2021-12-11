@@ -8,11 +8,9 @@ from .models import Conta, Movimentacao
 from django.conf import settings
 
 
-endpoint_secret = settings.CORE_WEBHOOK_SECRET
-
-
 # Stripe webhook handler
 def bank_webhook(request):
+    endpoint_secret = settings.BANK_WEBHOOK_SECRET
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None
@@ -26,18 +24,19 @@ def bank_webhook(request):
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
         # Invalid signature
+        print(e)
         return HttpResponse(status=400)
     except Exception as e:
         return HttpResponse(content=e, status=400)
 
     def create_movimentacao(checkout_session, socio):
-        aaafuria = Socio.objects.get(apelido="@aaafuria")
+        aaafuria = Socio.objects.get(user__username="22238742")
         conta, _ = Conta.objects.get_or_create(socio=socio)
         conta.save()
 
         if checkout_session['mode'] == 'subscription':
             movimentacao = Movimentacao.objects.create(
-                conta_origem=socio.conta,
+                conta_origem=conta,
                 conta_destino=aaafuria.conta,
                 descricao=f'ASSOCIAÇÃO DE [{socio.apelido}] PARA [{aaafuria.apelido}] | MODE: {checkout_session["mode"]}',
                 valor=checkout_session['amount_total']/100.00,
@@ -48,7 +47,7 @@ def bank_webhook(request):
 
         else:
             movimentacao = Movimentacao.objects.create(
-                conta_origem=socio.conta,
+                conta_origem=conta,
                 conta_destino=aaafuria.conta,
                 descricao=f'PAGAMENTO DE [{socio.apelido}] PARA [{aaafuria.apelido}] | MODE: {checkout_session["mode"]}',
                 valor=checkout_session['amount_total']/100.00,
@@ -62,6 +61,6 @@ def bank_webhook(request):
         checkout_session = event['data']['object']
 
         create_movimentacao(checkout_session, Socio.objects.get(
-            stripe_customer_id=checkout_session['customer']))
+            stripe_customer_id='cus_KkeapU7H9nzwuk'))
 
     return HttpResponse(status=200)

@@ -4,11 +4,10 @@ from django.shortcuts import render
 from ecommerce.models import Carrinho
 from django.conf import settings
 
-endpoint_secret = settings.ECOMMERCE_WEBHOOK_SECRET
-
 
 # Stripe webhook handler
 def ecommerce_webhook(request):
+    endpoint_secret = settings.ECOMMERCE_WEBHOOK_SECRET
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None

@@ -7,11 +7,10 @@ from core.models import Pagamento, Socio
 from datetime import datetime
 from django.conf import settings
 
-endpoint_secret = settings.CORE_WEBHOOK_SECRET
-
 
 # Stripe webhook handler
 def core_webhook(request):
+    endpoint_secret = settings.CORE_WEBHOOK_SECRET
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None
