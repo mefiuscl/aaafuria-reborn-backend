@@ -29,7 +29,7 @@ class ProdutoPedidoRelay(DjangoObjectType):
 class ProdutoRelay(DjangoObjectType):
     class Meta:
         model = Produto
-        filter_fields = '__all__'
+        filter_fields = ['is_hidden']
         interfaces = (graphene.relay.Node, )
 
 
