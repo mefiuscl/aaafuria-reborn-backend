@@ -19,7 +19,7 @@ class Socio(models.Model):
     nome = models.CharField(max_length=100)
     email = models.CharField(max_length=100, null=True, blank=True)
     apelido = models.CharField(max_length=100, null=True, blank=True)
-    # avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
     whatsapp = models.CharField(max_length=25, null=True, blank=True)
     whatsapp_url = models.CharField(max_length=50, null=True, blank=True)
