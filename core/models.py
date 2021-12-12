@@ -12,6 +12,10 @@ from django.conf import settings
 """
 
 
+def avatar_dir(instance, filename):
+    return f'socios/avatares/{instance.user.username}/'
+
+
 class Socio(models.Model):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     matricula = models.CharField(max_length=8, default="00000000")
@@ -19,7 +23,8 @@ class Socio(models.Model):
     nome = models.CharField(max_length=100)
     email = models.CharField(max_length=100, null=True, blank=True)
     apelido = models.CharField(max_length=100, null=True, blank=True)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(
+        upload_to=avatar_dir, null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
     whatsapp = models.CharField(max_length=25, null=True, blank=True)
     whatsapp_url = models.CharField(max_length=50, null=True, blank=True)
