@@ -22,6 +22,7 @@ class Socio(models.Model):
     # avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
     whatsapp = models.CharField(max_length=25, null=True, blank=True)
+    whatsapp_url = models.CharField(max_length=50, null=True, blank=True)
     cpf = models.CharField(max_length=14, null=True, blank=True)
     rg = models.CharField(max_length=20, null=True, blank=True)
     is_socio = models.BooleanField(default=False)
@@ -35,6 +36,28 @@ class Socio(models.Model):
 
     def __str__(self):
         return self.apelido or self.nome
+
+    def set_matricula(self):
+        if self.matricula == "00000000":
+            self.matricula = self.user.username
+
+    def set_wa_link(self):
+        if self.whatsapp:
+            self.whatsapp_url = f'https://wa.me/55{self.sanitize_number_string(self.whatsapp)}'
+
+    def sanitize_number_string(self, number_string):
+        sanitized_number = number_string.replace('.', '').replace('-', '')
+        sanitized_number = sanitized_number.replace(
+            '(', '').replace(')', '').replace(' ', '')
+
+        return sanitized_number
+
+    def sanitize_fields(self):
+        self.nome = self.nome.upper()
+        self.email = self.user.email.lower()
+
+        self.cpf = self.sanitize_number_string(self.cpf)
+        self.rg = self.sanitize_number_string(self.rg)
 
     def create_stripe_customer(self, api_key=settings.STRIPE_API_TEST_KEY, *args, **kwargs):
         if not self.stripe_customer_id:
@@ -55,44 +78,14 @@ class Socio(models.Model):
         )
         self.stripe_portal_url = session.url
 
-    # Method that check if the subscription is active.
-    def check_stripe_subscription(self, api_key=settings.STRIPE_API_TEST_KEY,):
-        stripe.api_key = api_key
-        if self.stripe_subscription_id:
-            try:
-                subscription = stripe.Subscription.retrieve(
-                    self.stripe_subscription_id)
-
-                if subscription.status == 'active':
-                    self.is_socio = True
-                    return True
-                else:
-                    self.is_socio = False
-                    return False
-
-            except Exception as e:
-                return False
-        return False
-
     def save(self, *args, **kwargs):
-        self.nome = self.nome.upper()
-        self.email = self.user.email.lower()
-
-        if self.matricula == "00000000":
-            self.matricula = self.user.username
-
+        self.sanitize_fields()
         self.create_stripe_customer()
 
         super().save(*args, **kwargs)
 
-    # Method that before deleting a Socio, deletes the Stripe customer.
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
-
-
-"""
-  Model called Pagamento representing a payment of each Socio.
-"""
 
 
 class Pagamento(models.Model):

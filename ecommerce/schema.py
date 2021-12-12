@@ -75,6 +75,8 @@ class StripeCheckoutPlantao(graphene.Mutation):
         carrinho = Carrinho.objects.get(
             user__username=matricula_socio, ordered=False)
         carrinho.create_stripe_checkout_session()
+        carrinho.save()
+
         carrinho.set_short_stripe_link(carrinho.stripe_checkout_url)
         carrinho.save()
         return StripeCheckout(carrinho=carrinho, ok=True)

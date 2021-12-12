@@ -159,7 +159,6 @@ class Carrinho(models.Model):
         self.status = 'aguardando'
         self.stripe_checkout_id = session.id
         self.stripe_checkout_url = session.url
-        self.save()
 
     def set_paid(self):
         self.status = 'pago'
