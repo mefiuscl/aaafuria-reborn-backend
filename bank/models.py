@@ -11,11 +11,11 @@ class Conta(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.socio.nome
+        return f'{self.socio}'
 
     class Meta:
-        verbose_name = 'Conta'
-        verbose_name_plural = 'Contas'
+        verbose_name = 'conta'
+        verbose_name_plural = 'contas'
 
 
 # Model for transfering money between accounts
@@ -34,8 +34,8 @@ class Movimentacao(models.Model):
     estornada_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Movimentação'
-        verbose_name_plural = 'Movimentações'
+        verbose_name = 'movimentação'
+        verbose_name_plural = 'movimentações'
 
     def __str__(self):
         return self.descricao

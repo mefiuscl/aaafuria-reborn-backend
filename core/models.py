@@ -40,7 +40,7 @@ class Socio(models.Model):
     stripe_portal_url = models.CharField(max_length=250, null=True, blank=True)
 
     def __str__(self):
-        return self.apelido or self.nome
+        return f'{self.matricula}: {self.apelido}' or f'{self.matricula}: {self.nome}'
 
     def set_matricula(self):
         if self.matricula == "00000000":
@@ -51,11 +51,12 @@ class Socio(models.Model):
             self.whatsapp_url = f'https://wa.me/55{self.sanitize_number_string(self.whatsapp)}'
 
     def sanitize_number_string(self, number_string):
-        sanitized_number = number_string.replace('.', '').replace('-', '')
-        sanitized_number = sanitized_number.replace(
-            '(', '').replace(')', '').replace(' ', '')
+        if number_string:
+            sanitized_number = number_string.replace('.', '').replace('-', '')
+            sanitized_number = sanitized_number.replace(
+                '(', '').replace(')', '').replace(' ', '')
 
-        return sanitized_number
+            return sanitized_number
 
     def sanitize_fields(self):
         self.nome = self.nome.upper()
@@ -107,7 +108,7 @@ class Pagamento(models.Model):
         max_length=15, default='Pendente')
 
     def __str__(self):
-        return self.socio.nome
+        return f'{self.socio}'
 
     def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY, *args, **kwargs):
         stripe.api_key = api_key

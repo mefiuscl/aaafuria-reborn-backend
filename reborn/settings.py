@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'storages',
 
     'core',
+    'atividades',
     'ecommerce',
     'bank'
 ]

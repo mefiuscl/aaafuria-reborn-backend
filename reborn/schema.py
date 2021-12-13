@@ -3,9 +3,10 @@ import graphql_jwt
 
 import core.schema
 import ecommerce.schema
+import atividades.schema
 
 
-class Query(core.schema.Query, ecommerce.schema.Query, graphene.ObjectType):
+class Query(core.schema.Query, ecommerce.schema.Query, atividades.schema.Query, graphene.ObjectType):
     pass
 
 
@@ -24,6 +25,9 @@ class Mutation(graphene.ObjectType):
 
     stripe_checkout = ecommerce.schema.StripeCheckout.Field()
     stripe_checkout_plantao = ecommerce.schema.StripeCheckoutPlantao.Field()
+
+    confirmar_competidor_na_programacao = atividades.schema.ConfirmarCompetidorNaProgramacao.Field()
+    remover_competidor_na_programacao = atividades.schema.RemoverCompetidorNaProgramacao.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
