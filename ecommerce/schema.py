@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
+from django.shortcuts import get_object_or_404
 
 from .models import Carrinho, Produto, ProdutoPedido, VariacaoProdutos
 
@@ -66,42 +67,19 @@ class StripeCheckout(graphene.Mutation):
 
 class StripeCheckoutPlantao(graphene.Mutation):
     class Arguments:
-        matricula_socio = graphene.String(required=True)
+        checkout_id = graphene.ID(required=True)
 
     ok = graphene.Boolean()
     carrinho = graphene.Field(CarrinhoType)
 
-    def mutate(self, info, matricula_socio):
-        carrinho = Carrinho.objects.get(
-            user__username=matricula_socio, ordered=False)
+    def mutate(self, info, checkout_id):
+        carrinho = Carrinho.objects.get(id=from_global_id(checkout_id)[1])
         carrinho.create_stripe_checkout_session()
         carrinho.save()
 
         carrinho.set_short_stripe_link(carrinho.stripe_checkout_url)
         carrinho.save()
-        return StripeCheckout(carrinho=carrinho, ok=True)
-
-
-class RemoverDoCarrinho(graphene.Mutation):
-    class Arguments:
-        produto_pedido_id = graphene.String(required=True)
-
-    ok = graphene.Boolean()
-
-    def mutate(self, info, produto_pedido_id):
-        try:
-            if not info.context.user.is_authenticated:
-                raise Exception('Usuário não autenticado')
-
-            produto_pedido = ProdutoPedido.objects.get(
-                id=from_global_id(produto_pedido_id)[1])
-            produto_pedido.delete()
-            Carrinho.objects.get(user=info.context.user,
-                                 ordered=False).get_total()
-            return RemoverDoCarrinho(ok=True)
-        except Exception as e:
-            print(e)
-            return RemoverDoCarrinho(ok=False)
+        return StripeCheckoutPlantao(carrinho=carrinho, ok=True)
 
 
 class AdicionarAoCarrinho(graphene.Mutation):
@@ -143,6 +121,29 @@ class AdicionarAoCarrinho(graphene.Mutation):
             return Exception('Produto não encontrado.')
         except Carrinho.DoesNotExist:
             return Exception('Carrinho não encontrado.')
+        except Exception as e:
+            return Exception(e)
+
+
+class RemoverDoCarrinho(graphene.Mutation):
+    class Arguments:
+        produto_pedido_id = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, produto_pedido_id):
+        try:
+            if not info.context.user.is_authenticated:
+                raise Exception('Usuário não autenticado')
+
+            produto_pedido = ProdutoPedido.objects.get(
+                id=from_global_id(produto_pedido_id)[1])
+            produto_pedido.delete()
+            Carrinho.objects.get(user=info.context.user,
+                                 ordered=False).get_total()
+            return RemoverDoCarrinho(ok=True)
+        except Exception as e:
+            return Exception(e)
 
 
 class AdicionarAoCarrinhoPlantao(graphene.Mutation):
@@ -212,8 +213,7 @@ class RemoverDoCarrinhoPlantao(graphene.Mutation):
                                  ordered=False).get_total()
             return RemoverDoCarrinho(ok=True)
         except Exception as e:
-            print(e)
-            return RemoverDoCarrinho(ok=False)
+            return Exception(e)
 
 
 class Query(graphene.ObjectType):
@@ -228,12 +228,18 @@ class Query(graphene.ObjectType):
     produto_pedido = graphene.Field(ProdutoPedidoType)
     all_produto_pedido = DjangoFilterConnectionField(ProdutoPedidoRelay)
 
-    carrinho = graphene.relay.Node.Field(CarrinhoType)
+    carrinho = graphene.relay.Node.Field(CarrinhoRelay)
     all_carrinho = DjangoFilterConnectionField(CarrinhoRelay)
 
     user_carrinho = graphene.Field(CarrinhoType)
     plantao_carrinho = graphene.Field(
-        CarrinhoType, matricula_socio=graphene.String(required=True))
+        CarrinhoRelay, matricula_socio=graphene.String(required=True))
+
+    def resolve_carrinho(self, info, id):
+        carrinho = get_object_or_404(Carrinho, id=id)
+        carrinho.get_total()
+
+        return carrinho
 
     def resolve_variacao_by_product_id(self, info, id):
         variacao_produto = VariacaoProdutos.objects.filter(
