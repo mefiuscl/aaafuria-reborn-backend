@@ -4,7 +4,7 @@ import stripe
 from django.shortcuts import render
 from stripe.api_resources import checkout, customer
 from core.models import Pagamento, Socio
-from datetime import datetime
+from datetime import datetime, timezone
 from django.conf import settings
 
 
@@ -66,6 +66,7 @@ def core_webhook(request):
             stripe_customer_id=subscription['customer']).first()
 
         socio.is_socio = False
+        socio.data_fim = timezone.now()
         socio.save()
 
     return HttpResponse(status=200)
