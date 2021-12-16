@@ -2,16 +2,18 @@ from django.contrib import admin
 from .models import Competidor, Modalidade, Programacao
 
 
+@admin.register(Modalidade)
 class ModalidadeAdmin(admin.ModelAdmin):
     list_display = ('nome',)
     search_fields = ('nome',)
     filter_horizontal = ('competidores',)
 
 
+@admin.register(Programacao)
 class ProgramacaoAdmin(admin.ModelAdmin):
     filter_horizontal = ('competidores_confirmados', 'competidores_presentes')
 
 
-admin.site.register(Competidor)
-admin.site.register(Modalidade, ModalidadeAdmin)
-admin.site.register(Programacao, ProgramacaoAdmin)
+@admin.register(Competidor)
+class CompetidorAdmin(admin.ModelAdmin):
+    pass

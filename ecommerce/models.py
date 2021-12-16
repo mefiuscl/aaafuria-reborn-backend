@@ -22,7 +22,7 @@ class Produto(models.Model):
         return self.nome
 
 
-class VariacaoProdutos(models.Model):
+class VariacaoProduto(models.Model):
     produto = models.ForeignKey(
         Produto, on_delete=models.CASCADE, related_name='variacoes')
     nome = models.CharField(max_length=100)
@@ -42,7 +42,7 @@ class ProdutoPedido(models.Model):
     produto = models.ForeignKey(
         Produto, on_delete=models.CASCADE, related_name='produtos')
     variacao = models.ForeignKey(
-        VariacaoProdutos, on_delete=models.CASCADE, related_name='variacoes', null=True, blank=True)
+        VariacaoProduto, on_delete=models.CASCADE, related_name='variacoes', null=True, blank=True)
     quantidade = models.IntegerField(default=1)
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     produto = models.ForeignKey(

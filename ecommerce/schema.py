@@ -5,7 +5,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
 from django.shortcuts import get_object_or_404
 
-from .models import Carrinho, Produto, ProdutoPedido, VariacaoProdutos
+from .models import Carrinho, Produto, ProdutoPedido, VariacaoProduto
 
 
 class ProdutoType(DjangoObjectType):
@@ -49,7 +49,7 @@ class CarrinhoRelay(DjangoObjectType):
 
 class VariacaoRelay(DjangoObjectType):
     class Meta:
-        model = VariacaoProdutos
+        model = VariacaoProduto
         filter_fields = ['produto']
         interfaces = (graphene.relay.Node, )
 
@@ -98,7 +98,7 @@ class AdicionarAoCarrinho(graphene.Mutation):
 
             user = info.context.user
             produto = Produto.objects.get(id=from_global_id(product_id)[1])
-            variacao = VariacaoProdutos.objects.get(
+            variacao = VariacaoProduto.objects.get(
                 id=from_global_id(variacao_id)[1], produto=produto) if variacao_id else None
 
             carrinho, _ = Carrinho.objects.get_or_create(
@@ -166,7 +166,7 @@ class AdicionarAoCarrinhoPlantao(graphene.Mutation):
 
             user = User.objects.get(username=matricula_socio)
             produto = Produto.objects.get(id=from_global_id(product_id)[1])
-            variacao = VariacaoProdutos.objects.get(
+            variacao = VariacaoProduto.objects.get(
                 id=from_global_id(variacao_id)[1], produto=produto) if variacao_id else None
 
             carrinho, _ = Carrinho.objects.get_or_create(
@@ -242,7 +242,7 @@ class Query(graphene.ObjectType):
         return carrinho
 
     def resolve_variacao_by_product_id(self, info, id):
-        variacao_produto = VariacaoProdutos.objects.filter(
+        variacao_produto = VariacaoProduto.objects.filter(
             produto=from_global_id(id)[1])
         return variacao_produto
 
