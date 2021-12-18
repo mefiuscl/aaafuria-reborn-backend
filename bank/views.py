@@ -61,6 +61,6 @@ def bank_webhook(request):
         checkout_session = event['data']['object']
 
         create_movimentacao(checkout_session, Socio.objects.get(
-            stripe_customer_id='cus_KkeapU7H9nzwuk'))
+            stripe_customer_id=checkout_session['customer']))
 
     return HttpResponse(status=200)

@@ -30,7 +30,7 @@ def ecommerce_webhook(request):
         checkout_session = event['data']['object']
 
         carrinho = Carrinho.objects.filter(
-            stripe_checkout_id=checkout_session['id']).first()
+            stripe_checkout_id=checkout_session['customer']).first()
 
         for produto_pedido in carrinho.produtos.all():
             if not produto_pedido.produto.has_variations:
