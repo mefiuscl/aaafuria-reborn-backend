@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.core import mail
+from django.conf import settings
 from babel.dates import format_datetime, get_timezone
 
 CATEGORIA_ATIVIDADE = (
@@ -36,9 +38,15 @@ class Modalidade(models.Model):
     categoria = models.CharField(max_length=10, choices=CATEGORIA_ATIVIDADE)
     competidores = models.ManyToManyField(
         'Competidor', blank=True, related_name='modalidades')
+    responsavel = models.ForeignKey(
+        'core.Socio', on_delete=models.CASCADE, related_name='modalidades', blank=True, null=True, editable=False)
 
     def __str__(self):
         return self.nome
+
+    # Define o usuário da requisição como responsavel
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
 
 class Programacao(models.Model):
@@ -73,6 +81,7 @@ class Programacao(models.Model):
                 self.estado = 'Agendado'
             else:
                 self.estado = 'Confirmado'
+                self.notificar_programacao_confirmado()
 
             if self.competidores_maximo != 0 and self.competidores_confirmados.count() == self.competidores_maximo:
                 self.estado = 'Cheio'
@@ -81,3 +90,17 @@ class Programacao(models.Model):
 
         self.save()
         return self.estado
+
+    def notificar_programacao_confirmado(self):
+        self.save()
+
+        subject = 'Programação confirmada'
+        message = 'Confirmados: \n'
+
+        for competidor in self.competidores_confirmados.all():
+            message += f'{competidor.socio}' + '\n'
+
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [self.modalidade.responsavel.user.email, ]
+        mail.send_mail(subject, message, email_from,
+                       recipient_list, fail_silently=False)

@@ -40,7 +40,7 @@ class Socio(models.Model):
     stripe_portal_url = models.CharField(max_length=250, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.matricula}: {self.apelido}' or f'{self.matricula}: {self.nome}'
+        return f'{self.matricula}: {self.apelido or self.nome}'
 
     def set_matricula(self):
         if self.matricula == "00000000":
@@ -86,6 +86,7 @@ class Socio(models.Model):
 
     def save(self, *args, **kwargs):
         self.sanitize_fields()
+        self.set_matricula()
         self.create_stripe_customer()
 
         super().save(*args, **kwargs)

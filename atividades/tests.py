@@ -1,7 +1,11 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-from .models import Competidor, Modalidade, Programacao
 from core.models import Socio
+from django.contrib.auth.models import User
+from django.test import TestCase
+
+from .models import Competidor, Modalidade, Programacao
+
+from django.core import mail
+from django.conf import settings
 
 
 class ModelTestCase(TestCase):
@@ -174,3 +178,38 @@ class ModelTestCase(TestCase):
 
         programacao.competidores_confirmados.add(competidor)
         self.assertEqual(programacao.competidores_confirmados.count(), 1)
+
+    def test_notificar_responsavel_programacao_confirmado(self):
+        competidor_1 = Competidor.objects.create(
+            socio=Socio.objects.get(user__username='00000000'),
+        )
+        competidor_2 = Competidor.objects.create(
+            socio=Socio.objects.get(user__username='11111111'),
+        )
+
+        programacao = Programacao.objects.create(
+            modalidade=Modalidade.objects.get_or_create(
+                nome='Carabina', categoria='Bateria')[0],
+            local='Estacionamento UNINOVAFAPI',
+            competidores_minimo=2
+        )
+
+        programacao.competidores_confirmados.add(competidor_1)
+        programacao.competidores_confirmados.add(competidor_2)
+
+        self.assertEqual(programacao.checar_estado(), 'Confirmado')
+
+        if (programacao.checar_estado() == 'Confirmado'):
+            subject = 'Programação confirmada'
+            message = 'Confirmados: \n'
+
+            for competidor in programacao.competidores_confirmados.all():
+                message += f'{competidor.socio}' + '\n'
+
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = ['leonunesbs@gmail.com', ]
+            mail.send_mail(subject, message, email_from,
+                           recipient_list, fail_silently=False)
+
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(mail.outbox[0].subject, 'Programação confirmada')
