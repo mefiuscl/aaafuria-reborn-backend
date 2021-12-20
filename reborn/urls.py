@@ -11,7 +11,7 @@ from ecommerce.views import ecommerce_webhook
 from bank.views import bank_webhook
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', admin.site.urls),
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path("core_webhook", csrf_exempt(core_webhook)),
     path("ecommerce_webhook", csrf_exempt(ecommerce_webhook)),
