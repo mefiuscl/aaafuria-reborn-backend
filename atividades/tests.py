@@ -200,16 +200,7 @@ class ModelTestCase(TestCase):
         self.assertEqual(programacao.checar_estado(), 'Confirmado')
 
         if (programacao.checar_estado() == 'Confirmado'):
-            subject = 'Programação confirmada'
-            message = 'Confirmados: \n'
-
-            for competidor in programacao.competidores_confirmados.all():
-                message += f'{competidor.socio}' + '\n'
-
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = ['leonunesbs@gmail.com', ]
-            mail.send_mail(subject, message, email_from,
-                           recipient_list, fail_silently=False)
+            programacao.notificar_confirmacao()
 
             self.assertEqual(len(mail.outbox), 1)
             self.assertEqual(mail.outbox[0].subject, 'Programação confirmada')

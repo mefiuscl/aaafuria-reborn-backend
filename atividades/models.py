@@ -1,7 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from django.core import mail
-from django.conf import settings
 from babel.dates import format_datetime, get_timezone
 
 CATEGORIA_ATIVIDADE = (
@@ -81,7 +79,7 @@ class Programacao(models.Model):
                 self.estado = 'Agendado'
             else:
                 self.estado = 'Confirmado'
-                self.notificar_programacao_confirmado()
+                self.notificar_confirmacao()
 
             if self.competidores_maximo != 0 and self.competidores_confirmados.count() == self.competidores_maximo:
                 self.estado = 'Cheio'
@@ -91,16 +89,17 @@ class Programacao(models.Model):
         self.save()
         return self.estado
 
-    def notificar_programacao_confirmado(self):
+    def notificar_confirmacao(self):
         self.save()
 
         subject = 'Programação confirmada'
         message = 'Confirmados: \n'
-
         for competidor in self.competidores_confirmados.all():
             message += f'{competidor.socio}' + '\n'
 
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = [self.modalidade.responsavel.user.email, ]
-        mail.send_mail(subject, message, email_from,
-                       recipient_list, fail_silently=False)
+        context = {
+            message: message,
+        }
+
+        self.modalidade.responsavel.notificar('email', subject,
+                                              'programacao_confirmada.txt', 'programacao_confirmada.html', context)

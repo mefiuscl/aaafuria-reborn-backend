@@ -55,6 +55,13 @@ class NovoUser(graphene.Mutation):
         socio = Socio(user=user, turma=turma, nome=nome, cpf=cpf,
                       data_nascimento=data_nascimento, whatsapp=whatsapp, rg=rg, apelido=apelido)
         socio.save()
+
+        context = {
+            'socio': socio,
+        }
+
+        socio.notificar('email', 'Bem vind@ à plataforma de sócios @aaafuria!',
+                        'novo_user.txt', 'novo_user.html', context)
         ok = True
         return NovoUser(socio=socio, ok=ok)
 

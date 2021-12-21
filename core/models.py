@@ -1,15 +1,9 @@
 import stripe
 from django.db import models
 from django.utils import timezone
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.conf import settings
-from stripe.api_resources import checkout
-from django.conf import settings
-
-"""
-  Model called Socio representing a profile of each User.
-"""
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 
 def avatar_dir(instance, filename):
@@ -84,9 +78,40 @@ class Socio(models.Model):
         )
         self.stripe_portal_url = session.url
 
+    def notificar(self, metodo, subject, text_template, html_template, context):
+        def email():
+            from_email = settings.EMAIL_HOST_USER
+            to = self.user.email
+
+            text_content = render_to_string(text_template, context)
+            html_content = render_to_string(html_template, context)
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [
+                                         to])
+
+            msg.attach_alternative(
+                html_content, "text/html")
+
+            return msg.send(fail_silently=False)
+
+        def sms():
+            return 'Enviando sms...'
+
+        def whatsapp():
+            return 'Enviando whatsapp...'
+
+        metodos = {
+            'email': email,
+            'sms': sms,
+            'whatsapp': whatsapp
+        }
+
+        return metodos[metodo]()
+
     def save(self, *args, **kwargs):
         self.sanitize_fields()
         self.set_matricula()
+        self.set_wa_link()
         self.create_stripe_customer()
 
         super().save(*args, **kwargs)
