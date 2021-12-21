@@ -1,11 +1,10 @@
-from django.http.response import HttpResponse
 import stripe
-from django.utils import timezone
-from django.shortcuts import render
-
 from core.models import Socio
-from .models import Conta, Movimentacao
 from django.conf import settings
+from django.http.response import HttpResponse
+from django.utils import timezone
+
+from .models import Conta, Movimentacao
 
 
 # Stripe webhook handler
