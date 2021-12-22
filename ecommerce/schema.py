@@ -1,11 +1,15 @@
 import graphene
+from bank.models import Conta, Movimentacao
+from core.models import Socio
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
-from django.shortcuts import get_object_or_404
 
-from .models import Carrinho, Produto, ProdutoPedido, VariacaoProduto
+from .models import (Carrinho, Pagamento, Produto, ProdutoPedido,
+                     VariacaoProduto)
 
 
 class ProdutoType(DjangoObjectType):
@@ -63,6 +67,45 @@ class StripeCheckout(graphene.Mutation):
         carrinho.create_stripe_checkout_session()
         carrinho.save()
         return StripeCheckout(carrinho=carrinho, ok=True)
+
+
+class CheckoutPlantao(graphene.Mutation):
+    class Arguments:
+        checkout_id = graphene.ID(required=True)
+        forma_pagamento = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+    carrinho = graphene.Field(CarrinhoType)
+
+    def mutate(self, info, checkout_id, forma_pagamento):
+        aaafuria = Socio.objects.get(user__username='22238742')
+        carrinho = Carrinho.objects.get(id=from_global_id(checkout_id)[1])
+
+        pagamento = Pagamento.objects.create(
+            user=carrinho.user,
+            carrinho=carrinho,
+            forma_pagamento=forma_pagamento,
+            status='pago',
+            valor=carrinho.total
+        )
+
+        movimentacao = Movimentacao.objects.create(
+            conta_origem=Conta.objects.get_or_create(
+                socio=carrinho.user.socio)[0],
+            conta_destino=Conta.objects.get_or_create(
+                socio=aaafuria)[0],
+            descricao=f'PAGAMENTO DE [{carrinho.user.socio.apelido}] PARA [{aaafuria.apelido}] | MODE: PAGAMENTO PLANTÃO',
+            valor=carrinho.total,
+            resolvida=True,
+            resolvida_em=timezone.now()
+        )
+        movimentacao.save()
+
+        carrinho.set_paid()
+        carrinho.save()
+
+        pagamento.save()
+        return CheckoutPlantao(carrinho=carrinho, ok=True)
 
 
 class StripeCheckoutPlantao(graphene.Mutation):

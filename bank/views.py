@@ -7,7 +7,6 @@ from django.utils import timezone
 from .models import Conta, Movimentacao
 
 
-# Stripe webhook handler
 def bank_webhook(request):
     endpoint_secret = settings.BANK_WEBHOOK_SECRET
     payload = request.body

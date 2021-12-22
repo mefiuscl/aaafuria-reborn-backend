@@ -1,9 +1,9 @@
-from django.conf import settings
+import requests
 import stripe
+from decouple import config
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from decouple import config
-import requests
 
 
 class Produto(models.Model):
@@ -137,8 +137,6 @@ class Carrinho(models.Model):
             self.stripe_short_checkout_url = r.json()[u'id']
             self.save()
 
-    # Method that creates a new checkout session on Stripe
-
     def create_stripe_checkout_session(self, api_key=settings.STRIPE_API_TEST_KEY):
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
@@ -161,6 +159,17 @@ class Carrinho(models.Model):
         self.stripe_checkout_url = session.url
 
     def set_paid(self):
+        for produto_pedido in self.produtos.all():
+            if not produto_pedido.produto.has_variations:
+                produto_pedido.produto.estoque -= produto_pedido.quantidade
+                produto_pedido.produto.save()
+            else:
+                produto_pedido.variacao.estoque -= produto_pedido.quantidade
+                produto_pedido.variacao.save()
+
+            produto_pedido.ordered = True
+            produto_pedido.save()
+
         self.status = 'pago'
         self.ordered = True
         self.data_pago = timezone.now()
@@ -169,3 +178,28 @@ class Carrinho(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class Pagamento(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    valor = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    data_pagamento = models.DateTimeField(auto_now_add=True)
+    carrinho = models.ForeignKey(
+        Carrinho, on_delete=models.CASCADE, related_name='pagamentos')
+    forma_pagamento = models.CharField(
+        max_length=20, choices=(
+            ('cartao', 'Cartão de crédito'),
+            ('especie', 'Espécie'),
+            ('pix', 'PIX'),
+        ), default='cartao')
+
+    status = models.CharField(
+        max_length=20, choices=(
+            ('criado', 'Criado'),
+            ('aguardando', 'Aguardando pagamento'),
+            ('pago', 'Pago'),
+            ('cancelado', 'Cancelado'),
+        ), default='criado')
+
+    def __str__(self):
+        return f'{self.valor} - {self.user.socio.nome}'

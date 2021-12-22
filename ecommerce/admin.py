@@ -21,3 +21,8 @@ class CarrinhoAdmin(admin.ModelAdmin):
 @admin.register(ecommerce_models.VariacaoProduto)
 class VariacaoProdutoAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(ecommerce_models.Pagamento)
+class PagamentoAdmin(admin.ModelAdmin):
+    pass

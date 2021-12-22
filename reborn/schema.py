@@ -24,6 +24,7 @@ class Mutation(graphene.ObjectType):
     remover_do_carrinho_plantao = ecommerce.schema.RemoverDoCarrinhoPlantao.Field()
 
     stripe_checkout = ecommerce.schema.StripeCheckout.Field()
+    checkout_plantao = ecommerce.schema.CheckoutPlantao.Field()
     stripe_checkout_plantao = ecommerce.schema.StripeCheckoutPlantao.Field()
 
     confirmar_competidor_na_programacao = atividades.schema.ConfirmarCompetidorNaProgramacao.Field()

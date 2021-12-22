@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 import stripe
 from django.shortcuts import render
-from ecommerce.models import Carrinho
+from ecommerce.models import Carrinho, Pagamento
 from django.conf import settings
 
 
@@ -30,20 +30,19 @@ def ecommerce_webhook(request):
         checkout_session = event['data']['object']
 
         carrinho = Carrinho.objects.filter(
-            stripe_checkout_id=checkout_session['customer']).first()
+            stripe_checkout_id=checkout_session['id']).first()
 
-        for produto_pedido in carrinho.produtos.all():
-            if not produto_pedido.produto.has_variations:
-                produto_pedido.produto.estoque -= produto_pedido.quantidade
-                produto_pedido.produto.save()
-            else:
-                produto_pedido.variacao.estoque -= produto_pedido.quantidade
-                produto_pedido.variacao.save()
-
-            produto_pedido.ordered = True
-            produto_pedido.save()
+        pagamento = Pagamento.objects.create(
+            user=carrinho.user,
+            carrinho=carrinho,
+            status='pago',
+            valor=carrinho.total,
+            forma_pagamento='cartao'
+        )
 
         carrinho.set_paid()
         carrinho.save()
+
+        pagamento.save()
 
     return HttpResponse(status=200)
