@@ -1,16 +1,23 @@
 from django.contrib import admin
+from django.contrib import admin
+from django.contrib.auth.models import User
 
 import core.models as core_models
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    @admin.action(description='Definir selecionados como Staff')
+    def set_staff(self, request, queryset):
+        queryset.update(is_staff=True)
+
+    actions = [set_staff]
 
 
 @admin.register(core_models.Socio)
 class SocioAdmin(admin.ModelAdmin):
 
-    @admin.action(description='Definir sócio como Staff')
-    def set_staff(self, request, queryset):
-        queryset.update(user__is_staff=True)
-
-    actions = [set_staff]
+    pass
 
 
 @admin.register(core_models.Pagamento)
