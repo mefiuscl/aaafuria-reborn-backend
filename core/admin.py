@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 import core.models as core_models
 
 
+admin.site.unregister(User)
+
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     @admin.action(description='Definir selecionados como Staff')
