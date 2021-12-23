@@ -31,7 +31,7 @@ def ecommerce_webhook(request):
         checkout_session = event['data']['object']
 
         if checkout_session['mode'] == 'subscription':
-            return HttpResponse(status=304)
+            return HttpResponse(status=204)
 
         carrinho = Carrinho.objects.filter(
             stripe_checkout_id=checkout_session['id']).first()
