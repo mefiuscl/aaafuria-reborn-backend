@@ -15,7 +15,6 @@ class UserAdmin(admin.ModelAdmin):
         queryset.update(is_staff=True)
 
     actions = [set_staff]
-    fieldsets = UserAdmin.fieldsets
 
 
 @admin.register(core_models.Socio)
