@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth import UserAdmin
-from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 
 
@@ -18,7 +17,6 @@ class UserAdmin(admin.ModelAdmin):
 
     actions = [set_staff]
     fieldsets = UserAdmin.fieldsets
-    form = UserChangeForm
 
 
 @admin.register(core_models.Socio)
