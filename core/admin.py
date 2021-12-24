@@ -9,12 +9,13 @@ admin.site.unregister(User)
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(admin.ModelAdmin):
     @admin.action(description='Definir selecionados como Staff')
     def set_staff(self, request, queryset):
         queryset.update(is_staff=True)
 
     actions = [set_staff]
+    fieldsets = UserAdmin.fieldsets
 
 
 @admin.register(core_models.Socio)
