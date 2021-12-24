@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth import UserAdmin
-from django.contrib.auth.models import User
 
 
 import core.models as core_models
@@ -16,7 +15,6 @@ class UserAdmin(admin.ModelAdmin):
         queryset.update(is_staff=True)
 
     actions = [set_staff]
-    fieldsets = UserAdmin.fieldsets
 
 
 @admin.register(core_models.Socio)
