@@ -149,6 +149,11 @@ class Pagamento(models.Model):
                 },
             ],
             mode='subscription',
+            discounts=[
+                {} if self.data_inicio else {
+                    'coupon': 'PRIMEIRAASSOCIACAO'
+                }
+            ]
         )
 
         self.checkout_url = checkout_session.url
