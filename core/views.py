@@ -48,8 +48,10 @@ def core_webhook(request):
             )
 
             if len(subscription.data) > 0:
-                socio.data_inicio = datetime.fromtimestamp(
-                    subscription.data[0]['current_period_start'])
+                if not socio.data_inicio:
+                    socio.data_inicio = datetime.fromtimestamp(
+                        subscription.data[0]['current_period_start'])
+                
                 socio.data_fim = datetime.fromtimestamp(
                     subscription.data[0]['current_period_end'])
 
