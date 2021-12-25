@@ -4,7 +4,8 @@ import stripe
 from django.shortcuts import render
 from stripe.api_resources import checkout, customer
 from core.models import Pagamento, Socio
-from datetime import datetime, timezone
+from datetime import datetime
+from django.utils import timezone
 from django.conf import settings
 
 
