@@ -150,7 +150,7 @@ class Pagamento(models.Model):
             ],
             mode='subscription',
             discounts=[
-                {} if self.data_inicio else {
+                {} if self.socio.data_inicio else {
                     'coupon': 'PRIMEIRAASSOCIACAO'
                 }
             ]
