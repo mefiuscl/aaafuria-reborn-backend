@@ -56,27 +56,26 @@ class ProdutoPedido(models.Model):
     def __str__(self):
         return f'{self.quantidade}x {self.produto.nome} - {self.user.socio.nome}'
 
-    def get_price(self):
+    def set_price(self):
         if self.variacao:
             self.preco = self.variacao.preco
             self.preco_socio = self.variacao.preco_socio
-            self.save()
         else:
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
-            self.save()
-
+    
+    def get_price(self):
         if self.user.socio.is_socio:
             self.total = self.preco_socio * self.quantidade
             self.save()
             return self.preco_socio
-
-        self.total = self.preco * self.quantidade
-        self.save()
-        return self.preco
+        else:
+            self.total = self.preco * self.quantidade
+            self.save()
+            return self.preco
 
     def save(self, *args, **kwargs):
-
+        self.set_price()
         super().save(*args, **kwargs)
 
 
