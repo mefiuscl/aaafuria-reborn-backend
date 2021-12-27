@@ -155,7 +155,8 @@ class Pagamento(models.Model):
                 {} if self.socio.data_inicio else {
                     'coupon': 'PRIMEIRAASSOCIACAO'
                 }
-            ]
+            ],
+            payment_method_types=['card'],
         )
 
         self.checkout_url = checkout_session.url
