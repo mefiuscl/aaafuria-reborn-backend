@@ -19,6 +19,7 @@ class ModalidadeAdmin(admin.ModelAdmin):
 @admin.register(Programacao)
 class ProgramacaoAdmin(admin.ModelAdmin):
     filter_horizontal = ('competidores_confirmados', 'competidores_presentes')
+    readonly_fields = ('estado',)
 
 
 @admin.register(Competidor)
