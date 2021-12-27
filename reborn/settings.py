@@ -113,6 +113,12 @@ AUTH_PASSWORD_VALIDATORS = [
     # {
     #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     # },
+    {
+        'NAME': 'reborn.validators.PasswordLengthValidator',
+    },
+    {
+        'NAME': 'reborn.validators.PasswordOnlyNumericValidator',
+    }
 ]
 
 
