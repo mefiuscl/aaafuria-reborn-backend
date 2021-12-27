@@ -143,7 +143,7 @@ class Pagamento(models.Model):
         checkout_session = stripe.checkout.Session.create(
             customer=self.socio.stripe_customer_id,
             success_url="https://aaafuria.site/areasocio",
-            cancel_url="https://aaafuria.site/",
+            cancel_url="https://aaafuria.site/sejasocio",
             line_items=[
                 {
                     'price': f'{self.tipo_plano.stripe_price_id}',
