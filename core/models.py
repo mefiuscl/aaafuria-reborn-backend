@@ -76,7 +76,8 @@ class Socio(models.Model):
         session = stripe.billing_portal.Session.create(
             customer=self.stripe_customer_id,
             return_url="https://aaafuria.site/areasocio",
-            locale='pt-BR'
+            locale='pt-BR',
+            payment_method_types=['card']
         )
         self.stripe_portal_url = session.url
 

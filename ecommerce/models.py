@@ -151,6 +151,7 @@ class Carrinho(models.Model):
                 } for produto in self.produtos.all()
             ],
             customer=self.user.socio.stripe_customer_id,
+            payment_method_types=['card', 'boleto'],
         )
 
         self.status = 'aguardando'
