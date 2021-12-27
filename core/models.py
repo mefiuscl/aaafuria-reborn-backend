@@ -77,7 +77,6 @@ class Socio(models.Model):
             customer=self.stripe_customer_id,
             return_url="https://aaafuria.site/areasocio",
             locale='pt-BR',
-            payment_method_types=['card']
         )
         self.stripe_portal_url = session.url
 
