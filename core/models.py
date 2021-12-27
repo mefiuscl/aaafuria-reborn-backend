@@ -42,11 +42,11 @@ class Socio(models.Model):
 
     def set_wa_link(self):
         if self.whatsapp:
-            self.whatsapp_url = f'https://wa.me/55{self.sanitize_document_number_string(self.whatsapp)}'
+            self.whatsapp_url = f'https://wa.me/55{self.whatsapp}'
 
-    def sanitize_document_number_string(self, document_number_string):
-        if document_number_string:
-            sanitized_number = document_number_string.replace(
+    def sanitize_number_string(self, number_string):
+        if number_string:
+            sanitized_number = number_string.replace(
                 '.', '').replace('-', '')
             sanitized_number = sanitized_number.replace(
                 '(', '').replace(')', '').replace(' ', '')
@@ -57,8 +57,9 @@ class Socio(models.Model):
         self.nome = self.nome.upper()
         self.email = self.user.email.lower()
 
-        self.cpf = self.sanitize_document_number_string(self.cpf)
-        self.rg = self.sanitize_document_number_string(self.rg)
+        self.cpf = self.sanitize_number_string(self.cpf)
+        self.rg = self.sanitize_number_string(self.rg)
+        self.whatsapp = self.sanitize_number_string(self.whatsapp)
 
     def create_stripe_customer(self, api_key=settings.STRIPE_API_KEY, *args, **kwargs):
         if not self.stripe_customer_id:
