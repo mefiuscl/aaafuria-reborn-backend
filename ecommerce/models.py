@@ -63,7 +63,7 @@ class ProdutoPedido(models.Model):
         else:
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
-    
+
     def get_price(self):
         if self.user.socio.is_socio:
             self.total = self.preco_socio * self.quantidade
@@ -136,7 +136,7 @@ class Carrinho(models.Model):
             self.stripe_short_checkout_url = r.json()[u'id']
             self.save()
 
-    def create_stripe_checkout_session(self, api_key=settings.STRIPE_API_TEST_KEY):
+    def create_stripe_checkout_session(self, api_key=settings.STRIPE_API_KEY):
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
             success_url='https://aaafuria.site/',
