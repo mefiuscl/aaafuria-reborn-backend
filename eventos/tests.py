@@ -1,4 +1,6 @@
 from django.test import TestCase
+import datetime
+from django.utils.timezone import make_aware
 
 from django.contrib.auth.models import User
 from core.models import Socio
@@ -103,17 +105,37 @@ class ConvidadoModelTest(TestCase):
         ).first().email, 'convidado@email.com')
         self.assertEqual(Convidado.objects.count(), 1)
 
+    def test_aprovar_convidado(self):
+        print('test_aprovar_convidado')
+        participante = Participante(
+            socio=Socio.objects.get(matricula='00000000'),
+        )
+        participante.save()
+
+        convidado = Convidado(
+            participante_responsavel=participante,
+            nome='João de Souza',
+            email='convidado@email.com'
+        )
+
+        convidado.aprovar()
+        convidado.save()
+
+        self.assertEqual(convidado.aprovado, True)
+
 
 class EventoModelTest(TestCase):
     def test_evento_str(self):
         print('test_evento_str')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
 
         self.assertEqual(str(evento), 'Evento Teste')
 
     def test_criar_evento(self):
         print('test_criar_evento')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         self.assertEqual(Evento.objects.count(), 1)
@@ -122,7 +144,8 @@ class EventoModelTest(TestCase):
 class LoteModelTest(TestCase):
     def test_criar_lote(self):
         print('test_criar_lote')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         lote = Lote(
@@ -158,7 +181,8 @@ class IngressoModelTest(TestCase):
 
     def test_criar_ingresso(self):
         print('test_criar_ingresso')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         lote = Lote(
@@ -188,7 +212,8 @@ class IngressoModelTest(TestCase):
 
     def test_valor_ingresso_n_socio(self):
         print('test_valor_ingresso_n_socio')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         lote = Lote(
@@ -218,7 +243,8 @@ class IngressoModelTest(TestCase):
 
     def test_valor_ingresso_socio(self):
         print('test_valor_ingresso_socio')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         lote = Lote(
@@ -252,7 +278,8 @@ class IngressoModelTest(TestCase):
 
     def test_valor_ingresso_convidado(self):
         print('test_valor_ingresso_convidado')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         lote = Lote(
@@ -288,7 +315,8 @@ class IngressoModelTest(TestCase):
 
     def test_quantidade_restante(self):
         print('test_quantidade_restante')
-        evento = Evento(nome='Evento Teste')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
         evento.save()
 
         lote = Lote(
@@ -317,3 +345,86 @@ class IngressoModelTest(TestCase):
         ingresso.lote.quantidade_restante -= 1
 
         self.assertEqual(ingresso.lote.quantidade_restante, 1)
+
+    def test_stripe_checkout_session(self):
+        print('test_stripe_checkout_session')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
+        evento.save()
+
+        lote = Lote(
+            evento=evento,
+            nome='Lote Teste',
+            preco=100,
+            preco_socio=70,
+            preco_convidado=130,
+            quantidade_restante=2,
+            data_inicio='2020-01-01',
+            data_fim='2020-01-02',
+        )
+
+        lote.save()
+
+        participante = Participante(
+            nome='João de Souza',
+            email='joao@email.com',
+            whatsapp='(86) 9 9123-4567',
+            rg='123456789',
+            cpf='123.456.789-00',
+            data_nascimento='2000-01-01',
+        )
+
+        participante.save()
+
+        ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
+            participante=participante,
+            lote=lote,
+        )
+
+        ingresso.save()
+
+        ingresso.create_stripe_checkout()
+        ingresso.save()
+
+        self.assertEqual(ingresso.status, 'pendente')
+
+    def test_ingresso_set_paid(self):
+        print('test_ingresso_set_paid')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio='2020-01-01', data_fim='2020-01-02')
+        evento.save()
+
+        lote = Lote(
+            evento=evento,
+            nome='Lote Teste',
+            preco=100,
+            preco_socio=70,
+            preco_convidado=130,
+            quantidade_restante=2,
+            data_inicio='2020-01-01',
+            data_fim='2020-01-02',
+        )
+
+        lote.save()
+
+        participante = Participante(
+            nome='João de Souza',
+            email='joao@email.com',
+            whatsapp='(86) 9 9123-4567',
+            rg='123456789',
+            cpf='123.456.789-00',
+            data_nascimento='2000-01-01',
+        )
+
+        participante.save()
+
+        ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
+            participante=participante,
+            lote=lote,
+        )
+
+        ingresso.set_paid()
+
+        self.assertEqual(ingresso.status, 'pago')
+        self.assertEqual(ingresso.lote.quantidade_restante, 1)
+        self.assertEqual(ingresso.lote.evento.participantes.count(), 1)
