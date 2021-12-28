@@ -94,7 +94,7 @@ class CheckoutPlantao(graphene.Mutation):
                 socio=carrinho.user.socio)[0],
             conta_destino=Conta.objects.get_or_create(
                 socio=aaafuria)[0],
-            descricao=f'PAGAMENTO DE [{carrinho.user.socio.apelido}] PARA [{aaafuria.apelido}] | MODE: PAGAMENTO PLANTÃO',
+            descricao=f'PAGAMENTO PLANTÃO DE [{carrinho.user.socio.apelido}] PARA [{aaafuria.apelido}] | MODE: {forma_pagamento}',
             valor=carrinho.total,
             resolvida=True,
             resolvida_em=timezone.now()
