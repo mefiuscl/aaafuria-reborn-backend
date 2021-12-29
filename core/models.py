@@ -71,7 +71,7 @@ class Socio(models.Model):
         retrieved_customer_list = stripe.Customer.list(
             limit=1, email=self.email).data
 
-        if retrieved_customer_list.count() > 0:
+        if len(retrieved_customer_list) > 0:
             self.stripe_customer_id = retrieved_customer_list[0].id
         else:
             customer = stripe.Customer.create(
