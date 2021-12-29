@@ -68,11 +68,11 @@ class Socio(models.Model):
 
     def create_stripe_customer(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
-        retrieved_customer = stripe.Customer.list(
-            limit=1, email=self.email).data[0]
+        retrieved_customer_list = stripe.Customer.list(
+            limit=1, email=self.email).data
 
-        if retrieved_customer:
-            self.stripe_customer_id = retrieved_customer.id
+        if retrieved_customer_list.count() > 0:
+            self.stripe_customer_id = retrieved_customer_list[0].id
         else:
             customer = stripe.Customer.create(
                 email=self.email,
