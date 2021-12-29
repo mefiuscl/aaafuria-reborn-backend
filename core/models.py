@@ -143,7 +143,7 @@ class Pagamento(models.Model):
     def __str__(self):
         return f'{self.socio}'
 
-    @ property
+    @property
     def checkout_url(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
         checkout_session = stripe.checkout.Session.retrieve(
