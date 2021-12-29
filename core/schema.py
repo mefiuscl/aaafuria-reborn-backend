@@ -21,11 +21,15 @@ class SocioType(DjangoObjectType):
 
 
 class PagamentoType(DjangoObjectType):
+    checkout_url = graphene.String(source='checkout_url')
+
     class Meta:
         model = Pagamento
 
 
 class SocioRelay(DjangoObjectType):
+    stripe_portal_url = graphene.String(source='stripe_portal_url')
+
     class Meta:
         model = Socio
         filter_fields = ['nome', 'cpf', 'user__username']
@@ -87,8 +91,6 @@ class NovoPagamento(graphene.Mutation):
         except Socio.DoesNotExist:
             return Exception('Sócio não encontrado.')
 
-# Query for the Socio model.
-
 
 class Query(graphene.ObjectType):
     socio = graphene.relay.Node.Field(SocioRelay)
@@ -97,7 +99,7 @@ class Query(graphene.ObjectType):
         SocioType, matricula=graphene.String(required=True))
     all_socio = DjangoFilterConnectionField(SocioRelay)
 
-    create_portal_url = graphene.Field(SocioRelay)
+    query_stripe_portal_url = graphene.Field(SocioRelay)
 
     def resolve_socio_autenticado(self, info, **kwargs):
         if not info.context.user.is_authenticated:
@@ -115,14 +117,11 @@ class Query(graphene.ObjectType):
         except Socio.DoesNotExist:
             return Exception('Matrícula não encontrada.')
 
-    def resolve_create_portal_url(self, info, **kwargs):
+    def resolve_query_stripe_portal_url(self, info, **kwargs):
         if not info.context.user.is_authenticated:
             raise Exception('Usuário não autenticado.')
 
         try:
-            socio = Socio.objects.get(user=info.context.user)
-            socio.create_stripe_portal_url()
-            socio.save()
-            return socio
+            return Socio.objects.get(user=info.context.user)
         except Socio.DoesNotExist:
             return Exception('Sócio não encontrado.')

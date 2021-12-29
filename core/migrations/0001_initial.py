@@ -19,45 +19,56 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TipoPlano',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('nome', models.CharField(max_length=100)),
-                ('stripe_price_id', models.CharField(blank=True, max_length=100, null=True)),
+                ('stripe_price_id', models.CharField(
+                    blank=True, max_length=100, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='Socio',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('matricula', models.CharField(default='00000000', max_length=8)),
                 ('turma', models.CharField(default='MED: 00', max_length=10)),
                 ('nome', models.CharField(max_length=100)),
                 ('email', models.CharField(blank=True, max_length=100, null=True)),
                 ('apelido', models.CharField(blank=True, max_length=100, null=True)),
-                ('avatar', models.ImageField(blank=True, null=True, upload_to=core.models.avatar_dir)),
+                ('avatar', models.ImageField(blank=True,
+                 null=True, upload_to=core.models.avatar_dir)),
                 ('data_nascimento', models.DateField(blank=True, null=True)),
                 ('whatsapp', models.CharField(blank=True, max_length=25, null=True)),
-                ('whatsapp_url', models.CharField(blank=True, max_length=50, null=True)),
+                ('whatsapp_url', models.CharField(
+                    blank=True, max_length=50, null=True)),
                 ('cpf', models.CharField(blank=True, max_length=14, null=True)),
                 ('rg', models.CharField(blank=True, max_length=20, null=True)),
                 ('is_socio', models.BooleanField(default=False)),
                 ('data_inicio', models.DateField(blank=True, null=True)),
                 ('data_fim', models.DateField(blank=True, null=True)),
-                ('stripe_customer_id', models.CharField(blank=True, max_length=50, null=True)),
-                ('stripe_subscription_id', models.CharField(blank=True, max_length=250, null=True)),
-                ('stripe_portal_url', models.CharField(blank=True, max_length=250, null=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('stripe_customer_id', models.CharField(
+                    blank=True, max_length=50, null=True)),
+                ('stripe_subscription_id', models.CharField(
+                    blank=True, max_length=250, null=True)),
+                ('user', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='Pagamento',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('checkout_id', models.CharField(blank=True, max_length=100, null=True)),
-                ('checkout_url', models.CharField(blank=True, max_length=400, null=True)),
-                ('data_pagamento', models.DateField(default=django.utils.timezone.now)),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('checkout_id', models.CharField(
+                    blank=True, max_length=100, null=True)),
+                ('data_pagamento', models.DateField(
+                    default=django.utils.timezone.now)),
                 ('status', models.CharField(default='Pendente', max_length=15)),
-                ('socio', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pagamentos', to='core.socio')),
-                ('tipo_plano', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.tipoplano')),
+                ('socio', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='pagamentos', to='core.socio')),
+                ('tipo_plano', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='core.tipoplano')),
             ],
         ),
     ]

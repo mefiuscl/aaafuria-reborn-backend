@@ -10,6 +10,9 @@ def avatar_dir(instance, filename):
     return f'socios/avatares/{instance.user.username}/'
 
 
+API_KEY = settings.STRIPE_API_KEY
+
+
 class Socio(models.Model):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     matricula = models.CharField(max_length=8, default="00000000")
@@ -31,27 +34,27 @@ class Socio(models.Model):
     stripe_customer_id = models.CharField(max_length=50, null=True, blank=True)
     stripe_subscription_id = models.CharField(
         max_length=250, null=True, blank=True)
-    stripe_portal_url = models.CharField(max_length=250, null=True, blank=True)
 
     def __str__(self):
         return f'{self.matricula}: {self.apelido or self.nome}'
 
-    def set_matricula(self):
-        if self.matricula == "00000000":
-            self.matricula = self.user.username
-
-    def set_wa_link(self):
-        if self.whatsapp:
-            self.whatsapp_url = f'https://wa.me/55{self.whatsapp}'
+    @property
+    def stripe_portal_url(self, api_key=API_KEY, *args, **kwargs):
+        stripe.api_key = api_key
+        session = stripe.billing_portal.Session.create(
+            customer=self.stripe_customer_id,
+            return_url="https://aaafuria.site/areasocio",
+            locale='pt-BR',
+        )
+        return session.url
 
     def sanitize_number_string(self, number_string):
-        if number_string:
-            sanitized_number = number_string.replace(
-                '.', '').replace('-', '')
-            sanitized_number = sanitized_number.replace(
-                '(', '').replace(')', '').replace(' ', '')
+        sanitized_number = number_string.replace(
+            '.', '').replace('-', '')
+        sanitized_number = sanitized_number.replace(
+            '(', '').replace(')', '').replace(' ', '')
 
-            return sanitized_number
+        return sanitized_number
 
     def sanitize_fields(self):
         self.nome = self.nome.upper()
@@ -61,7 +64,7 @@ class Socio(models.Model):
         self.rg = self.sanitize_number_string(self.rg)
         self.whatsapp = self.sanitize_number_string(self.whatsapp)
 
-    def create_stripe_customer(self, api_key=settings.STRIPE_API_KEY, *args, **kwargs):
+    def create_stripe_customer(self, api_key=API_KEY, *args, **kwargs):
         if not self.stripe_customer_id:
             stripe.api_key = api_key
             customer = stripe.Customer.create(
@@ -70,15 +73,6 @@ class Socio(models.Model):
                 phone=self.whatsapp,
             )
             self.stripe_customer_id = customer.id
-
-    def create_stripe_portal_url(self, api_key=settings.STRIPE_API_KEY, *args, **kwargs):
-        stripe.api_key = api_key
-        session = stripe.billing_portal.Session.create(
-            customer=self.stripe_customer_id,
-            return_url="https://aaafuria.site/areasocio",
-            locale='pt-BR',
-        )
-        self.stripe_portal_url = session.url
 
     def notificar(self, metodo, subject, text_template, html_template, context):
         def email():
@@ -110,10 +104,16 @@ class Socio(models.Model):
 
         return metodos[metodo]()
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         self.sanitize_fields()
-        self.set_matricula()
-        self.set_wa_link()
+
+        if self.matricula == "00000000":
+            self.matricula = self.user.username
+        if self.whatsapp:
+            self.whatsapp_url = f'https://wa.me/55{self.whatsapp}'
+
+    def save(self, *args, **kwargs):
+        self.clean()
         self.create_stripe_customer()
 
         super().save(*args, **kwargs)
@@ -128,8 +128,6 @@ class Pagamento(models.Model):
     tipo_plano = models.ForeignKey('core.TipoPlano', on_delete=models.CASCADE)
     checkout_id = models.CharField(
         max_length=100, null=True, blank=True)
-    checkout_url = models.CharField(max_length=400, null=True, blank=True)
-
     data_pagamento = models.DateField(default=timezone.now)
 
     status = models.CharField(
@@ -138,7 +136,15 @@ class Pagamento(models.Model):
     def __str__(self):
         return f'{self.socio}'
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY, *args, **kwargs):
+    @property
+    def checkout_url(self, api_key=API_KEY, *args, **kwargs):
+        stripe.api_key = api_key
+        checkout_session = stripe.checkout.Session.retrieve(
+            self.checkout_id,
+        )
+        return checkout_session.url
+
+    def create_stripe_checkout(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
         checkout_session = stripe.checkout.Session.create(
             customer=self.socio.stripe_customer_id,
@@ -159,10 +165,9 @@ class Pagamento(models.Model):
             payment_method_types=['card'],
         )
 
-        self.checkout_url = checkout_session.url
         self.checkout_id = checkout_session.id
 
-    def check_status(self, api_key=settings.STRIPE_API_KEY, *args, **kwargs):
+    def check_status(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
         try:
             checkout = stripe.checkout.Session.retrieve(self.checkout_id)
@@ -178,7 +183,6 @@ class Pagamento(models.Model):
         super().save(*args, **kwargs)
 
 
-# Class named TipoPlano that represents the type of plan.
 class TipoPlano(models.Model):
     nome = models.CharField(max_length=100)
     stripe_price_id = models.CharField(max_length=100, null=True, blank=True)
