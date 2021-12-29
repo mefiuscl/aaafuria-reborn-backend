@@ -11,6 +11,9 @@ class PublicMediaStorage(S3Boto3Storage):
     default_acl = 'public-read'
     file_overwrite = False
 
+    def _get_security_token(self):
+        return None
+
 
 class PrivateMediaStorage(S3Boto3Storage):
     location = 'private'
