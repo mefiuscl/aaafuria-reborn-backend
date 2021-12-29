@@ -7,7 +7,8 @@ from django.template.loader import render_to_string
 
 
 def avatar_dir(instance, filename):
-    return f'socios/{instance.user.username}/avatar/{filename}'
+    filename = 'avatar' + '.' + filename.split('.')[-1]
+    return f'socios/{instance.user.username}/{filename}'
 
 
 API_KEY = settings.STRIPE_API_KEY
