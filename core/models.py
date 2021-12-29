@@ -10,7 +10,7 @@ def avatar_dir(instance, filename):
     return f'socios/avatares/{instance.user.username}/'
 
 
-API_KEY = settings.STRIPE_API_TEST_KEY
+API_KEY = settings.STRIPE_API_KEY
 
 
 class Socio(models.Model):
