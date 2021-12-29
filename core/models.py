@@ -138,7 +138,8 @@ class Socio(models.Model):
     @receiver(models.signals.post_save, sender='core.Socio')
     def create_socio_conta(sender, instance, created, **kwargs):
         from bank.models import Conta
-        Conta.objects.get_or_create(socio=instance).save()
+        conta, _ = Conta.objects.get_or_create(socio=instance)
+        conta.save()
 
 
 class Pagamento(models.Model):
