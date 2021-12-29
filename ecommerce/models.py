@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+API_KEY = settings.STRIPE_API_KEY
+
 
 class Produto(models.Model):
     nome = models.CharField(max_length=100)
@@ -87,9 +89,6 @@ class Carrinho(models.Model):
 
     stripe_checkout_id = models.CharField(
         max_length=150, null=True, blank=True)
-    stripe_checkout_url = models.CharField(
-        max_length=500, null=True, blank=True)
-
     stripe_short_checkout_url = models.CharField(
         max_length=400, null=True, blank=True)
 
@@ -110,6 +109,13 @@ class Carrinho(models.Model):
 
     def __str__(self):
         return f'R$ {self.total} - {self.user.socio.nome}'
+
+    @property
+    def stripe_checkout_url(self, api_key=API_KEY):
+        stripe.api_key = api_key
+        session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
+
+        return session.url
 
     def get_total(self):
         total = 0
@@ -136,7 +142,7 @@ class Carrinho(models.Model):
             self.stripe_short_checkout_url = r.json()[u'id']
             self.save()
 
-    def create_stripe_checkout_session(self, api_key=settings.STRIPE_API_KEY):
+    def create_stripe_checkout_session(self, api_key=API_KEY):
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
             success_url='https://aaafuria.site/',
@@ -156,7 +162,6 @@ class Carrinho(models.Model):
 
         self.status = 'aguardando'
         self.stripe_checkout_id = session.id
-        self.stripe_checkout_url = session.url
 
     def set_paid(self):
         for produto_pedido in self.produtos.all():

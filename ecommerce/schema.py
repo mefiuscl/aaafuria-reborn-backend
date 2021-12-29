@@ -39,12 +39,16 @@ class ProdutoRelay(DjangoObjectType):
 
 
 class CarrinhoType(DjangoObjectType):
+    stripe_checkout_url = graphene.String(source='stripe_checkout_url')
+
     class Meta:
         model = Carrinho
         filter_fields = []
 
 
 class CarrinhoRelay(DjangoObjectType):
+    stripe_checkout_url = graphene.String(source='stripe_checkout_url')
+
     class Meta:
         model = Carrinho
         filter_fields = ['ordered']
