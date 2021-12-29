@@ -17,6 +17,9 @@ class ProdutoType(DjangoObjectType):
         model = Produto
         filter_fields = []
 
+    def resolve_imagem(self, info, *args, **kwargs):
+        return info.context.build_absolute_uri(self.imagem.url)
+
 
 class ProdutoPedidoType(DjangoObjectType):
     class Meta:
@@ -36,6 +39,9 @@ class ProdutoRelay(DjangoObjectType):
         model = Produto
         filter_fields = ['is_hidden']
         interfaces = (graphene.relay.Node, )
+
+    def resolve_imagem(self, info, *args, **kwargs):
+        return info.context.build_absolute_uri(self.imagem.url)
 
 
 class CarrinhoType(DjangoObjectType):

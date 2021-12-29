@@ -13,11 +13,14 @@ class UserType(DjangoObjectType):
 
 
 class SocioType(DjangoObjectType):
+    stripe_portal_url = graphene.String(source='stripe_portal_url')
+
     class Meta:
         model = Socio
         filter_fields = ['nome', 'cpf', 'user__username']
 
-# Object type for Socio model, named SocioType.
+    def resolve_avatar(self, info, *args, **kwargs):
+        return info.context.build_absolute_uri(self.avatar.url)
 
 
 class PagamentoType(DjangoObjectType):
@@ -34,6 +37,9 @@ class SocioRelay(DjangoObjectType):
         model = Socio
         filter_fields = ['nome', 'cpf', 'user__username']
         interfaces = (graphene.relay.Node, )
+
+    def resolve_avatar(self, info, *args, **kwargs):
+        return info.context.build_absolute_uri(self.avatar.url)
 
 
 class NovoUser(graphene.Mutation):
