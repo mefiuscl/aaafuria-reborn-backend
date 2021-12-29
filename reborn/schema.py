@@ -4,9 +4,10 @@ import graphql_jwt
 import core.schema
 import ecommerce.schema
 import atividades.schema
+import bank.schema
 
 
-class Query(core.schema.Query, ecommerce.schema.Query, atividades.schema.Query, graphene.ObjectType):
+class Query(core.schema.Query, ecommerce.schema.Query, atividades.schema.Query, bank.schema.Query, graphene.ObjectType):
     pass
 
 
