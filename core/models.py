@@ -10,7 +10,7 @@ def avatar_dir(instance, filename):
     return f'socios/avatares/{instance.user.username}/'
 
 
-API_KEY = settings.STRIPE_API_KEY
+API_KEY = settings.STRIPE_API_TEST_KEY
 
 
 class Socio(models.Model):
@@ -65,11 +65,17 @@ class Socio(models.Model):
         self.whatsapp = self.sanitize_number_string(self.whatsapp)
 
     def create_stripe_customer(self, api_key=API_KEY, *args, **kwargs):
-        if not self.stripe_customer_id:
-            stripe.api_key = api_key
+        stripe.api_key = api_key
+        retrieved_customer = stripe.Customer.list(
+            limit=1, email=self.email).data[0]
+
+        if retrieved_customer:
+            self.stripe_customer_id = retrieved_customer.id
+        else:
             customer = stripe.Customer.create(
+                email=self.email,
                 name=self.nome,
-                email=self.user.email,
+                metadata={'matricula': self.matricula},
                 phone=self.whatsapp,
             )
             self.stripe_customer_id = customer.id
