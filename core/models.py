@@ -75,7 +75,8 @@ class Socio(models.Model):
             customer = stripe.Customer.create(
                 email=self.email,
                 name=self.nome,
-                metadata={'matricula': self.matricula},
+                metadata={'matricula': self.matricula,
+                          'apelido': self.apelido},
                 phone=self.whatsapp,
             )
             self.stripe_customer_id = customer.id
@@ -89,7 +90,7 @@ class Socio(models.Model):
             html_content = render_to_string(html_template, context)
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, [
-                                         to])
+                to])
 
             msg.attach_alternative(
                 html_content, "text/html")
@@ -142,7 +143,7 @@ class Pagamento(models.Model):
     def __str__(self):
         return f'{self.socio}'
 
-    @property
+    @ property
     def checkout_url(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
         checkout_session = stripe.checkout.Session.retrieve(
@@ -191,7 +192,8 @@ class Pagamento(models.Model):
 
 class TipoPlano(models.Model):
     nome = models.CharField(max_length=100)
-    stripe_price_id = models.CharField(max_length=100, null=True, blank=True)
+    stripe_price_id = models.CharField(
+        max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.nome
