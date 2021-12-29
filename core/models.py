@@ -1,9 +1,10 @@
 import stripe
-from django.db import models
-from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.db import models
+from django.dispatch import receiver
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 
 def avatar_dir(instance, filename):
@@ -128,6 +129,11 @@ class Socio(models.Model):
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
+
+    @receiver(models.signals.post_delete, sender='core.Socio')
+    def remove_avatar_from_s3(sender, instance, **kwargs):
+        if instance.avatar:
+            instance.avatar.delete(save=False)
 
 
 class Pagamento(models.Model):
