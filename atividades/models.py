@@ -73,6 +73,14 @@ class Programacao(models.Model):
                                    format="dd/MM/yyyy HH:mm", tzinfo=get_timezone('America/Sao_Paulo'))
         return f'{self.modalidade} - {datetime}'
 
+    @property
+    def finalizado(self):
+        if self.data_hora < timezone.now():
+            self.estado = 'Finalizado'
+            self.save()
+            return True
+        return False
+
     def checar_estado(self):
         if self.competidores_confirmados.count() >= self.competidores_minimo:
             if self.competidores_confirmados.count() == 0:

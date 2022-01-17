@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
+from django_filters import FilterSet, OrderingFilter
 
 from .models import Programacao, Competidor, Modalidade
 
@@ -25,15 +26,33 @@ class ModalidadeType(DjangoObjectType):
         filter_fields = '__all__'
 
 
+class ProgramacaoFilter(FilterSet):
+    class Meta:
+        model = Programacao
+        fields = ['modalidade__categoria',
+                  'estado', ]
+
+    order_by = OrderingFilter(
+        fields=(
+            ('data_hora', 'data_hora'),
+        )
+    )
+
+
 class ProgramacaoType(DjangoObjectType):
+    finalizado = graphene.Boolean(source='finalizado')
+
     class Meta:
         model = Programacao
 
 
 class ProgramacaoRelay(DjangoObjectType):
+    finalizado = graphene.Boolean(source='finalizado')
+
     class Meta:
         model = Programacao
-        filter_fields = ['modalidade__categoria', 'estado']
+        filter_fields = ['modalidade__categoria',
+                         'estado', ]
         interfaces = (graphene.relay.Node, )
 
 
@@ -78,4 +97,5 @@ class RemoverCompetidorNaProgramacao(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    all_programacao = DjangoFilterConnectionField(ProgramacaoRelay)
+    all_programacao = DjangoFilterConnectionField(
+        ProgramacaoRelay, filterset_class=ProgramacaoFilter)
