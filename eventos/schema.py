@@ -127,6 +127,8 @@ class Query(graphene.ObjectType):
     all_evento = DjangoFilterConnectionField(EventoRelay)
     all_ingresso = DjangoFilterConnectionField(IngressoRelay)
 
+    user_authenticated_ingressos = graphene.List(IngressoRelay)
+
     all_lote = DjangoFilterConnectionField(LoteRelay)
 
     def resolve_ingresso_by_id(self, info, id):
@@ -154,3 +156,9 @@ class Query(graphene.ObjectType):
 
         except Ingresso.DoesNotExist:
             raise Exception('Ingresso não encontrado.')
+
+    def resolve_user_authenticated_ingressos(self, info):
+        if not info.context.user.is_authenticated:
+            raise Exception('Usuário não autenticado.')
+
+        return Ingresso.objects.filter(participante__socio=info.context.user.socio, status='pago')
