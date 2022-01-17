@@ -52,7 +52,7 @@ class IngressoAdmin(admin.ModelAdmin):
                     'turma', 'categoria', 'status', )
     list_filter = ('status', 'lote__evento', 'participante__categoria')
     search_fields = ['participante__nome',
-                     'participante__email', 'lote__evento__nome']
+                     'participante__email', 'lote__evento__nome', 'participante__socio__matricula']
 
     def evento(self, obj):
         return obj.lote.evento
