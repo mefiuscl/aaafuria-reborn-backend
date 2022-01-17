@@ -117,14 +117,6 @@ class Lote(models.Model):
             raise ValidationError(
                 'A data de início não pode ser maior que a data de fim')
 
-        if self.data_inicio < self.evento.data_inicio:
-            raise ValidationError(
-                'A data de início não pode ser menor que a data de início do evento')
-
-        if self.data_fim > self.evento.data_fim:
-            raise ValidationError(
-                'A data de fim não pode ser maior que a data de fim do evento')
-
     def save(self, *args, **kwargs):
         self.update_ativo()
         if self.ativo:
