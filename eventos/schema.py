@@ -25,6 +25,8 @@ class IngressoRelay(DjangoObjectType):
 
 
 class LoteRelay(DjangoObjectType):
+    is_gratuito = graphene.Boolean(source='is_gratuito')
+
     class Meta:
         model = Lote
         filter_fields = ['ativo', 'evento__fechado']
@@ -47,14 +49,26 @@ class NovoIngresso(graphene.Mutation):
         )
         participante.save()
 
-        ingresso, _ = Ingresso.objects.get_or_create(
-            lote=Lote.objects.get(id=from_global_id(lote_id)[1]),
-            participante=participante,
-        )
-        ingresso.create_stripe_checkout()
-        ingresso.save()
+        lote = Lote.objects.get(id=from_global_id(lote_id)[1])
 
-        return NovoIngresso(ok=True, ingresso=ingresso)
+        if lote.is_gratuito:
+            ingresso, _ = Ingresso.objects.get_or_create(
+                lote=lote,
+                participante=participante,
+            )
+            ingresso.set_paid()
+            ingresso.save()
+            return NovoIngresso(ok=True)
+
+        else:
+            ingresso, _ = Ingresso.objects.get_or_create(
+                lote=lote,
+                participante=participante,
+            )
+            ingresso.create_stripe_checkout()
+            ingresso.save()
+
+            return NovoIngresso(ok=True, ingresso=ingresso)
 
 
 class Query(graphene.ObjectType):

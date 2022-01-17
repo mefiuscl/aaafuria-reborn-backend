@@ -98,6 +98,13 @@ class Lote(models.Model):
     def __str__(self):
         return self.nome
 
+    @property
+    def is_gratuito(self):
+        if self.preco == self.preco_socio == 0:
+            return True
+
+        return False
+
     def clean(self):
         if self.data_fim < self.data_inicio:
             raise ValidationError(
@@ -153,14 +160,14 @@ class Ingresso(models.Model):
         self.valor = categoria[self.participante.categoria]
 
     @property
-    def stripe_checkout_url(self, api_key=settings.STRIPE_API_KEY):
+    def stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY):
         if self.stripe_checkout_id:
             stripe.api_key = api_key
             session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
 
             return session.url
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY):
         self.set_valor()
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
@@ -181,6 +188,7 @@ class Ingresso(models.Model):
         )
 
         self.stripe_checkout_id = session.id
+        self.status = 'aguardando'
 
     def set_paid(self):
         self.status = 'pago'
@@ -192,9 +200,5 @@ class Ingresso(models.Model):
 
     def save(self, *args, **kwargs):
         self.set_valor()
-
-        if self.status == 'pendente':
-            self.create_stripe_checkout()
-            self.status = 'aguardando'
 
         super().save(*args, **kwargs)
