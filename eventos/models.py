@@ -160,14 +160,14 @@ class Ingresso(models.Model):
         self.valor = categoria[self.participante.categoria]
 
     @property
-    def stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY):
+    def stripe_checkout_url(self, api_key=settings.STRIPE_API_KEY):
         if self.stripe_checkout_id:
             stripe.api_key = api_key
             session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
 
             return session.url
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY):
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
         self.set_valor()
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
