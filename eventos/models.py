@@ -105,6 +105,10 @@ class Lote(models.Model):
 
         return False
 
+    def update_ativo(self):
+        if self.quantidade_restante < 1:
+            self.ativo = False
+
     def clean(self):
         if self.data_fim < self.data_inicio:
             raise ValidationError(
@@ -193,6 +197,7 @@ class Ingresso(models.Model):
     def set_paid(self):
         self.status = 'pago'
         self.lote.quantidade_restante -= 1
+        self.lote.update_ativo()
         self.lote.save()
 
         self.lote.evento.participantes.add(self.participante)
