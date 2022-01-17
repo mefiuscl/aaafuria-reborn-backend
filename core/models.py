@@ -51,12 +51,13 @@ class Socio(models.Model):
         return session.url
 
     def sanitize_number_string(self, number_string):
-        sanitized_number = number_string.replace(
-            '.', '').replace('-', '')
-        sanitized_number = sanitized_number.replace(
-            '(', '').replace(')', '').replace(' ', '')
+        if number_string:
+            sanitized_number = number_string.replace(
+                '.', '').replace('-', '')
+            sanitized_number = sanitized_number.replace(
+                '(', '').replace(')', '').replace(' ', '')
 
-        return sanitized_number
+            return sanitized_number
 
     def sanitize_fields(self):
         self.nome = self.nome.upper()

@@ -8,12 +8,12 @@ class Participante(models.Model):
     socio = models.ForeignKey(
         'core.Socio', on_delete=models.CASCADE, blank=True, null=True)
 
-    nome = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    whatsapp = models.CharField(max_length=25)
-    rg = models.CharField(max_length=50)
-    cpf = models.CharField(max_length=11)
-    data_nascimento = models.DateField()
+    nome = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(max_length=100, blank=True, null=True)
+    whatsapp = models.CharField(max_length=25, blank=True, null=True)
+    rg = models.CharField(max_length=50, blank=True, null=True)
+    cpf = models.CharField(max_length=11, blank=True, null=True)
+    data_nascimento = models.DateField(blank=True, null=True)
 
     categoria = models.CharField(
         max_length=12,
@@ -44,6 +44,8 @@ class Participante(models.Model):
 
             if self.socio.is_socio:
                 self.categoria = 'socio'
+            else:
+                self.categoria = 'n_socio'
         else:
             self.categoria = 'convidado'
 
@@ -70,9 +72,12 @@ class Convidado(models.Model):
 
 class Evento(models.Model):
     nome = models.CharField(max_length=100)
-    participantes = models.ManyToManyField(Participante)
+    participantes = models.ManyToManyField(Participante, blank=True)
+    imagem = models.ImageField(
+        upload_to='eventos/', null=True, blank=True)
     data_inicio = models.DateField()
     data_fim = models.DateField()
+    fechado = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nome
@@ -121,11 +126,12 @@ class Ingresso(models.Model):
     lote = models.ForeignKey(Lote, on_delete=models.CASCADE)
     participante = models.ForeignKey(Participante, on_delete=models.CASCADE)
     data_compra = models.DateField(auto_now_add=True)
-    valor = models.DecimalField(max_digits=7, decimal_places=2)
+    valor = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     status = models.CharField(
         max_length=12,
         choices=(
             ('pago', 'Pago'),
+            ('aguardando', 'Aguradando pagamento'),
             ('pendente', 'Pendente'),
             ('cancelado', 'Cancelado'),
         ),
@@ -146,15 +152,20 @@ class Ingresso(models.Model):
 
         self.valor = categoria[self.participante.categoria]
 
-    def save(self, *args, **kwargs):
-        self.set_valor()
-        super().save(*args, **kwargs)
+    @property
+    def stripe_checkout_url(self, api_key=settings.STRIPE_API_KEY):
+        if self.stripe_checkout_id:
+            stripe.api_key = api_key
+            session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY):
+            return session.url
+
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
+        self.set_valor()
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
             success_url='https://aaafuria.site/',
-            cancel_url='https://aaafuria.site/carrinho',
+            cancel_url='https://aaafuria.site/eventos',
             mode='payment',
             line_items=[
                 {
@@ -171,12 +182,6 @@ class Ingresso(models.Model):
 
         self.stripe_checkout_id = session.id
 
-    def get_stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY):
-        stripe.api_key = api_key
-        session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
-
-        return session.url
-
     def set_paid(self):
         self.status = 'pago'
         self.lote.quantidade_restante -= 1
@@ -184,3 +189,12 @@ class Ingresso(models.Model):
 
         self.lote.evento.participantes.add(self.participante)
         self.lote.evento.save()
+
+    def save(self, *args, **kwargs):
+        self.set_valor()
+
+        if self.status == 'pendente':
+            self.create_stripe_checkout()
+            self.status = 'aguardando'
+
+        super().save(*args, **kwargs)

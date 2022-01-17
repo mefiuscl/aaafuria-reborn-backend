@@ -33,25 +33,28 @@ def ecommerce_webhook(request):
         if checkout_session['mode'] == 'subscription':
             return HttpResponse(status=204)
 
-        carrinho = Carrinho.objects.filter(
-            stripe_checkout_id=checkout_session['id']).first()
+        try:
+            carrinho = Carrinho.objects.get(
+                stripe_checkout_id=checkout_session['id'])
 
-        pagamento = Pagamento.objects.create(
-            user=carrinho.user,
-            carrinho=carrinho,
-            status='pago',
-            valor=carrinho.total,
-            forma_pagamento='cartao'
-        )
+            pagamento = Pagamento.objects.create(
+                user=carrinho.user,
+                carrinho=carrinho,
+                status='pago',
+                valor=carrinho.total,
+                forma_pagamento='cartao'
+            )
 
-        carrinho.set_paid()
-        carrinho.save()
+            carrinho.set_paid()
+            carrinho.save()
 
-        pagamento.save()
+            pagamento.save()
 
-        conta, _ = Conta.objects.get_or_create(socio=carrinho.user.socio)
-        conta.calangos = int(
-            ((checkout_session['amount_total'] / 100) // 10) * 100)
-        conta.save()
+            conta, _ = Conta.objects.get_or_create(socio=carrinho.user.socio)
+            conta.calangos = int(
+                ((checkout_session['amount_total'] / 100) // 10) * 100)
+            conta.save()
+        except Carrinho.DoesNotExist:
+            return HttpResponse(status=204)
 
     return HttpResponse(status=200)

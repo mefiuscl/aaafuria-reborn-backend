@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from core.views import core_webhook
 from ecommerce.views import ecommerce_webhook
 from bank.views import bank_webhook
+from eventos.views import eventos_webhook
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -18,4 +19,5 @@ urlpatterns = [
     path("core_webhook/", csrf_exempt(core_webhook)),
     path("ecommerce_webhook/", csrf_exempt(ecommerce_webhook)),
     path("bank_webhook/", csrf_exempt(bank_webhook)),
+    path("eventos_webhook/", csrf_exempt(eventos_webhook)),
 ]

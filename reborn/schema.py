@@ -5,9 +5,10 @@ import core.schema
 import ecommerce.schema
 import atividades.schema
 import bank.schema
+import eventos.schema
 
 
-class Query(core.schema.Query, ecommerce.schema.Query, atividades.schema.Query, bank.schema.Query, graphene.ObjectType):
+class Query(core.schema.Query, ecommerce.schema.Query, atividades.schema.Query, bank.schema.Query, eventos.schema.Query, graphene.ObjectType):
     pass
 
 
@@ -30,6 +31,8 @@ class Mutation(graphene.ObjectType):
 
     confirmar_competidor_na_programacao = atividades.schema.ConfirmarCompetidorNaProgramacao.Field()
     remover_competidor_na_programacao = atividades.schema.RemoverCompetidorNaProgramacao.Field()
+
+    novo_ingresso = eventos.schema.NovoIngresso.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
