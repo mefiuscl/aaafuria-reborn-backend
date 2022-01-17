@@ -26,7 +26,9 @@ class LoteAdmin(admin.ModelAdmin):
 class IngressoAdmin(admin.ModelAdmin):
     readonly_fields = ('stripe_checkout_url', )
     list_display = ('evento', 'lote', 'participante', 'status', )
-    list_filter = ('status', 'lote')
+    list_filter = ('status', 'lote__evento')
+    search_fields = ['participante__nome',
+                     'participante__email', 'lote__evento__nome']
 
     def evento(self, obj):
         return obj.lote.evento
