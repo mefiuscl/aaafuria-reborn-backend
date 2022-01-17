@@ -25,5 +25,8 @@ class LoteAdmin(admin.ModelAdmin):
 @admin.register(eventos_models.Ingresso)
 class IngressoAdmin(admin.ModelAdmin):
     readonly_fields = ('stripe_checkout_url', )
-    list_display = ('lote', 'participante', 'status', )
+    list_display = ('evento', 'lote', 'participante', 'status', )
     list_filter = ('status', 'lote')
+
+    def evento(self, obj):
+        return obj.lote.evento
