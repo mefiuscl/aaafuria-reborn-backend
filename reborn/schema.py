@@ -33,6 +33,7 @@ class Mutation(graphene.ObjectType):
     remover_competidor_na_programacao = atividades.schema.RemoverCompetidorNaProgramacao.Field()
 
     novo_ingresso = eventos.schema.NovoIngresso.Field()
+    invalidar_ingresso = eventos.schema.InvalidarIngresso.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
