@@ -43,6 +43,7 @@ def core_webhook(request):
             socio.is_socio = True
 
             # Verificar e adicionar data_inicio e data_fim
+            stripe.api_key = settings.STRIPE_API_KEY
             subscription = stripe.Subscription.list(
                 customer=socio.stripe_customer_id,
                 status='active'
@@ -52,7 +53,7 @@ def core_webhook(request):
                 if not socio.data_inicio:
                     socio.data_inicio = datetime.fromtimestamp(
                         subscription.data[0]['current_period_start'])
-                
+
                 socio.data_fim = datetime.fromtimestamp(
                     subscription.data[0]['current_period_end'])
 
