@@ -50,10 +50,6 @@ def ecommerce_webhook(request):
 
             pagamento.save()
 
-            conta, _ = Conta.objects.get_or_create(socio=carrinho.user.socio)
-            conta.calangos = int(
-                ((checkout_session['amount_total'] / 100) // 10) * 100)
-            conta.save()
         except Carrinho.DoesNotExist:
             return HttpResponse(status=204)
 

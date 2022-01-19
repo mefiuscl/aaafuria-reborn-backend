@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from bank.models import Conta
+
 API_KEY = settings.STRIPE_API_KEY
 
 
@@ -178,6 +180,11 @@ class Carrinho(models.Model):
         self.status = 'pago'
         self.ordered = True
         self.data_pago = timezone.now()
+
+        conta, _ = Conta.objects.get_or_create(socio=self.socio)
+        conta.calangos = int(
+            (self.total // 10) * 100)
+        conta.save()
 
         self.save()
 
