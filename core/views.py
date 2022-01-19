@@ -71,6 +71,7 @@ def core_webhook(request):
                         f'{socio.stripe_subscription_id}',
                         cancel_at=socio.data_fim,
                         collection_method='send_invoice',
+                        days_until_due=7,
                         proration_behavior='none'
                     )
                 elif current_period_end - datetime.now() > timedelta(days=31):
@@ -83,6 +84,7 @@ def core_webhook(request):
                                 f'{socio.stripe_subscription_id}',
                                 cancel_at=socio.data_fim,
                                 collection_method='send_invoice',
+                                days_until_due=7,
                                 proration_behavior='none'
                             )
 
