@@ -38,6 +38,8 @@ class CarrinhoAdmin(admin.ModelAdmin):
 class VariacaoProdutoAdmin(admin.ModelAdmin):
     list_display = ['get_produto_nome', 'nome', 'preco', 'preco_socio',
                     'estoque']
+    list_filter = ['produto__nome']
+    search_fields = ['produto__nome']
 
     def get_produto_nome(self, obj):
         return obj.produto.nome
