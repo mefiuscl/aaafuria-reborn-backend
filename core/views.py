@@ -73,7 +73,7 @@ def core_webhook(request):
                         cancel_at=socio.data_fim,
                         proration_behavior='none'
                     )
-                elif current_period_end - datetime.now() > timedelta(month=1):
+                elif current_period_end - datetime.now() > timedelta(days=31):
                     if datetime.now().month < 7:
                         if current_period_end.month > 6:
                             socio.data_fim = datetime(
