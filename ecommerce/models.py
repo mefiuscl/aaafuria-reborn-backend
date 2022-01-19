@@ -167,12 +167,14 @@ class Carrinho(models.Model):
 
     def set_paid(self):
         for produto_pedido in self.produtos.all():
-            if not produto_pedido.produto.has_variations:
+            if produto_pedido.produto.has_variations:
+                produto_pedido.produto.estoque -= produto_pedido.quantidade
+                produto_pedido.variacao.estoque -= produto_pedido.quantidade
+                produto_pedido.produto.save()
+                produto_pedido.variacao.save()
+            else:
                 produto_pedido.produto.estoque -= produto_pedido.quantidade
                 produto_pedido.produto.save()
-            else:
-                produto_pedido.variacao.estoque -= produto_pedido.quantidade
-                produto_pedido.variacao.save()
 
             produto_pedido.ordered = True
             produto_pedido.save()
