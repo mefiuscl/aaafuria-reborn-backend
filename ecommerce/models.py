@@ -11,7 +11,7 @@ API_KEY = settings.STRIPE_API_KEY
 
 
 class Produto(models.Model):
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, verbose_name='nome do produto')
     descricao = models.TextField()
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
@@ -29,7 +29,7 @@ class Produto(models.Model):
 class VariacaoProduto(models.Model):
     produto = models.ForeignKey(
         Produto, on_delete=models.CASCADE, related_name='variacoes')
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, verbose_name='variação')
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
     stripe_price_id = models.CharField(max_length=100, blank=True, null=True)
@@ -183,8 +183,8 @@ class Carrinho(models.Model):
         self.ordered = True
         self.data_pago = timezone.now()
 
-        conta, _ = Conta.objects.get_or_create(socio=self.socio)
-        conta.calangos = int(
+        conta, _ = Conta.objects.get_or_create(socio=self.user.socio)
+        conta.calangos += int(
             (self.total // 10) * 100)
         conta.save()
 

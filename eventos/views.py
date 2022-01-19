@@ -40,13 +40,6 @@ def eventos_webhook(request):
             ingresso.set_paid()
             ingresso.save()
 
-            if ingresso.participante.socio:
-                conta, _ = Conta.objects.get_or_create(
-                    socio=ingresso.participante.socio)
-                conta.calangos = int(
-                    ((checkout_session['amount_total'] / 100) // 10) * 100)
-                conta.save()
-
         except Ingresso.DoesNotExist:
             return HttpResponse(status=204)
 

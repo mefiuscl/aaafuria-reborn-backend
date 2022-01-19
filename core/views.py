@@ -61,7 +61,7 @@ def core_webhook(request):
             pagamento.save()
 
             conta, _ = Conta.objects.get_or_create(socio=socio)
-            conta.calangos = int(
+            conta.calangos += int(
                 ((checkout_session['amount_total'] / 100) // 10) * 100)
             conta.save()
 

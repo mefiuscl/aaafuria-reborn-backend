@@ -4,6 +4,8 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+from bank.models import Conta
+
 
 class Participante(models.Model):
     socio = models.ForeignKey(
@@ -205,6 +207,13 @@ class Ingresso(models.Model):
         self.lote.quantidade_restante -= 1
         if self.lote.quantidade_restante < 0:
             raise ValidationError('Não há ingressos disponíveis')
+
+        if self.participante.socio:
+            conta, _ = Conta.objects.get_or_create(
+                socio=self.participante.socio)
+            conta.calangos += int(
+                (self.valor // 10) * 100)
+            conta.save()
 
         self.status = 'pago'
         self.data_compra = timezone.now()
