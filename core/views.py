@@ -3,7 +3,7 @@ from django.http.response import HttpResponse
 import stripe
 from bank.models import Conta
 from core.models import Pagamento, Socio
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from django.conf import settings
 
@@ -48,14 +48,43 @@ def core_webhook(request):
             )
 
             if len(subscription.data) > 0:
+                socio.stripe_subscription_id = subscription.data[0]['id']
+
                 if not socio.data_inicio:
                     socio.data_inicio = datetime.fromtimestamp(
                         subscription.data[0]['current_period_start'])
 
-                socio.data_fim = datetime.fromtimestamp(
+                current_period_end = datetime.fromtimestamp(
                     subscription.data[0]['current_period_end'])
 
-                socio.stripe_subscription_id = subscription.data[0]['id']
+                socio.data_fim = current_period_end
+                stripe.Subscription.modify(
+                    f'{socio.stripe_subscription_id}',
+                    proration_behavior='none'
+                )
+
+                if current_period_end.year > datetime.now().year:
+                    socio.data_fim = datetime(
+                        datetime.now().year, 12, 31, 23, 59, 59
+                    )
+                    stripe.Subscription.modify(
+                        f'{socio.stripe_subscription_id}',
+                        cancel_at=socio.data_fim,
+                        collection_method='send_invoice',
+                        proration_behavior='none'
+                    )
+                elif current_period_end - datetime.now() > timedelta(days=31):
+                    if datetime.now().month < 7:
+                        if current_period_end.month > 6:
+                            current_period_end = datetime(
+                                datetime.now().year, 6, 30, 23, 59, 59
+                            )
+                            stripe.Subscription.modify(
+                                f'{socio.stripe_subscription_id}',
+                                cancel_at=socio.data_fim,
+                                collection_method='send_invoice',
+                                proration_behavior='none'
+                            )
 
             socio.save()
             pagamento.save()
