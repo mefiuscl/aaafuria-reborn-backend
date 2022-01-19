@@ -1,3 +1,4 @@
+from calendar import month
 from django.conf import settings
 from django.http.response import HttpResponse
 import stripe
@@ -74,10 +75,10 @@ def core_webhook(request):
                         days_until_due=7,
                         proration_behavior='none'
                     )
-                elif current_period_end - datetime.now() > timedelta(days=31):
+                elif current_period_end - datetime.now() > timedelta(month=1):
                     if datetime.now().month < 7:
                         if current_period_end.month > 6:
-                            current_period_end = datetime(
+                            socio.data_fim = datetime(
                                 datetime.now().year, 6, 30, 23, 59, 59
                             )
                             stripe.Subscription.modify(
