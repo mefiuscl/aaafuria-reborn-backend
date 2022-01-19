@@ -36,8 +36,13 @@ class CarrinhoAdmin(admin.ModelAdmin):
 
 @admin.register(ecommerce_models.VariacaoProduto)
 class VariacaoProdutoAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'preco', 'preco_socio',
+    list_display = ['get_produto_nome', 'nome', 'preco', 'preco_socio',
                     'estoque']
+
+    def get_produto_nome(self, obj):
+        return obj.produto.nome
+
+    get_produto_nome.short_description = 'Produto'
 
 
 @admin.register(ecommerce_models.Pagamento)
