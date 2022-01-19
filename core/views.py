@@ -71,8 +71,6 @@ def core_webhook(request):
                     stripe.Subscription.modify(
                         f'{socio.stripe_subscription_id}',
                         cancel_at=socio.data_fim,
-                        collection_method='send_invoice',
-                        days_until_due=7,
                         proration_behavior='none'
                     )
                 elif current_period_end - datetime.now() > timedelta(month=1):
@@ -84,8 +82,6 @@ def core_webhook(request):
                             stripe.Subscription.modify(
                                 f'{socio.stripe_subscription_id}',
                                 cancel_at=socio.data_fim,
-                                collection_method='send_invoice',
-                                days_until_due=7,
                                 proration_behavior='none'
                             )
 
