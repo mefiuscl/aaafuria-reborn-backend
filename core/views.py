@@ -89,8 +89,9 @@ def core_webhook(request):
             pagamento.save()
 
             conta, _ = Conta.objects.get_or_create(socio=socio)
-            conta.calangos += int(
-                ((checkout_session['amount_total'] / 100) // 10) * 100)
+            if conta.socio.is_socio:
+                conta.calangos += int(
+                    ((checkout_session['amount_total'] * 100) // 5 * 50))
             conta.save()
 
     # Handle the customer.subscription.deleted event

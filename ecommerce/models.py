@@ -184,8 +184,9 @@ class Carrinho(models.Model):
         self.data_pago = timezone.now()
 
         conta, _ = Conta.objects.get_or_create(socio=self.user.socio)
-        conta.calangos += int(
-            (self.total // 5) * 50)
+        if conta.socio.is_socio:
+            conta.calangos += int(
+                (self.total // 5) * 50)
         conta.save()
 
         self.save()

@@ -211,8 +211,9 @@ class Ingresso(models.Model):
         if self.participante.socio:
             conta, _ = Conta.objects.get_or_create(
                 socio=self.participante.socio)
-            conta.calangos += int(
-                (self.valor // 10) * 100)
+            if conta.socio.is_socio:
+                conta.calangos += int(
+                    (self.valor // 5) * 50)
             conta.save()
 
         self.status = 'pago'
