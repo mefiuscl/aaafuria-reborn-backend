@@ -185,7 +185,7 @@ class Carrinho(models.Model):
 
         conta, _ = Conta.objects.get_or_create(socio=self.user.socio)
         conta.calangos += int(
-            (self.total // 10) * 100)
+            (self.total // 5) * 50)
         conta.save()
 
         self.save()
