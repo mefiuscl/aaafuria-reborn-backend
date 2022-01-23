@@ -66,7 +66,6 @@ class ProdutoPedido(models.Model):
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
 
-    @property
     def get_price(self):
         if self.user.socio.is_socio:
             self.total = self.preco_socio * self.quantidade
