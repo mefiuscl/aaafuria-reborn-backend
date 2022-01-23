@@ -49,8 +49,6 @@ class ProdutoPedido(models.Model):
         VariacaoProduto, on_delete=models.CASCADE, related_name='variacoes', null=True, blank=True)
     quantidade = models.IntegerField(default=1)
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    produto = models.ForeignKey(
-        Produto, on_delete=models.CASCADE)
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     preco_socio = models.DecimalField(
         max_digits=8, decimal_places=2, default=0)
@@ -68,6 +66,7 @@ class ProdutoPedido(models.Model):
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
 
+    @property
     def get_price(self):
         if self.user.socio.is_socio:
             self.total = self.preco_socio * self.quantidade

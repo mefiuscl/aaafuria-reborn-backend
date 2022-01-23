@@ -28,6 +28,8 @@ class ProdutoPedidoType(DjangoObjectType):
 
 
 class ProdutoPedidoRelay(DjangoObjectType):
+    get_price = graphene.Float(source='get_price')
+
     class Meta:
         model = ProdutoPedido
         filter_fields = ['ordered']
