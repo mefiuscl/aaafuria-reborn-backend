@@ -154,10 +154,13 @@ class Carrinho(models.Model):
                     'quantity': produto.quantidade,
                     'currency': 'BRL',
                     'amount': int(produto.get_price() * 100),
+                    'tax_rates': ['txr_1KNHSqH8nuTtWMpPYdEjlHgt']
                 } for produto in self.produtos.all()
             ],
             customer=self.user.socio.stripe_customer_id,
             payment_method_types=['card'],
+
+
         )
 
         self.status = 'aguardando'
