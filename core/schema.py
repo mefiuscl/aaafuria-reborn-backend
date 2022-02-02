@@ -59,6 +59,13 @@ class NovoUser(graphene.Mutation):
     socio = graphene.Field(SocioType)
 
     def mutate(self, info, matricula, turma, pin, email, nome, apelido, cpf, rg, data_nascimento, whatsapp):
+        if matricula == '' or turma == '' or pin == '' or email == '' or nome == '' or apelido == '' or cpf == '' or rg == '' or data_nascimento == '' or whatsapp == '':
+            raise Exception('Todos os campos são obrigatórios.')
+        if matricula == '00000000':
+            raise Exception('Matrícula inválida.')
+        if len(matricula) != 8:
+            raise Exception('Matrícula inválida.')
+
         user = User.objects.create_user(
             username=matricula, password=pin, email=email)
         user.save()
