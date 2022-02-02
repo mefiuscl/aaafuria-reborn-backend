@@ -154,7 +154,7 @@ class Carrinho(models.Model):
                     'quantity': produto.quantidade,
                     'currency': 'BRL',
                     'amount': int(produto.get_price() * 100),
-                    'tax_rates': ['txr_1KNHSqH8nuTtWMpPYdEjlHgt']
+                    'tax_rates': ['txr_1KNHNdH8nuTtWMpP7wE3IGLa']
                 } for produto in self.produtos.all()
             ],
             customer=self.user.socio.stripe_customer_id,
