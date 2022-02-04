@@ -25,6 +25,10 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
 
+    def save(self, *args, **kwargs):
+        self.nome = self.nome.upper()
+        super().save(*args, *kwargs)
+
 
 class VariacaoProduto(models.Model):
     produto = models.ForeignKey(
@@ -40,6 +44,10 @@ class VariacaoProduto(models.Model):
 
     def __str__(self):
         return f'{self.produto.nome} - {self.nome}'
+
+    def save(self, *args, **kwargs):
+        self.nome = self.nome.upper()
+        super().save(*args, *kwargs)
 
 
 class ProdutoPedido(models.Model):
