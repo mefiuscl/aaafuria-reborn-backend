@@ -15,6 +15,8 @@ class Produto(models.Model):
     descricao = models.TextField()
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
+    preco_staff = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
     imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
     has_variations = models.BooleanField(default=False)
@@ -30,6 +32,8 @@ class VariacaoProduto(models.Model):
     nome = models.CharField(max_length=100, verbose_name='variação')
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
+    preco_staff = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
     imagem = models.ImageField(
         upload_to='produtos/variacoes/', blank=True, null=True)
@@ -49,6 +53,8 @@ class ProdutoPedido(models.Model):
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     preco_socio = models.DecimalField(
         max_digits=8, decimal_places=2, default=0)
+    preco_staff = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0)
 
     ordered = models.BooleanField(default=False)
 
@@ -59,11 +65,16 @@ class ProdutoPedido(models.Model):
         if self.variacao:
             self.preco = self.variacao.preco
             self.preco_socio = self.variacao.preco_socio
+            self.preco_staff = self.variacao.preco_staff
         else:
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
+            self.preco_staff = self.produto.preco_staff
 
     def get_price(self):
+        if self.user.is_staff:
+            self.total = self.preco_staff * self.quantidade
+            self.save()
         if self.user.socio.is_socio:
             self.total = self.preco_socio * self.quantidade
             self.save()
