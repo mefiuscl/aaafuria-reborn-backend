@@ -75,6 +75,7 @@ class ProdutoPedido(models.Model):
         if self.user.is_staff:
             self.total = self.preco_staff * self.quantidade
             self.save()
+            return self.preco_staff
         if self.user.socio.is_socio:
             self.total = self.preco_socio * self.quantidade
             self.save()
