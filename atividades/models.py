@@ -62,6 +62,9 @@ class Programacao(models.Model):
     competidores_minimo = models.IntegerField(default=0)  # default no min
     competidores_maximo = models.IntegerField(default=0)  # default no max
 
+    grupo_whatsapp_url = models.CharField(
+        max_length=150, blank=True, null=True)
+
     estado = models.CharField(max_length=20, default='Agendado')
 
     class Meta:
