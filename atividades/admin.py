@@ -18,6 +18,17 @@ class ModalidadeAdmin(admin.ModelAdmin):
 
 @admin.register(Programacao)
 class ProgramacaoAdmin(admin.ModelAdmin):
+    list_display = [
+        'modalidade',
+        'data_hora',
+        'local',
+        'descricao',
+        'estado',
+    ]
+    list_filter = [
+        'modalidade',
+        'estado',
+    ]
     filter_horizontal = ('competidores_confirmados', 'competidores_presentes')
     readonly_fields = ('estado',)
 
