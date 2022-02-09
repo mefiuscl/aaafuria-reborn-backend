@@ -61,8 +61,9 @@ class Socio(models.Model):
             return sanitized_number
 
     def sanitize_fields(self):
-        self.nome = self.nome.upper()
-        self.email = self.user.email.lower()
+        self.nome = self.nome.strip().upper()
+        self.apelido = self.apelido.strip()
+        self.email = self.user.email.strip().lower()
 
         self.cpf = self.sanitize_number_string(self.cpf)
         self.rg = self.sanitize_number_string(self.rg)
@@ -136,12 +137,12 @@ class Socio(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
 
-    @ receiver(models.signals.post_delete, sender='core.Socio')
+    @receiver(models.signals.post_delete, sender='core.Socio')
     def remove_avatar_from_s3(sender, instance, **kwargs):
         if instance.avatar:
             instance.avatar.delete(save=False)
 
-    @ receiver(models.signals.post_save, sender='core.Socio')
+    @receiver(models.signals.post_save, sender='core.Socio')
     def create_socio_conta(sender, instance, created, **kwargs):
         from bank.models import Conta
         conta, _ = Conta.objects.get_or_create(socio=instance)
@@ -162,7 +163,7 @@ class Pagamento(models.Model):
     def __str__(self):
         return f'{self.socio}'
 
-    @ property
+    @property
     def checkout_url(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
         checkout_session = stripe.checkout.Session.retrieve(
