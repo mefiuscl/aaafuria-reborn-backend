@@ -52,5 +52,7 @@ def ecommerce_webhook(request):
 
         except Carrinho.DoesNotExist:
             return HttpResponse(status=204)
+        except Exception as e:
+            return HttpResponse(content=e, status=400)
 
     return HttpResponse(status=200)

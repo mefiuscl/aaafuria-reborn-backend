@@ -173,14 +173,14 @@ class Ingresso(models.Model):
         self.status = 'invalido'
 
     @property
-    def stripe_checkout_url(self, api_key=settings.STRIPE_API_KEY):
+    def stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY):
         if self.stripe_checkout_id:
             stripe.api_key = api_key
             session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
 
             return session.url
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY):
         self.set_valor()
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
@@ -197,7 +197,7 @@ class Ingresso(models.Model):
                 }
             ],
             customer=self.participante.stripe_customer_id or None,
-            payment_method_types=['card'],
+            payment_method_types=['card', 'boleto'],
         )
 
         self.stripe_checkout_id = session.id

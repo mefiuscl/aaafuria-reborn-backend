@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.http.response import HttpResponse
 import stripe
 from bank.models import Conta
@@ -41,6 +42,8 @@ def eventos_webhook(request):
             ingresso.save()
 
         except Ingresso.DoesNotExist:
-            return HttpResponse(status=204)
+            return HttpResponse(content=Ingresso.objects.none(), status=204)
+        except ValidationError as e:
+            return HttpResponse(content=e, status=400)
 
     return HttpResponse(status=200)
