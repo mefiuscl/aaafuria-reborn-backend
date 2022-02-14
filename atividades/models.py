@@ -90,7 +90,6 @@ class Programacao(models.Model):
                 self.estado = 'Agendado'
             else:
                 self.estado = 'Confirmado'
-                self.notificar_confirmacao()
 
             if self.competidores_maximo != 0 and self.competidores_confirmados.count() == self.competidores_maximo:
                 self.estado = 'Cheio'
