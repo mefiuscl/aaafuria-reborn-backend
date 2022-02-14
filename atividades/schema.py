@@ -99,3 +99,9 @@ class RemoverCompetidorNaProgramacao(graphene.Mutation):
 class Query(graphene.ObjectType):
     all_programacao = DjangoFilterConnectionField(
         ProgramacaoRelay, filterset_class=ProgramacaoFilter)
+
+    programacao = graphene.Field(
+        ProgramacaoRelay, id=graphene.ID(required=True))
+
+    def resolve_programacao(self, info, id, *args, **kwargs):
+        return Programacao.objects.get(id=from_global_id(id)[1])

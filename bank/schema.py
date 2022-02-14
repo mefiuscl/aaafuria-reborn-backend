@@ -28,6 +28,12 @@ class Query(graphene.ObjectType):
     conta = graphene.relay.Node.Field(ContaRelay)
     all_user_movimentacoes = DjangoFilterConnectionField(MovimentacaoRelay)
 
+    def resolve_conta(self, info, *args, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise Exception('Não autorizado!')
+
+        return info.context.user.socio.conta
+
     def resolve_all_user_movimentacoes(self, info, **kwargs):
         if not info.context.user.is_authenticated:
             raise Exception('Não autorizado!')
