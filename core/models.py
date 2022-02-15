@@ -75,6 +75,8 @@ class Socio(models.Model):
             limit=1, email=self.email).data
 
         if len(retrieved_customer_list) > 0:
+            [objects.delete() for objects in self.objects.filter(
+                stripe_customer_id=retrieved_customer_list[0].id)]
             self.stripe_customer_id = retrieved_customer_list[0].id
         else:
             customer = stripe.Customer.create(
