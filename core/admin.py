@@ -51,7 +51,8 @@ class SocioAdmin(admin.ModelAdmin):
     list_display = ('apelido', 'is_socio', 'nome',
                     'turma', 'matricula', 'whatsapp_url_link')
     list_filter = ('turma', 'is_socio')
-    search_fields = ('apelido', 'nome', 'matricula', 'stripe_customer_id')
+    search_fields = ('apelido', 'nome', 'matricula',
+                     'stripe_customer_id', 'email')
 
     def whatsapp_url_link(self, obj):
         return format_html("<a href='{url}' target='_blank'>{url}</a>", url=obj.whatsapp_url)

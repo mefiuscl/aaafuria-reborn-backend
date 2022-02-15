@@ -5,7 +5,9 @@ from .models import Conta, Movimentacao
 
 @admin.register(Conta)
 class ContaAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['socio', 'saldo', 'calangos', ]
+    search_fields = ['socio__nome', 'socio__apelido',
+                     'socio__matricula', 'socio__email', 'socio__stripe_customer_id']
 
 
 @admin.register(Movimentacao)

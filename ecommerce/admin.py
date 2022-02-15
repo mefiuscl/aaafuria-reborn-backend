@@ -14,7 +14,7 @@ class ProdutoPedidoAdmin(admin.ModelAdmin):
     list_display = ['get_socio', 'produto',
                     'variacao', 'quantidade', 'ordered']
     list_filter = ['ordered', 'variacao__nome', 'produto__nome']
-    search_fields = ['user__socio__nome', 'user__socio__email',
+    search_fields = ['user__socio__nome', 'user__socio__email', 'user__socio__apelido',
                      'user__socio__matricula', 'produto__nome', 'variacao__nome']
 
     def get_socio(self, obj):
