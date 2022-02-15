@@ -54,5 +54,7 @@ def ecommerce_webhook(request):
             return HttpResponse(status=204)
         except Exception as e:
             return HttpResponse(content=e, status=400)
+    else:
+        return HttpResponse(status=204)
 
     return HttpResponse(status=200)
