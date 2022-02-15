@@ -74,10 +74,6 @@ class Socio(models.Model):
         retrieved_customer_list = stripe.Customer.list(
             limit=1, email=self.email).data
 
-        if Socio.objects.filter(
-                stripe_customer_id=retrieved_customer_list[0].id).count() > 1:
-            raise ValidationError('Já existe um usuário com esse email.')
-
         if len(retrieved_customer_list) > 0:
             self.stripe_customer_id = retrieved_customer_list[0].id
         else:
@@ -137,6 +133,11 @@ class Socio(models.Model):
         self.create_stripe_customer()
 
         super().save(*args, **kwargs)
+
+        if Socio.objects.filter(
+                stripe_customer_id=self.stripe_customer_id).count() > 1:
+            self.delete()
+            raise ValidationError('Já existe um usuário com esse email.')
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
