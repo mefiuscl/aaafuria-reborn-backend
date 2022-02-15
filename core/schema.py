@@ -65,6 +65,13 @@ class NovoUser(graphene.Mutation):
             raise Exception('Matrícula inválida.')
         if len(matricula) != 8:
             raise Exception('Matrícula inválida.')
+        if len(pin) != 6:
+            raise Exception('PIN inválido.')
+
+        if User.objects.filter(username=matricula).exists():
+            raise Exception('Matrícula já cadastrada.')
+        if User.objects.filter(email=email).exists():
+            raise Exception('Email já cadastrado.')
 
         user = User.objects.create_user(
             username=matricula, password=pin, email=email)
