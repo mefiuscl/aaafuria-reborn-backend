@@ -70,13 +70,14 @@ class Socio(models.Model):
         self.whatsapp = self.sanitize_number_string(self.whatsapp)
 
     def create_stripe_customer(self, api_key=API_KEY, *args, **kwargs):
+        if Socio.objects.filter(
+                stripe_customer_id=retrieved_customer_list[0].id).count > 1:
+            raise ValidationError('Já existe um usuário com esse email.')
         stripe.api_key = api_key
         retrieved_customer_list = stripe.Customer.list(
             limit=1, email=self.email).data
 
         if len(retrieved_customer_list) > 0:
-            [objects.delete() for objects in Socio.objects.filter(
-                stripe_customer_id=retrieved_customer_list[0].id)]
             self.stripe_customer_id = retrieved_customer_list[0].id
         else:
             customer = stripe.Customer.create(
