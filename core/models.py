@@ -75,7 +75,7 @@ class Socio(models.Model):
             limit=1, email=self.email).data
 
         if Socio.objects.filter(
-                stripe_customer_id=retrieved_customer_list[0].id).exists():
+                stripe_customer_id=retrieved_customer_list[0].id).count() > 1:
             raise ValidationError('Já existe um usuário com esse email.')
 
         if len(retrieved_customer_list) > 0:
