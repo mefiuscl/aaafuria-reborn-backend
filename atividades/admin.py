@@ -31,6 +31,7 @@ class ProgramacaoAdmin(admin.ModelAdmin):
     ]
     filter_horizontal = ('competidores_confirmados', 'competidores_presentes')
     readonly_fields = ('estado',)
+    ordering = ['-data_hora']
 
 
 @admin.register(Competidor)
