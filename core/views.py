@@ -96,6 +96,8 @@ def core_webhook(request):
                 conta.save()
             except Exception as e:
                 return HttpResponse(content=e, status=400)
+        else:
+            return HttpResponse(status=204)
 
     # Handle the customer.subscription.deleted event
     if event['type'] == 'customer.subscription.deleted':
