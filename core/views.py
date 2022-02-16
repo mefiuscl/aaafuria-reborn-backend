@@ -32,7 +32,7 @@ def core_webhook(request):
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         checkout_session = event['data']['object']
-        if checkout_session['mode'] == 'subscription':
+        if checkout_session['mode'] == 'subscription' and checkout_session['payment_status'] == 'paid':
             try:
                 pagamento = Pagamento.objects.filter(
                     checkout_id=checkout_session['id']).first()

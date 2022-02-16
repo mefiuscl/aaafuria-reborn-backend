@@ -250,10 +250,11 @@ class RemoverDoCarrinhoPlantao(graphene.Mutation):
     class Arguments:
         produto_pedido_id = graphene.String(required=True)
         matricula_socio = graphene.String(required=True)
+        remove = graphene.Boolean(required=False)
 
     ok = graphene.Boolean()
 
-    def mutate(self, info, produto_pedido_id, matricula_socio):
+    def mutate(self, info, produto_pedido_id, matricula_socio, remove):
         try:
             if not info.context.user.is_authenticated:
                 raise Exception('Usuário não autenticado')
@@ -263,7 +264,16 @@ class RemoverDoCarrinhoPlantao(graphene.Mutation):
             user = User.objects.get(username=matricula_socio)
             produto_pedido = ProdutoPedido.objects.get(
                 id=from_global_id(produto_pedido_id)[1])
-            produto_pedido.delete()
+
+            if remove:
+                produto_pedido.delete()
+            else:
+                if produto_pedido.quantidade > 1:
+                    produto_pedido.quantidade -= 1
+                    produto_pedido.save()
+                else:
+                    produto_pedido.delete()
+
             Carrinho.objects.get(user=user,
                                  ordered=False).get_total()
             return RemoverDoCarrinho(ok=True)
