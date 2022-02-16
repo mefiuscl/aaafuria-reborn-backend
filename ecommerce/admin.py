@@ -49,7 +49,7 @@ class VariacaoProdutoAdmin(admin.ModelAdmin):
 
 @admin.register(ecommerce_models.Pagamento)
 class PagamentoAdmin(admin.ModelAdmin):
-    list_display = ['get_socio', 'data_pagamento', 'forma_pagamento', 'status']
+    list_display = ['get_socio', 'valor', 'data_pagamento', 'forma_pagamento', 'status']
     list_filter = ['status', 'forma_pagamento', 'data_pagamento']
 
     def get_socio(self, obj):
