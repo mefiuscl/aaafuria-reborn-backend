@@ -197,7 +197,7 @@ class Ingresso(models.Model):
                 }
             ],
             customer=self.participante.stripe_customer_id or None,
-            payment_method_types=['card', 'boleto'],
+            payment_method_types=['card'],
         )
 
         self.stripe_checkout_id = session.id
