@@ -31,7 +31,7 @@ class CarrinhoAdmin(admin.ModelAdmin):
     def get_socio(self, obj):
         return obj.user.socio
 
-    get_socio.short_description = 'User'
+    get_socio.short_description = 'Sócio'
 
 
 @admin.register(ecommerce_models.VariacaoProduto)
@@ -49,4 +49,10 @@ class VariacaoProdutoAdmin(admin.ModelAdmin):
 
 @admin.register(ecommerce_models.Pagamento)
 class PagamentoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['get_socio', 'data_pagamento', 'forma_pagamento', 'status']
+    list_filter = ['status', 'forma_pagamento', 'data_pagamento']
+
+    def get_socio(self, obj):
+        return obj.user.socio
+
+    get_socio.short_description = 'Sócio'

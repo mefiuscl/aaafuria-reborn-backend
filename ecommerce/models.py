@@ -234,5 +234,3 @@ class Pagamento(models.Model):
             ('cancelado', 'Cancelado'),
         ), default='criado')
 
-    def __str__(self):
-        return f'{self.valor} - {self.user.socio.nome}'
