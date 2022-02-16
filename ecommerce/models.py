@@ -124,9 +124,6 @@ class Carrinho(models.Model):
             ('cancelado', 'Cancelado'),
         ), default='criado')
 
-    def __str__(self):
-        return f'R$ {self.total} - {self.user.socio.nome}'
-
     @property
     def stripe_checkout_url(self, api_key=API_KEY):
         stripe.api_key = api_key
@@ -233,4 +230,3 @@ class Pagamento(models.Model):
             ('pago', 'Pago'),
             ('cancelado', 'Cancelado'),
         ), default='criado')
-
