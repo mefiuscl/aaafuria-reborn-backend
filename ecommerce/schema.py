@@ -254,7 +254,7 @@ class RemoverDoCarrinhoPlantao(graphene.Mutation):
 
     ok = graphene.Boolean()
 
-    def mutate(self, info, produto_pedido_id, matricula_socio, remove):
+    def mutate(self, info, produto_pedido_id, matricula_socio, remove=False):
         try:
             if not info.context.user.is_authenticated:
                 raise Exception('Usuário não autenticado')
