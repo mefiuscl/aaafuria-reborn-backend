@@ -116,7 +116,7 @@ class Query(graphene.ObjectType):
     socio = graphene.relay.Node.Field(SocioRelay)
     socio_autenticado = graphene.Field(SocioRelay)
     socio_by_matricula = graphene.Field(
-        SocioType, matricula=graphene.String(required=True))
+        SocioRelay, matricula=graphene.String(required=False))
     all_socio = DjangoFilterConnectionField(SocioRelay)
 
     query_stripe_portal_url = graphene.Field(SocioRelay)
@@ -131,11 +131,14 @@ class Query(graphene.ObjectType):
         except Socio.DoesNotExist:
             return Exception('Não encontrado.')
 
-    def resolve_socio_by_matricula(self, info, matricula):
-        try:
-            return Socio.objects.get(user__username=matricula)
-        except Socio.DoesNotExist:
-            return Exception('Matrícula não encontrada.')
+    def resolve_socio_by_matricula(self, info, matricula=None):
+        if matricula:
+            try:
+                return Socio.objects.get(user__username=matricula)
+            except Socio.DoesNotExist:
+                return Exception('Matrícula não encontrada.')
+            except Exception as e:
+                return Exception(e)
 
     def resolve_query_stripe_portal_url(self, info, **kwargs):
         if not info.context.user.is_authenticated:
