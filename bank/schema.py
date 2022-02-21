@@ -40,3 +40,7 @@ class Query(graphene.ObjectType):
 
         return Movimentacao.objects.filter(
             conta_origem=info.context.user.socio.conta)
+
+
+class Mutation(graphene.ObjectType):
+    pass

@@ -326,3 +326,14 @@ class Query(graphene.ObjectType):
                 user=user, ordered=False)
             return carrinho
         return None
+
+
+class Mutation(graphene.ObjectType):
+    adicionar_ao_carrinho = AdicionarAoCarrinho.Field()
+    remover_do_carrinho = RemoverDoCarrinho.Field()
+    adicionar_ao_carrinho_plantao = AdicionarAoCarrinhoPlantao.Field()
+    remover_do_carrinho_plantao = RemoverDoCarrinhoPlantao.Field()
+
+    stripe_checkout = StripeCheckout.Field()
+    checkout_plantao = CheckoutPlantao.Field()
+    stripe_checkout_plantao = StripeCheckoutPlantao.Field()

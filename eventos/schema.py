@@ -162,3 +162,8 @@ class Query(graphene.ObjectType):
             raise Exception('Usuário não autenticado.')
 
         return Ingresso.objects.filter(participante__socio=info.context.user.socio, status='pago')
+
+
+class Mutation(graphene.ObjectType):
+    novo_ingresso = NovoIngresso.Field()
+    invalidar_ingresso = InvalidarIngresso.Field()

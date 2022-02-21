@@ -176,8 +176,7 @@ class Carrinho(models.Model):
             ],
             customer=self.user.socio.stripe_customer_id,
             payment_method_types=['card'],
-
-
+            allow_promotion_codes=True,
         )
 
         self.status = 'aguardando'

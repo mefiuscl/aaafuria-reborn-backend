@@ -70,21 +70,22 @@ class Socio(models.Model):
         self.whatsapp = self.sanitize_number_string(self.whatsapp)
 
     def create_stripe_customer(self, api_key=API_KEY, *args, **kwargs):
-        stripe.api_key = api_key
-        retrieved_customer_list = stripe.Customer.list(
-            limit=1, email=self.email).data
+        if not self.stripe_customer_id:
+            stripe.api_key = api_key
+            retrieved_customer_list = stripe.Customer.list(
+                limit=1, email=self.email).data
 
-        if len(retrieved_customer_list) > 0:
-            self.stripe_customer_id = retrieved_customer_list[0].id
-        else:
-            customer = stripe.Customer.create(
-                email=self.email,
-                name=self.nome,
-                metadata={'matricula': self.matricula,
-                          'apelido': self.apelido},
-                phone=self.whatsapp,
-            )
-            self.stripe_customer_id = customer.id
+            if len(retrieved_customer_list) > 0:
+                self.stripe_customer_id = retrieved_customer_list[0].id
+            else:
+                customer = stripe.Customer.create(
+                    email=self.email,
+                    name=self.nome,
+                    metadata={'matricula': self.matricula,
+                              'apelido': self.apelido},
+                    phone=self.whatsapp,
+                )
+                self.stripe_customer_id = customer.id
 
     def notificar(self, metodo, subject, text_template, html_template, context):
         def email():

@@ -1,7 +1,12 @@
+import datetime
 import graphene
 from django.contrib.auth.models import User
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from django.utils import timezone
+from graphql import GraphQLError
+
+from bank.models import Conta, Movimentacao
 
 from .models import Socio, Pagamento, TipoPlano
 
@@ -109,7 +114,63 @@ class NovoPagamento(graphene.Mutation):
             ok = True
             return NovoPagamento(ok=ok, pagamento=pagamento)
         except Socio.DoesNotExist:
-            return Exception('Sócio não encontrado.')
+            raise Exception('Sócio não encontrado.')
+        except Exception as e:
+            raise Exception(e)
+
+
+class AssociacaoManual(graphene.Mutation):
+
+    class Arguments:
+        matricula = graphene.String(required=True)
+        tipo_plano = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, matricula, tipo_plano):
+        if not info.context.user.is_authenticated:
+            raise Exception('Usuário não autenticado.')
+        if not info.context.user.is_staff:
+            raise Exception('Acesso negado.')
+
+        try:
+            valores_tipo_plano = {
+                'Mensal': {'valor': 24.9, 'dias': 30},
+                'Semestral': {'valor': 99.5, 'dias': 180},
+                'Anual': {'valor': 198.0, 'dias': 365},
+            }
+            socio: Socio = Socio.objects.get(user__username=matricula)
+
+            socio.is_socio = True
+            socio.data_inicio = timezone.now()
+            socio.data_fim = timezone.now(
+            ) + datetime.timedelta(days=valores_tipo_plano[tipo_plano]['dias'])
+
+            socio.save()
+
+            conta, _ = Conta.objects.get_or_create(socio=socio)
+            if conta.socio.is_socio:
+                conta.calangos += int(
+                    ((valores_tipo_plano[tipo_plano]['valor'] // 5) * 50))
+            conta.save()
+
+            aaafuria = Socio.objects.get(user__username="22238742")
+            movimentacao = Movimentacao.objects.create(
+                conta_origem=conta,
+                conta_destino=aaafuria.conta,
+                descricao=f'ASSOCIAÇÃO DE [{socio.apelido}] PARA [{aaafuria.apelido}] | MODE: ASSOCIACAO MANUAL',
+                valor=valores_tipo_plano[tipo_plano]['valor'],
+                resolvida=True,
+                resolvida_em=timezone.now()
+            )
+            movimentacao.save()
+
+            ok = True
+            return AssociacaoManual(ok=ok)
+        except Socio.DoesNotExist:
+            raise Exception('Sócio não encontrado.')
+        except Exception as e:
+            raise Exception(e)
 
 
 class Query(graphene.ObjectType):
@@ -136,9 +197,9 @@ class Query(graphene.ObjectType):
             try:
                 return Socio.objects.get(user__username=matricula)
             except Socio.DoesNotExist:
-                return Exception('Matrícula não encontrada.')
+                raise GraphQLError('Matrícula não encontrada.')
             except Exception as e:
-                return Exception(e)
+                raise GraphQLError(e)
 
     def resolve_query_stripe_portal_url(self, info, **kwargs):
         if not info.context.user.is_authenticated:
@@ -148,3 +209,9 @@ class Query(graphene.ObjectType):
             return Socio.objects.get(user=info.context.user)
         except Socio.DoesNotExist:
             return Exception('Sócio não encontrado.')
+
+
+class Mutation(graphene.ObjectType):
+    novo_user = NovoUser.Field()
+    novo_pagamento = NovoPagamento.Field()
+    associacao_manual = AssociacaoManual.Field()

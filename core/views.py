@@ -94,6 +94,7 @@ def core_webhook(request):
                     conta.calangos += int(
                         ((checkout_session['amount_total'] / 100) // 5 * 50))
                 conta.save()
+
             except Exception as e:
                 return HttpResponse(content=e, status=400)
         else:

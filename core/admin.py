@@ -46,7 +46,7 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 
-@ admin.register(core_models.Socio)
+@admin.register(core_models.Socio)
 class SocioAdmin(admin.ModelAdmin):
     list_display = ('apelido', 'is_socio', 'nome',
                     'turma', 'matricula', 'whatsapp_url_link')
@@ -58,11 +58,11 @@ class SocioAdmin(admin.ModelAdmin):
         return format_html("<a href='{url}' target='_blank'>{url}</a>", url=obj.whatsapp_url)
 
 
-@ admin.register(core_models.Pagamento)
+@admin.register(core_models.Pagamento)
 class PagamentoAdmin(admin.ModelAdmin):
     pass
 
 
-@ admin.register(core_models.TipoPlano)
+@admin.register(core_models.TipoPlano)
 class TipoPlanoAdmin(admin.ModelAdmin):
     pass

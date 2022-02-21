@@ -105,3 +105,8 @@ class Query(graphene.ObjectType):
 
     def resolve_programacao(self, info, id, *args, **kwargs):
         return Programacao.objects.get(id=from_global_id(id)[1])
+
+
+class Mutation(graphene.ObjectType):
+    confirmar_competidor_na_programacao = ConfirmarCompetidorNaProgramacao.Field()
+    remover_competidor_na_programacao = RemoverCompetidorNaProgramacao.Field()
