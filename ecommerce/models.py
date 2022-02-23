@@ -143,21 +143,20 @@ class Carrinho(models.Model):
         return total
 
     def set_short_stripe_link(self, long_url):
-        if not self.stripe_short_checkout_url:
-            url = "https://api-ssl.bitly.com/v4/shorten"
-            headers = {
-                "Host": "api-ssl.bitly.com",
-                "Accept": "application/json",
-                "Authorization": f"Bearer {config('BITLY_API_KEY')}"
-            }
-            payload = {
-                "long_url": long_url
-            }
-            # constructing this request took a good amount of guess
-            # and check. thanks Postman!
-            r = requests.post(url, headers=headers, json=payload)
-            self.stripe_short_checkout_url = r.json()[u'id']
-            self.save()
+        url = "https://api-ssl.bitly.com/v4/shorten"
+        headers = {
+            "Host": "api-ssl.bitly.com",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {config('BITLY_API_KEY')}"
+        }
+        payload = {
+            "long_url": long_url
+        }
+        # constructing this request took a good amount of guess
+        # and check. thanks Postman!
+        r = requests.post(url, headers=headers, json=payload)
+        self.stripe_short_checkout_url = r.json()[u'id']
+        self.save()
 
     def create_stripe_checkout_session(self, api_key=API_KEY):
         stripe.api_key = api_key
