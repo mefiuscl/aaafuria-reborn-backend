@@ -20,6 +20,7 @@ class Produto(models.Model):
     estoque = models.IntegerField(default=0)
     imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
     has_variations = models.BooleanField(default=False)
+    has_observacoes = models.BooleanField(default=False)
     is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
@@ -56,6 +57,7 @@ class ProdutoPedido(models.Model):
         Produto, on_delete=models.CASCADE, related_name='produtos')
     variacao = models.ForeignKey(
         VariacaoProduto, on_delete=models.CASCADE, related_name='variacoes', null=True, blank=True)
+    observacoes = models.TextField(blank=True, null=True)
     quantidade = models.IntegerField(default=1)
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=0)

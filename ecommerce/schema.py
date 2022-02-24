@@ -142,11 +142,12 @@ class AdicionarAoCarrinho(graphene.Mutation):
         product_id = graphene.String(required=True)
         quantidade = graphene.Int(required=True)
         variacao_id = graphene.String(required=False)
+        observacoes = graphene.String(required=False)
 
     ok = graphene.Boolean()
     carrinho = graphene.Field(CarrinhoType)
 
-    def mutate(self, info, product_id, quantidade, variacao_id=None):
+    def mutate(self, info, product_id, quantidade, variacao_id=None, observacoes=None):
         try:
             if not info.context.user.is_authenticated:
                 raise Exception('Usuário não autenticado.')
@@ -160,7 +161,7 @@ class AdicionarAoCarrinho(graphene.Mutation):
                 user=user, ordered=False)
 
             produto_pedido, created = ProdutoPedido.objects.get_or_create(
-                produto=produto, user=user, ordered=False, variacao=variacao)
+                produto=produto, user=user, ordered=False, variacao=variacao, observacoes=observacoes)
 
             if not created:
                 produto_pedido.quantidade += quantidade
@@ -207,11 +208,12 @@ class AdicionarAoCarrinhoPlantao(graphene.Mutation):
         quantidade = graphene.Int(required=True)
         matricula_socio = graphene.String(required=True)
         variacao_id = graphene.String(required=False)
+        observacoes = graphene.String(required=False)
 
     ok = graphene.Boolean()
     carrinho = graphene.Field(CarrinhoType)
 
-    def mutate(self, info, product_id, quantidade, matricula_socio, variacao_id=None,):
+    def mutate(self, info, product_id, quantidade, matricula_socio, variacao_id=None, observacoes=None):
         try:
             if not info.context.user.is_authenticated:
                 raise Exception('Usuário não autenticado.')
@@ -228,7 +230,7 @@ class AdicionarAoCarrinhoPlantao(graphene.Mutation):
                 user=user, ordered=False)
 
             produto_pedido, created = ProdutoPedido.objects.get_or_create(
-                produto=produto, user=user, ordered=False, variacao=variacao)
+                produto=produto, user=user, ordered=False, variacao=variacao, observacoes=observacoes)
 
             if not created:
                 produto_pedido.quantidade += quantidade

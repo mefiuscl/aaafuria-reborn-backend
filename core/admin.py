@@ -40,6 +40,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
     list_display = ('username', 'email', 'is_staff',
                     'is_superuser', 'is_active')
+    search_fields = ['username', 'email', 'socio__nome']
 
 
 admin.site.unregister(User)
