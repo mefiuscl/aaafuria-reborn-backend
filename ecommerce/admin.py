@@ -12,7 +12,7 @@ class ProdutoAdmin(admin.ModelAdmin):
 @admin.register(ecommerce_models.ProdutoPedido)
 class ProdutoPedidoAdmin(admin.ModelAdmin):
     list_display = ['get_socio', 'get_socio_turma', 'produto',
-                    'variacao', 'quantidade', 'ordered']
+                    'variacao', 'observacoes', 'quantidade', 'ordered']
     list_filter = ['ordered', 'variacao__nome', 'produto__nome']
     search_fields = ['user__socio__nome', 'user__socio__email', 'user__socio__apelido',
                      'user__socio__matricula', 'produto__nome', 'variacao__nome']
