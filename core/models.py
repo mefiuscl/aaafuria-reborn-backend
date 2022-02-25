@@ -195,7 +195,7 @@ class Pagamento(models.Model):
                     'coupon': 'PRIMEIRAASSOCIACAO'
                 }
             ],
-            payment_method_types=['card'],
+            payment_method_types=['card', 'boleto'],
         )
 
         self.checkout_id = checkout_session.id
