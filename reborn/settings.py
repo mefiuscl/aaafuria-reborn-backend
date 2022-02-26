@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'ecommerce',
     'bank',
 
-    'eventos'
+    'eventos',
+    'files'
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

@@ -6,9 +6,18 @@ import ecommerce.schema
 import atividades.schema
 import bank.schema
 import eventos.schema
+import files.schema
 
 
-class Query(core.schema.Query, ecommerce.schema.Query, atividades.schema.Query, bank.schema.Query, eventos.schema.Query, graphene.ObjectType):
+class Query(
+    core.schema.Query,
+    ecommerce.schema.Query,
+    atividades.schema.Query,
+    bank.schema.Query,
+    eventos.schema.Query,
+    files.schema.Query,
+    graphene.ObjectType
+):
     pass
 
 
@@ -18,6 +27,7 @@ class Mutation(
     atividades.schema.Mutation,
     bank.schema.Mutation,
     eventos.schema.Mutation,
+    files.schema.Mutation,
     graphene.ObjectType
 ):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
