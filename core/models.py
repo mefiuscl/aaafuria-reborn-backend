@@ -1,9 +1,11 @@
-from django.forms import ValidationError
+import requests
 import stripe
+from decouple import config
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.dispatch import receiver
+from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
 
@@ -129,6 +131,36 @@ class Socio(models.Model):
 
             self.whatsapp_url = f'https://wa.me/55{self.whatsapp}'
 
+    @property
+    def is_atleta(self):
+        for competidor in self.modalidades.all():
+            if competidor:
+                return True
+
+        return False
+
+    def adicionar_coupom_cheers(self):
+        base = 180
+        atleta = base
+        socio = base + 5
+        n_socio = base + 45
+
+        url = 'https://cheersshop.com.br/codigo'
+        obj = {
+            "nome": self.cpf,
+            "desconto_porcentagem": None,
+            "desconto_reais": atleta if self.atleta else socio if self.is_socio else n_socio,
+            "quantidade": "1",
+            "maximo_usuario": 1,
+            "vendedor": "1874",
+            "ativo": True,
+            "uso": 1,
+            "usuario": 192061
+        }
+
+        requests.post(url, data=obj, headers={
+            'Authorization': f'Bearer {config("CHEERS_TOKEN")}'})
+
     def save(self, *args, **kwargs):
         self.clean()
         self.create_stripe_customer()
@@ -153,6 +185,27 @@ class Socio(models.Model):
         from bank.models import Conta
         conta, _ = Conta.objects.get_or_create(socio=instance)
         conta.save()
+
+    @receiver(models.signals.post_save, sender='core.Socio')
+    def adicionar_socio_cheers(sender, instance, created, **kwargs):
+        from datetime import timedelta
+
+        for socio in Socio.objects.all():
+            if socio.data_fim - timezone.now().date() > timedelta(days=30) and socio.is_socio:
+                url = 'https://cheersshop.com.br/socio/adicionar'
+                obj = {
+                    "nome": socio.nome,
+                    "email": socio.email,
+                    "telefone": socio.whatsapp,
+                    "matricula": socio.matricula,
+                    "observacao": "",
+                    "cpf": socio.cpf,
+                    "data_fim_plano": socio.data_fim,
+                    "vendedor": "1874"
+                }
+
+                requests.post(url, data=obj, headers={
+                    'Authorization': f'Bearer {config("CHEERS_TOKEN")}'})
 
 
 class Pagamento(models.Model):

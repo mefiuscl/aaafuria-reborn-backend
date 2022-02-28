@@ -5,7 +5,6 @@ from django.test import TestCase
 from .models import Competidor, Modalidade, Programacao
 
 from django.core import mail
-from django.conf import settings
 
 
 class ModelTestCase(TestCase):
