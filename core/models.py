@@ -158,7 +158,7 @@ class Socio(models.Model):
             "usuario": 192061
         }
 
-        requests.post(url, data=obj, headers={
+        return requests.post(url, data=obj, headers={
             'Authorization': f'Bearer {config("CHEERS_TOKEN")}'})
 
     def save(self, *args, **kwargs):
