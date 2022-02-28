@@ -186,27 +186,6 @@ class Socio(models.Model):
         conta, _ = Conta.objects.get_or_create(socio=instance)
         conta.save()
 
-    @receiver(models.signals.post_save, sender='core.Socio')
-    def adicionar_socio_cheers(sender, instance, created, **kwargs):
-        from datetime import timedelta
-
-        for socio in Socio.objects.all():
-            if socio.data_fim and socio.is_socio:
-                url = 'https://cheersshop.com.br/socio/adicionar'
-                obj = {
-                    "nome": socio.nome,
-                    "email": socio.email,
-                    "telefone": socio.whatsapp,
-                    "matricula": socio.matricula,
-                    "observacao": "",
-                    "cpf": socio.cpf,
-                    "data_fim_plano": socio.data_fim,
-                    "vendedor": "1874"
-                }
-
-                requests.post(url, data=obj, headers={
-                    'Authorization': f'Bearer {config("CHEERS_TOKEN")}'})
-
 
 class Pagamento(models.Model):
     socio = models.ForeignKey(
