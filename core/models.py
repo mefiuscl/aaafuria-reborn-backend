@@ -149,7 +149,7 @@ class Socio(models.Model):
         obj = {
             "nome": self.cpf,
             "desconto_porcentagem": None,
-            "desconto_reais": atleta if self.atleta else socio if self.is_socio else n_socio,
+            "desconto_reais": atleta if self.is_atleta else socio if self.is_socio else n_socio,
             "quantidade": "1",
             "maximo_usuario": 1,
             "vendedor": "1874",
