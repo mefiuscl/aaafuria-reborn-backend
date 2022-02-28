@@ -191,7 +191,7 @@ class Socio(models.Model):
         from datetime import timedelta
 
         for socio in Socio.objects.all():
-            if socio.data_fim and socio.is_socio and socio.data_fim - timezone.now().date() > timedelta(days=30):
+            if socio.data_fim and socio.is_socio:
                 url = 'https://cheersshop.com.br/socio/adicionar'
                 obj = {
                     "nome": socio.nome,
