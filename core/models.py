@@ -151,10 +151,10 @@ class Socio(models.Model):
             "desconto_porcentagem": None,
             "desconto_reais": atleta if self.is_atleta else socio if self.is_socio else n_socio,
             "quantidade": "1",
-            "maximo_usuario": 1,
+            "maximo_usuario": "1",
             "vendedor": "1874",
             "ativo": True,
-            "uso": 1,
+            "uso": "1",
             "usuario": 192061
         }
 
