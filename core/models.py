@@ -136,7 +136,6 @@ class Socio(models.Model):
         for competidor in self.modalidades.all():
             if competidor:
                 return True
-
         return False
 
     def adicionar_coupom_cheers(self):

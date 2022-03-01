@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Conta, Movimentacao
+from .models import Conta, Movimentacao, Resgate
 
 
 @admin.register(Conta)
@@ -12,4 +12,9 @@ class ContaAdmin(admin.ModelAdmin):
 
 @admin.register(Movimentacao)
 class MovimentacaoAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Resgate)
+class ResgateAdmin(admin.ModelAdmin):
     pass

@@ -2,7 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
-from .models import Conta, Movimentacao
+from .models import Conta, Movimentacao, Resgate
 
 
 class MovimentacaoType(DjangoObjectType):
@@ -24,6 +24,23 @@ class ContaRelay(DjangoObjectType):
         interfaces = (graphene.relay.Node, )
 
 
+class ResgatarIntermed(graphene.Mutation):
+    class Arguments:
+        pass
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info):
+        conta = Conta.objects.get(socio__user=info.context.user)
+        resgate, _ = Resgate.objects.get_or_create(
+            conta=conta,
+            descricao='Resgate desconto Intermed',
+            valor_calangos=900,
+        )
+        resgate.resolver()
+        return ResgatarIntermed(ok=True)
+
+
 class Query(graphene.ObjectType):
     conta = graphene.relay.Node.Field(ContaRelay)
     all_user_movimentacoes = DjangoFilterConnectionField(MovimentacaoRelay)
@@ -43,4 +60,4 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    pass
+    resgatar_intermed = ResgatarIntermed.Field()
