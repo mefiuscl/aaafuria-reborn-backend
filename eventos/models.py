@@ -29,6 +29,8 @@ class Participante(models.Model):
         default='n_socio',
     )
 
+    convites_disponiveis = models.PositiveIntegerField(default=1)
+
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
@@ -56,8 +58,10 @@ class Participante(models.Model):
 
 
 class Convidado(models.Model):
-    participante_responsavel = models.ForeignKey(
+    participante_responsavel: Participante = models.ForeignKey(
         Participante, on_delete=models.CASCADE)
+    evento: 'Evento' = models.ForeignKey(
+        'eventos.Evento', on_delete=models.CASCADE, related_name='evento', blank=True, null=True)
     nome = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     aprovado = models.BooleanField(default=False)
@@ -75,7 +79,10 @@ class Convidado(models.Model):
 
 class Evento(models.Model):
     nome = models.CharField(max_length=100)
-    participantes = models.ManyToManyField(Participante, blank=True)
+    participantes: Participante = models.ManyToManyField(
+        Participante, blank=True)
+    convidados: Convidado = models.ManyToManyField(
+        Convidado, blank=True, related_name='convidados')
     imagem = models.ImageField(
         upload_to='eventos/', null=True, blank=True)
     data_inicio = models.DateTimeField()
@@ -139,8 +146,9 @@ class Lote(models.Model):
 
 
 class Ingresso(models.Model):
-    lote = models.ForeignKey(Lote, on_delete=models.CASCADE)
-    participante = models.ForeignKey(Participante, on_delete=models.CASCADE)
+    lote: Lote = models.ForeignKey(Lote, on_delete=models.CASCADE)
+    participante: Participante = models.ForeignKey(
+        Participante, on_delete=models.CASCADE)
     data_compra = models.DateTimeField(blank=True, null=True)
     valor = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     status = models.CharField(
@@ -172,15 +180,14 @@ class Ingresso(models.Model):
     def set_invalido(self):
         self.status = 'invalido'
 
-    @property
-    def stripe_checkout_url(self, api_key=settings.STRIPE_API_KEY):
+    def get_stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY) -> str:
         if self.stripe_checkout_id:
             stripe.api_key = api_key
             session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
 
             return session.url
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY):
         self.set_valor()
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import requests
+from decouple import config
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
@@ -52,7 +53,6 @@ class ModelTest(TestCase):
                     )
 
     def test_adicionar_socio_cheers(self):
-        from decouple import config
         socio: Socio = Socio.objects.get(user__username='00000000')
 
         if socio.data_fim - timezone.now().date() > timedelta(days=30) and socio.is_socio:
@@ -72,3 +72,24 @@ class ModelTest(TestCase):
                 'Authorization': f'Bearer {config("CHEERS_TOKEN")}'})
 
             self.assertEqual(response.status_code, 200)
+
+    def test_adicionar_coupom_cheers(self):
+        socio: Socio = Socio.objects.get(user__username='00000000')
+
+        if socio.is_socio:
+            url = 'https://cheersshop.com.br/codigo'
+            obj = {
+                "nome": socio.cpf,
+                "uso": 1,
+                "ativo": True,
+                "desconto_reais": 70 if socio.is_atleta else 65,
+                "maximo_usuario": "1",
+                "quantidade": "1",
+                "usuario": 192061,
+                "vendedor": "1874",
+            }
+
+            response = requests.post(url, data=obj, headers={
+                'Authorization': f'Bearer {config("CHEERS_TOKEN")}'})
+
+            self.assertEqual(response.json()['status'], 'Success')

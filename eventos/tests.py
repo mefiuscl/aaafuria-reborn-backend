@@ -1,11 +1,11 @@
-from django.test import TestCase
 import datetime
-from django.utils.timezone import make_aware
 
-from django.contrib.auth.models import User
 from core.models import Socio
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.utils import timezone
 
-from .models import Convidado, Ingresso, Participante, Evento, Lote
+from .models import Convidado, Evento, Ingresso, Lote, Participante
 
 
 class ParticipanteModelTest(TestCase):
@@ -55,6 +55,22 @@ class ParticipanteModelTest(TestCase):
         participante.save()
         self.assertEqual(participante.categoria, 'socio')
 
+    def test_convites_restantes(self):
+        print('test_convites_restantes')
+        socio = Socio.objects.get(matricula='00000000')
+
+        participante = Participante(
+            socio=socio,
+        )
+        participante.save()
+
+        self.assertEqual(participante.convites_disponiveis, 1)
+
+        participante.convites_disponiveis = 2
+        participante.save()
+
+        self.assertEqual(participante.convites_disponiveis, 2)
+
 
 class ConvidadoModelTest(TestCase):
     def setUp(self):
@@ -71,6 +87,13 @@ class ConvidadoModelTest(TestCase):
             data_nascimento='2000-01-01',
             stripe_customer_id='cus_00000000',).save()
 
+        Evento(nome='Evento Teste',
+               data_inicio=timezone.make_aware(
+                   datetime.datetime(2020, 1, 1, 15, 0)),
+               data_fim=timezone.make_aware(
+                   datetime.datetime(2020, 1, 1, 15, 0))
+               ).save()
+
     def test_convidado_str(self):
         print('test_convidado_str')
         participante = Participante(
@@ -79,6 +102,7 @@ class ConvidadoModelTest(TestCase):
 
         convidado = Convidado(
             participante_responsavel=participante,
+            evento=Evento.objects.get(nome='Evento Teste'),
             nome='João de Souza',
         )
 
@@ -86,24 +110,35 @@ class ConvidadoModelTest(TestCase):
 
         self.assertEqual(str(convidado), 'João de Souza')
 
-    def test_adicionar_convidado(self):
-        print('test_adicionar_convidado')
+    def test_convidar(self):
+        print('test_convidar')
         participante = Participante(
             socio=Socio.objects.get(matricula='00000000'),
         )
         participante.save()
 
-        convidado = Convidado(
-            participante_responsavel=participante,
-            nome='João de Souza',
-            email='convidado@email.com'
-        )
+        if participante.convites_disponiveis > 0:
+            convidado = Convidado(
+                participante_responsavel=participante,
+                evento=Evento.objects.get(nome='Evento Teste'),
+                nome='João de Souza',
+                email='convidado@email.com'
+            )
+            convidado.save()
 
-        convidado.save()
+            participante.convites_disponiveis -= 1
+            participante.save()
 
-        self.assertEqual(Convidado.objects.all(
-        ).first().email, 'convidado@email.com')
-        self.assertEqual(Convidado.objects.count(), 1)
+            self.assertEqual(Convidado.objects.all(
+            ).first().email, 'convidado@email.com')
+            self.assertEqual(Convidado.objects.count(), 1)
+            self.assertEqual(convidado.evento.nome, 'Evento Teste')
+
+            self.assertEqual(participante.convites_disponiveis, 0)
+
+        else:
+            self.assertEqual(Convidado.objects.count(), 0)
+            self.assertEqual(participante.convites_disponiveis, 0)
 
     def test_aprovar_convidado(self):
         print('test_aprovar_convidado')
@@ -128,14 +163,14 @@ class EventoModelTest(TestCase):
     def test_evento_str(self):
         print('test_evento_str')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
 
         self.assertEqual(str(evento), 'Evento Teste')
 
     def test_criar_evento(self):
         print('test_criar_evento')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         self.assertEqual(Evento.objects.count(), 1)
@@ -145,7 +180,7 @@ class LoteModelTest(TestCase):
     def test_criar_lote(self):
         print('test_criar_lote')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0), timezone.get_current_timezone()), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -155,8 +190,9 @@ class LoteModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -182,7 +218,7 @@ class IngressoModelTest(TestCase):
     def test_criar_ingresso(self):
         print('test_criar_ingresso')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -192,8 +228,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -213,7 +250,7 @@ class IngressoModelTest(TestCase):
     def test_valor_ingresso_n_socio(self):
         print('test_valor_ingresso_n_socio')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -223,8 +260,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -244,7 +282,7 @@ class IngressoModelTest(TestCase):
     def test_valor_ingresso_socio(self):
         print('test_valor_ingresso_socio')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -254,8 +292,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -279,7 +318,7 @@ class IngressoModelTest(TestCase):
     def test_valor_ingresso_convidado(self):
         print('test_valor_ingresso_convidado')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -289,8 +328,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -316,7 +356,7 @@ class IngressoModelTest(TestCase):
     def test_quantidade_restante(self):
         print('test_quantidade_restante')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -326,8 +366,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -349,7 +390,7 @@ class IngressoModelTest(TestCase):
     def test_stripe_checkout_session(self):
         print('test_stripe_checkout_session')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -359,8 +400,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -376,7 +418,7 @@ class IngressoModelTest(TestCase):
 
         participante.save()
 
-        ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
+        ingresso: Ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
             participante=participante,
             lote=lote,
         )
@@ -385,13 +427,12 @@ class IngressoModelTest(TestCase):
 
         ingresso.create_stripe_checkout()
         ingresso.save()
-
-        self.assertEqual(ingresso.status, 'pendente')
+        self.assertEqual(ingresso.status, 'aguardando')
 
     def test_ingresso_set_paid(self):
         print('test_ingresso_set_paid')
         evento = Evento(nome='Evento Teste',
-                        data_inicio='2020-01-01', data_fim='2020-01-02')
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
         evento.save()
 
         lote = Lote(
@@ -401,8 +442,9 @@ class IngressoModelTest(TestCase):
             preco_socio=70,
             preco_convidado=130,
             quantidade_restante=2,
-            data_inicio='2020-01-01',
-            data_fim='2020-01-02',
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
         )
 
         lote.save()
@@ -418,7 +460,7 @@ class IngressoModelTest(TestCase):
 
         participante.save()
 
-        ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
+        ingresso: Ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
             participante=participante,
             lote=lote,
         )
