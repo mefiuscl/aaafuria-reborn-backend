@@ -50,7 +50,7 @@ admin.site.register(User, CustomUserAdmin)
 @admin.register(core_models.Socio)
 class SocioAdmin(admin.ModelAdmin):
     list_display = ('apelido', 'is_socio', 'is_atleta', 'nome',
-                    'turma', 'matricula', 'whatsapp_url_link', )
+                    'turma', 'matricula', 'whatsapp_url_link', 'data_fim')
     list_filter = ('turma', 'is_socio')
     search_fields = ('apelido', 'nome', 'matricula',
                      'stripe_customer_id', 'email')

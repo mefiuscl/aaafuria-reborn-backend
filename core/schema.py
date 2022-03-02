@@ -145,6 +145,19 @@ class AssociacaoManual(graphene.Mutation):
             socio.data_inicio = timezone.now()
             socio.data_fim = timezone.now(
             ) + datetime.timedelta(days=valores_tipo_plano[tipo_plano]['dias'])
+            socio.save()
+
+            if socio.data_fim.year > timezone.now().year:
+                socio.data_fim = timezone.datetime(
+                    timezone.now().year, 12, 31, 23, 59, 59
+                )
+
+            elif socio.data_fim - timezone.now() > timezone.timedelta(days=31):
+                if timezone.now().month < 7:
+                    if socio.data_fim.month > 6:
+                        socio.data_fim = timezone.datetime(
+                            timezone.now().year, 6, 30, 23, 59, 59
+                        )
 
             socio.save()
 
