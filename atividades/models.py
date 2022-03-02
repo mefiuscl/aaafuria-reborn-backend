@@ -91,7 +91,7 @@ class Programacao(models.Model):
             else:
                 self.estado = 'Confirmado'
 
-            if self.competidores_maximo != 0 and self.competidores_confirmados.count() == self.competidores_maximo:
+            if self.competidores_maximo != 0 and self.competidores_confirmados.count() >= self.competidores_maximo:
                 self.estado = 'Cheio'
         else:
             self.estado = 'Aguardando'
