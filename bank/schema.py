@@ -1,6 +1,10 @@
+import requests
 import graphene
+from core.models import Socio
+from decouple import config
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from django.utils import timezone
 
 from .models import Conta, Movimentacao, Resgate
 
@@ -32,13 +36,36 @@ class ResgatarIntermed(graphene.Mutation):
 
     def mutate(self, info):
         conta = Conta.objects.get(socio__user=info.context.user)
-        resgate, _ = Resgate.objects.get_or_create(
-            conta=conta,
-            descricao='Resgate desconto Intermed',
-            valor_calangos=900,
-        )
-        resgate.resolver()
-        return ResgatarIntermed(ok=True)
+        socio: Socio = conta.socio
+
+        if socio.is_socio and socio.data_fim:
+            resgate, _ = Resgate.objects.get_or_create(
+                conta=conta,
+                descricao='Resgate desconto Intermed',
+                valor_calangos=900,
+            )
+            resgate.resolver()
+
+            requests.post(
+                url='https://cheersshop.com.br/socio/adicionar',
+                data={
+                    "nome": socio.nome,
+                    "email": socio.email,
+                    "telefone": socio.whatsapp,
+                    "matricula": socio.matricula,
+                    "observacao": "",
+                    "cpf": socio.cpf,
+                    "data_fim_plano": socio.data_fim,
+                    "vendedor": "1874"
+                },
+                headers={
+                    "Authorization": f"Bearer {config('CHEERS_TOKEN')}",
+                }
+            )
+
+            return ResgatarIntermed(ok=True)
+        else:
+            return ResgatarIntermed(ok=False)
 
 
 class Query(graphene.ObjectType):
