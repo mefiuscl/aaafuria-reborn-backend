@@ -68,7 +68,7 @@ class ConfirmarCompetidorNaProgramacao(graphene.Mutation):
 
         programacao = Programacao.objects.get(id=from_global_id(id)[1])
 
-        if programacao.competidores_confirmados.count() >= programacao.competidores_maximo:
+        if programacao.competidores_maximo != 0 and programacao.competidores_confirmados.count() >= programacao.competidores_maximo:
             raise Exception("Não é possível confirmar mais competidores")
 
         programacao.competidores_confirmados.add(competidor)
