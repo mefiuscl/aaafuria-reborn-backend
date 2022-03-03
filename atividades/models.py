@@ -86,10 +86,10 @@ class Programacao(models.Model):
 
     def checar_estado(self):
         if self.competidores_confirmados.count() >= self.competidores_minimo:
+            self.estado = 'Confirmado'
+
             if self.competidores_confirmados.count() == 0:
                 self.estado = 'Agendado'
-            else:
-                self.estado = 'Confirmado'
 
             if self.competidores_maximo != 0 and self.competidores_confirmados.count() >= self.competidores_maximo:
                 self.estado = 'Cheio'
