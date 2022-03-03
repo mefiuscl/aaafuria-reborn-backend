@@ -180,6 +180,9 @@ class Ingresso(models.Model):
     def set_invalido(self):
         self.status = 'invalido'
 
+    def set_cancelado(self):
+        self.status = 'cancelado'
+
     def get_stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY) -> str:
         if self.stripe_checkout_id:
             stripe.api_key = api_key

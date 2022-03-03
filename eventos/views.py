@@ -31,6 +31,24 @@ def eventos_webhook(request):
     if event['type'] == 'checkout.session.completed':
         checkout_session = event['data']['object']
 
+        if checkout_session['mode'] == 'payment' and checkout_session['payment_status'] == 'paid':
+            try:
+                ingresso = Ingresso.objects.get(
+                    stripe_checkout_id=checkout_session['id'])
+
+                ingresso.set_paid()
+                ingresso.save()
+
+            except Ingresso.DoesNotExist:
+                return HttpResponse(content=Ingresso.objects.none(), status=204)
+            except ValidationError as e:
+                return HttpResponse(content=e, status=400)
+        else:
+            return HttpResponse(status=204)
+
+    if event['type'] == 'checkout.session.async_payment_succeeded':
+        checkout_session = event['data']['object']
+
         if checkout_session['mode'] == 'payment':
             try:
                 ingresso = Ingresso.objects.get(
@@ -42,6 +60,26 @@ def eventos_webhook(request):
             except Ingresso.DoesNotExist:
                 return HttpResponse(content=Ingresso.objects.none(), status=204)
             except ValidationError as e:
+                return HttpResponse(content=e, status=400)
+        else:
+            return HttpResponse(status=204)
+
+    if event['type'] == 'checkout.session.async_payment_failed':
+        checkout_session = event['data']['object']
+
+        if checkout_session['mode'] == 'payment':
+            try:
+                ingresso = Ingresso.objects.get(
+                    stripe_checkout_id=checkout_session['id'])
+
+                ingresso.set_cancelado()
+                ingresso.save()
+
+            except Ingresso.DoesNotExist:
+                return HttpResponse(content=Ingresso.objects.none(), status=204)
+            except ValidationError as e:
+                return HttpResponse(content=e, status=400)
+            except Exception as e:
                 return HttpResponse(content=e, status=400)
         else:
             return HttpResponse(status=204)
