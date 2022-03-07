@@ -70,7 +70,6 @@ class NovoIngresso(graphene.Mutation):
         participante, _ = Participante.objects.get_or_create(
             socio=info.context.user.socio
         )
-        participante.save()
 
         lote = Lote.objects.get(id=from_global_id(lote_id)[1])
 

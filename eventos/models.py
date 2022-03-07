@@ -88,6 +88,7 @@ class Evento(models.Model):
     data_inicio = models.DateTimeField()
     data_fim = models.DateTimeField()
     fechado = models.BooleanField(default=True)
+    exclusivo_socios = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome
