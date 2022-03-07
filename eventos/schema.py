@@ -30,16 +30,7 @@ class IngressoType(DjangoObjectType):
 
 
 class IngressoRelay(DjangoObjectType):
-    stripe_checkout_url = graphene.String(source='stripe_checkout_url')
-
-    class Meta:
-        model = Ingresso
-        filter_fields = '__all__'
-        interfaces = (graphene.relay.Node, )
-
-
-class IngressoRelay(DjangoObjectType):
-    stripe_checkout_url = graphene.String(source='stripe_checkout_url')
+    stripe_checkout_url = graphene.String(source='get_stripe_checkout_url')
 
     class Meta:
         model = Ingresso
@@ -84,7 +75,6 @@ class NovoIngresso(graphene.Mutation):
             ingresso.set_paid()
             ingresso.save()
             return NovoIngresso(ok=True)
-
         else:
             ingresso, _ = Ingresso.objects.get_or_create(
                 lote=lote,
