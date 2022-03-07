@@ -80,6 +80,10 @@ class NovoIngresso(graphene.Mutation):
                 lote=lote,
                 participante=participante,
             )
+
+            if not created:
+                return NovoIngresso(ok=False)
+
             ingresso.create_stripe_checkout()
             ingresso.save()
 
