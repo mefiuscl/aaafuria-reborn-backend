@@ -76,7 +76,7 @@ class NovoIngresso(graphene.Mutation):
             ingresso.save()
             return NovoIngresso(ok=True)
         else:
-            ingresso, _ = Ingresso.objects.get_or_create(
+            ingresso, created = Ingresso.objects.get_or_create(
                 lote=lote,
                 participante=participante,
             )
