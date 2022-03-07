@@ -205,6 +205,7 @@ class Ingresso(models.Model):
                     'quantity': 1,
                     'currency': 'BRL',
                     'amount': int(self.valor * 100),
+                    'tax_rates': ['txr_1KT7puH8nuTtWMpP8U05kbNZ']
                 }
             ],
             customer=self.participante.stripe_customer_id or None,
