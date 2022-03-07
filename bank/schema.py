@@ -39,14 +39,7 @@ class ResgatarIntermed(graphene.Mutation):
         socio: Socio = conta.socio
 
         if socio.is_socio and socio.data_fim:
-            resgate, _ = Resgate.objects.get_or_create(
-                conta=conta,
-                descricao='Resgate desconto Intermed',
-                valor_calangos=900,
-            )
-            resgate.resolver()
-
-            requests.post(
+            response = requests.post(
                 url='https://cheersshop.com.br/socio/adicionar',
                 data={
                     "nome": socio.nome,
@@ -63,7 +56,16 @@ class ResgatarIntermed(graphene.Mutation):
                 }
             )
 
-            return ResgatarIntermed(ok=True)
+            if response.status_code == 200:
+                resgate, _ = Resgate.objects.get_or_create(
+                    conta=conta,
+                    descricao='Resgate desconto Intermed',
+                    valor_calangos=900,
+                )
+                resgate.resolver()
+                return ResgatarIntermed(ok=True)
+            else:
+                return ResgatarIntermed(ok=False)
         else:
             return ResgatarIntermed(ok=False)
 
