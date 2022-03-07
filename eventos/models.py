@@ -183,14 +183,14 @@ class Ingresso(models.Model):
     def set_cancelado(self):
         self.status = 'cancelado'
 
-    def get_stripe_checkout_url(self, api_key=settings.STRIPE_API_TEST_KEY) -> str:
+    def get_stripe_checkout_url(self, api_key=settings.STRIPE_API_KEY) -> str:
         if self.stripe_checkout_id:
             stripe.api_key = api_key
             session = stripe.checkout.Session.retrieve(self.stripe_checkout_id)
 
             return session.url
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_TEST_KEY):
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
         self.set_valor()
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
