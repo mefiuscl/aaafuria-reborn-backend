@@ -48,7 +48,7 @@ def eventos_webhook(request):
     if event['type'] == 'checkout.session.expired':
         checkout_session = event['data']['object']
 
-        if checkout_session['mode'] == 'payment':
+        if checkout_session['mode'] == 'payment' and checkout_session['payment_status'] == 'unpaid':
             try:
                 ingresso = Ingresso.objects.get(
                     stripe_checkout_id=checkout_session['id'])

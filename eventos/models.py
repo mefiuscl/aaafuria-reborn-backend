@@ -144,13 +144,14 @@ class Ingresso(models.Model):
     data_compra = models.DateTimeField(blank=True, null=True)
     valor = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     status = models.CharField(
-        max_length=12,
+        max_length=255,
         choices=(
             ('invalido', 'Inválido'),
             ('pago', 'Pago'),
             ('aguardando', 'Aguradando pagamento'),
             ('pendente', 'Pendente'),
             ('cancelado', 'Cancelado'),
+            ('expirado', 'Expirado'),
         ),
         default='pendente',
     )
@@ -233,7 +234,7 @@ class Ingresso(models.Model):
         self.lote.evento.save()
 
     def set_expired(self):
-        self.status = 'cancelado'
+        self.status = 'expirado'
         self.lote.quantidade_restante += 1
         self.lote.save()
 
