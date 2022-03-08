@@ -1,7 +1,5 @@
 from core.models import Socio
-from django.contrib.auth.models import User
 from django.test import TestCase
-
 from .models import Competidor, Modalidade, Programacao
 
 from django.core import mail
@@ -9,32 +7,7 @@ from django.core import mail
 
 class ModelTestCase(TestCase):
     def setUp(self):
-        Socio.objects.create(
-            user=User.objects.create_user(
-                username='00000000',
-                password='000000'
-            ),
-            nome='Leonardo Nunes',
-            apelido='Leo'
-        )
-
-        Socio.objects.create(
-            user=User.objects.create_user(
-                username='11111111',
-                password='111111'
-            ),
-            nome='Denise Almeida',
-            apelido='Deni'
-        )
-
-        Socio.objects.create(
-            user=User.objects.create_user(
-                username='33333333',
-                password='333333'
-            ),
-            nome='Jemima Kretli',
-            apelido='Jems'
-        )
+        pass
 
     def test_create_competidor(self):
         print('test_create_competidor')

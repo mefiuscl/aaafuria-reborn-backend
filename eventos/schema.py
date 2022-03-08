@@ -1,9 +1,11 @@
 import graphene
+from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-from .models import Evento, Ingresso, Lote, Participante
-from graphql_relay.node.node import from_global_id
 from graphql import GraphQLError
+from graphql_relay.node.node import from_global_id
+
+from .models import Evento, Ingresso, Lote, Participante
 
 
 class EventoRelay(DjangoObjectType):
@@ -56,11 +58,12 @@ class NovoIngresso(graphene.Mutation):
 
     def mutate(self, info, lote_id):
         if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
+            raise GraphQLError(_('Unauthenticated.'))
 
         participante, _ = Participante.objects.get_or_create(
             socio=info.context.user.socio
         )
+        participante.save()
 
         lote = Lote.objects.get(id=from_global_id(lote_id)[1])
 
@@ -95,11 +98,11 @@ class InvalidarIngresso(graphene.Mutation):
 
     def mutate(self, info, id):
         if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
+            raise GraphQLError(_('Unauthenticated.'))
 
         if not info.context.user.is_staff:
-            raise Exception(
-                'Apenas administradores podem invalidar ingressos.')
+            raise GraphQLError(
+                _('Unauthorized. Only staff members can invalidate ingressos.'))
 
         try:
             ingresso = Ingresso.objects.get(id=from_global_id(id)[1])
@@ -108,7 +111,7 @@ class InvalidarIngresso(graphene.Mutation):
 
             return InvalidarIngresso(ok=True)
         except Ingresso.DoesNotExist:
-            raise GraphQLError('Ingresso não encontrado.')
+            raise GraphQLError(_('Ingresso not found.'))
 
 
 class Query(graphene.ObjectType):
@@ -123,33 +126,35 @@ class Query(graphene.ObjectType):
 
     def resolve_ingresso_by_id(self, info, id):
         if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
+            raise GraphQLError(_('Unauthenticated.'))
 
         if not info.context.user.is_staff:
-            raise Exception('Usuário não autorizado.')
+            raise GraphQLError(
+                _('Unauthorized. Only staff members can access ingressos.'))
         try:
             ingresso = Ingresso.objects.get(id=from_global_id(id)[1])
 
             return ingresso
 
         except Ingresso.DoesNotExist:
-            raise GraphQLError('Ingresso não encontrado.')
+            raise GraphQLError(_('Ingresso not found.'))
 
     def resolve_all_ingresso(self, info):
         if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
+            raise GraphQLError(_('Unauthenticated.'))
 
         if not info.context.user.is_staff:
-            raise Exception('Usuário não autorizado.')
+            raise GraphQLError(
+                _('Unauthorized. Only staff members can access ingressos.'))
         try:
             return Ingresso.objects.all()
 
         except Ingresso.DoesNotExist:
-            raise Exception('Ingresso não encontrado.')
+            raise GraphQLError(_('Ingresso not found.'))
 
     def resolve_user_authenticated_ingressos(self, info):
         if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
+            raise GraphQLError(_('Unauthenticated.'))
 
         return Ingresso.objects.filter(participante__socio=info.context.user.socio, status='pago')
 

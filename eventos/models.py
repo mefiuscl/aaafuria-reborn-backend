@@ -1,10 +1,10 @@
-from django.core.exceptions import ValidationError
 import stripe
-from django.db import models
-from django.conf import settings
-from django.utils import timezone
-
 from bank.models import Conta
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext as _
 
 
 class Participante(models.Model):
@@ -116,12 +116,6 @@ class Lote(models.Model):
 
         return False
 
-    def update_ativo(self):
-        if self.quantidade_restante < 1:
-            self.ativo = False
-        elif self.quantidade_restante >= 1:
-            self.ativo = True
-
     def clean(self):
         if self.data_fim < self.data_inicio:
             raise ValidationError(
@@ -136,12 +130,9 @@ class Lote(models.Model):
                 'A data de fim não pode ser maior que a data de fim do evento')
 
     def save(self, *args, **kwargs):
-        self.update_ativo()
         if self.ativo:
-            for lote in self.evento.lotes.all():
-                if lote.id != self.id:
-                    lote.ativo = False
-                    lote.save()
+            self.evento.lotes.all().update(ativo=False)
+
         self.clean()
         super().save(*args, **kwargs)
 
@@ -216,9 +207,6 @@ class Ingresso(models.Model):
         self.status = 'aguardando'
 
     def set_paid(self):
-        self.lote.quantidade_restante -= 1
-        if self.lote.quantidade_restante < 0:
-            raise ValidationError('Não há ingressos disponíveis')
 
         if self.participante.socio:
             conta, _ = Conta.objects.get_or_create(
@@ -230,7 +218,8 @@ class Ingresso(models.Model):
 
         self.status = 'pago'
         self.data_compra = timezone.now()
-        self.lote.update_ativo()
+
+        self.lote.quantidade_restante -= 1
         self.lote.save()
 
         self.lote.evento.participantes.add(self.participante)
@@ -240,3 +229,16 @@ class Ingresso(models.Model):
         self.set_valor()
 
         super().save(*args, **kwargs)
+
+        if not self.lote.ativo:
+            self.delete()
+            raise ValidationError(
+                _('Lote não está mais disponível para compra'))
+
+        if self.lote.quantidade_restante < 1:
+            self.delete()
+            raise ValidationError(_('Lote esgotado.'))
+
+        if self.lote.data_inicio > timezone.now() or self.lote.data_fim < timezone.now():
+            self.delete()
+            raise ValidationError(_('Lote vencido.'))
