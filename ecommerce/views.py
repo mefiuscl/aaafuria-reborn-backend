@@ -29,30 +29,30 @@ def ecommerce_webhook(request):
     if event['type'] == 'checkout.session.completed':
         checkout_session = event['data']['object']
 
-        if checkout_session['mode'] == 'subscription':
+        if checkout_session['mode'] == 'payment' and checkout_session['payment_status'] == 'paid':
+            try:
+                carrinho = Carrinho.objects.get(
+                    stripe_checkout_id=checkout_session['id'])
+
+                pagamento = Pagamento.objects.create(
+                    user=carrinho.user,
+                    carrinho=carrinho,
+                    status='pago',
+                    valor=carrinho.total,
+                    forma_pagamento='cartao'
+                )
+
+                carrinho.set_paid()
+                carrinho.save()
+
+                pagamento.save()
+
+            except Carrinho.DoesNotExist:
+                return HttpResponse(status=204)
+            except Exception as e:
+                return HttpResponse(content=e, status=400)
+        else:
             return HttpResponse(status=204)
-
-        try:
-            carrinho = Carrinho.objects.get(
-                stripe_checkout_id=checkout_session['id'])
-
-            pagamento = Pagamento.objects.create(
-                user=carrinho.user,
-                carrinho=carrinho,
-                status='pago',
-                valor=carrinho.total,
-                forma_pagamento='cartao'
-            )
-
-            carrinho.set_paid()
-            carrinho.save()
-
-            pagamento.save()
-
-        except Carrinho.DoesNotExist:
-            return HttpResponse(status=204)
-        except Exception as e:
-            return HttpResponse(content=e, status=400)
     else:
         return HttpResponse(status=204)
 
