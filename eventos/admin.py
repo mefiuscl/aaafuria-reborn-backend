@@ -42,8 +42,8 @@ class EventoAdmin(admin.ModelAdmin):
 
 @admin.register(eventos_models.Lote)
 class LoteAdmin(admin.ModelAdmin):
-    list_display = ['evento', 'nome', 'quantidade_restante',
-                    'data_inicio', 'data_fim', 'ativo']
+    list_display = ['evento', 'nome', 'quantidade_restante', 'preco',
+                    'preco_socio', 'preco_convidado', 'data_inicio', 'data_fim', 'ativo']
 
 
 @admin.register(eventos_models.Ingresso)
