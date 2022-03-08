@@ -51,8 +51,7 @@ class IngressoAdmin(admin.ModelAdmin):
     readonly_fields = ('get_stripe_checkout_url', )
     list_display = ('evento', 'lote', linkify('participante'),
                     'turma', 'categoria', 'status', )
-    list_filter = ('status', 'lote__nome', 'lote__evento',
-                   'participante__categoria')
+    list_filter = ('status', 'lote', 'lote__evento', 'participante__categoria')
     search_fields = ['participante__nome',
                      'participante__email', 'lote__evento__nome', 'participante__socio__matricula']
 
