@@ -229,8 +229,6 @@ class Ingresso(models.Model):
 
     def validate_lote(self):
         if self.lote.data_inicio > timezone.now():
-            self.lote.ativo = False
-            self.lote.save()
             raise ValidationError(_('Lote não iniciado.'))
         if self.lote.data_fim < timezone.now():
             self.lote.ativo = False
