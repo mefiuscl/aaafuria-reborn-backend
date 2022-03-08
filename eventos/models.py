@@ -184,7 +184,7 @@ class Ingresso(models.Model):
             return session.url
 
     def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
-        if self.status == 'pendente':
+        if self.status == 'pendente' or self.status == 'expirado':
             if self.lote.quantidade_restante >= 1:
                 self.lote.quantidade_restante -= 1
                 self.lote.save()
