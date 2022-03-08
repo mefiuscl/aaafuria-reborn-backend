@@ -27,7 +27,6 @@ def eventos_webhook(request):
     except Exception as e:
         return HttpResponse(content=e, status=400)
 
-    # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         checkout_session = event['data']['object']
 
@@ -72,7 +71,27 @@ def eventos_webhook(request):
                 ingresso = Ingresso.objects.get(
                     stripe_checkout_id=checkout_session['id'])
 
-                ingresso.set_cancelado()
+                ingresso.set_expired()
+                ingresso.save()
+
+            except Ingresso.DoesNotExist:
+                return HttpResponse(content=Ingresso.objects.none(), status=204)
+            except ValidationError as e:
+                return HttpResponse(content=e, status=400)
+            except Exception as e:
+                return HttpResponse(content=e, status=400)
+        else:
+            return HttpResponse(status=204)
+
+    if event['type'] == 'checkout.session.expired':
+        checkout_session = event['data']['object']
+
+        if checkout_session['mode'] == 'payment':
+            try:
+                ingresso = Ingresso.objects.get(
+                    stripe_checkout_id=checkout_session['id'])
+
+                ingresso.set_expired()
                 ingresso.save()
 
             except Ingresso.DoesNotExist:

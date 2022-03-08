@@ -219,12 +219,27 @@ class Ingresso(models.Model):
         self.status = 'pago'
         self.data_compra = timezone.now()
 
-        self.lote.save()
-
         self.lote.evento.participantes.add(self.participante)
         self.lote.evento.save()
 
+    def set_expired(self):
+        self.status = 'cancelado'
+        self.lote.quantidade_restante += 1
+        self.lote.save()
+
+    def validate_lote(self):
+        if self.lote.data_inicio > timezone.now():
+            raise ValidationError(_('Lote não iniciado.'))
+        if self.lote.data_fim < timezone.now():
+            raise ValidationError(_('Lote finalizado.'))
+        if not self.lote.ativo:
+            raise ValidationError(_('Lote não está ativo.'))
+        if self.lote.quantidade_restante < 0:
+            raise ValidationError(_('Lote esgotado.'))
+
     def save(self, *args, **kwargs):
         self.set_valor()
+        self.lote.quantidade_restante -= 1
 
+        self.validate_lote()
         super().save(*args, **kwargs)
