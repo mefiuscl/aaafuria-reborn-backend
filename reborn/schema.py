@@ -7,6 +7,7 @@ import atividades.schema
 import bank.schema
 import eventos.schema
 import files.schema
+import help.schema
 
 
 class Query(
@@ -16,6 +17,7 @@ class Query(
     bank.schema.Query,
     eventos.schema.Query,
     files.schema.Query,
+    help.schema.Query,
     graphene.ObjectType
 ):
     pass
@@ -28,6 +30,7 @@ class Mutation(
     bank.schema.Mutation,
     eventos.schema.Mutation,
     files.schema.Mutation,
+    help.schema.Mutation,
     graphene.ObjectType
 ):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()

@@ -26,7 +26,6 @@ def ecommerce_webhook(request):
     except Exception as e:
         return HttpResponse(content=e, status=400)
 
-    # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         checkout_session = event['data']['object']
 

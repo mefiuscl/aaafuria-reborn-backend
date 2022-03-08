@@ -30,9 +30,10 @@ INSTALLED_APPS = [
     'atividades',
     'ecommerce',
     'bank',
-
     'eventos',
-    'files'
+
+    'files',
+    'help'
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -112,7 +113,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -172,6 +172,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals(), staticfiles=False)

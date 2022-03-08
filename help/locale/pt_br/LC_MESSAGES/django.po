@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-07 23:45-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: help/models.py:47 help/models.py:82
+msgid "author"
+msgstr "autor"
+
+#: help/models.py:49
+msgid "title"
+msgstr "título"
+
+#: help/models.py:50 help/models.py:83
+msgid "description"
+msgstr "descrição"
+
+#: help/models.py:52
+msgid "status"
+msgstr ""
+
+#: help/models.py:54
+msgid "priority"
+msgstr "prioridade"
+
+#: help/models.py:56
+msgid "category"
+msgstr "categoria"
+
+#: help/models.py:58 help/models.py:85
+msgid "created at"
+msgstr "criado em"
+
+#: help/models.py:60
+msgid "updated at"
+msgstr "atualizado em"
+
+#: help/models.py:74 help/models.py:80
+msgid "issue"
+msgstr "solicitação"
+
+#: help/models.py:75
+msgid "issues"
+msgstr "solicitações"
+
+#: help/models.py:95
+msgid "comment"
+msgstr "comentário"
+
+#: help/models.py:96
+msgid "comments"
+msgstr "comentários"
+
+#: help/schema.py:47 help/schema.py:66 help/schema.py:93 help/schema.py:111
+#: help/schema.py:123 help/schema.py:133
+msgid "You must be logged in to access this data"
+msgstr "Você deve estar autenticado para acessar estas informações"
+
+#: help/schema.py:61
+msgid "Issue already closed"
+msgstr "Esta solicitação já está fechada"
+
+#: help/schema.py:83
+msgid "This issue is closed"
+msgstr "Esta solicitação está fechada"
+
+#: help/schema.py:107 help/schema.py:109 help/schema.py:119 help/schema.py:121
+msgid "Issue not found"
+msgstr "Solicitação não encontrada"
+
+#: help/schema.py:129
+#, fuzzy
+#| msgid "You must be logged in to access this data"
+msgid "You do not have permission to access this data"
+msgstr "Você deve estar autenticado para acessar estas informações"
