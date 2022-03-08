@@ -201,7 +201,7 @@ class Ingresso(models.Model):
             ],
             customer=self.participante.stripe_customer_id or None,
             payment_method_types=['card'],
-            expires_at=5 * 60
+            expires_at=timezone.now() + timezone.timedelta(minutes=60),
         )
 
         self.stripe_checkout_id = session.id
@@ -229,12 +229,18 @@ class Ingresso(models.Model):
 
     def validate_lote(self):
         if self.lote.data_inicio > timezone.now():
+            self.lote.ativo = False
+            self.lote.save()
             raise ValidationError(_('Lote não iniciado.'))
         if self.lote.data_fim < timezone.now():
+            self.lote.ativo = False
+            self.lote.save()
             raise ValidationError(_('Lote finalizado.'))
         if not self.lote.ativo:
             raise ValidationError(_('Lote não está ativo.'))
         if self.lote.quantidade_restante < 0:
+            self.lote.ativo = False
+            self.lote.save()
             raise ValidationError(_('Lote esgotado.'))
 
     def save(self, *args, **kwargs):
