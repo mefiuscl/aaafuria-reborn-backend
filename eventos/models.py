@@ -250,6 +250,4 @@ class Ingresso(models.Model):
 
     def save(self, *args, **kwargs):
         self.set_valor()
-        self.validate_lote()
-
         super().save(*args, **kwargs)

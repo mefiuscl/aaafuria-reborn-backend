@@ -75,6 +75,7 @@ class NovoIngresso(graphene.Mutation):
             if not created:
                 return NovoIngresso(ok=False)
 
+            ingresso.validate_lote()
             ingresso.set_paid()
             ingresso.save()
             return NovoIngresso(ok=True)
@@ -83,7 +84,7 @@ class NovoIngresso(graphene.Mutation):
                 lote=lote,
                 participante=participante,
             )
-
+            ingresso.validate_lote()
             ingresso.create_stripe_checkout()
             ingresso.save()
 
@@ -112,6 +113,8 @@ class InvalidarIngresso(graphene.Mutation):
             return InvalidarIngresso(ok=True)
         except Ingresso.DoesNotExist:
             raise GraphQLError(_('Ingresso not found.'))
+        except Exception as e:
+            return GraphQLError(e)
 
 
 class Query(graphene.ObjectType):
