@@ -201,13 +201,13 @@ class Ingresso(models.Model):
             ],
             customer=self.participante.stripe_customer_id or None,
             payment_method_types=['card'],
+            expires_at=5 * 60
         )
 
         self.stripe_checkout_id = session.id
         self.status = 'aguardando'
 
     def set_paid(self):
-
         if self.participante.socio:
             conta, _ = Conta.objects.get_or_create(
                 socio=self.participante.socio)
@@ -219,7 +219,6 @@ class Ingresso(models.Model):
         self.status = 'pago'
         self.data_compra = timezone.now()
 
-        self.lote.quantidade_restante -= 1
         self.lote.save()
 
         self.lote.evento.participantes.add(self.participante)
@@ -229,16 +228,3 @@ class Ingresso(models.Model):
         self.set_valor()
 
         super().save(*args, **kwargs)
-
-        if not self.lote.ativo:
-            self.delete()
-            raise ValidationError(
-                _('Lote não está mais disponível para compra'))
-
-        if self.lote.quantidade_restante < 1:
-            self.delete()
-            raise ValidationError(_('Lote esgotado.'))
-
-        if self.lote.data_inicio > timezone.now() or self.lote.data_fim < timezone.now():
-            self.delete()
-            raise ValidationError(_('Lote vencido.'))
