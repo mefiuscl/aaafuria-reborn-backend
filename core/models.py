@@ -133,9 +133,8 @@ class Socio(models.Model):
 
     @property
     def is_atleta(self):
-        for competidor in self.modalidades.all():
-            if competidor:
-                return True
+        if self.competidor.modalidades.count() > 0:
+            return True
         return False
 
     def adicionar_coupom_cheers(self):
