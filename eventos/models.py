@@ -241,6 +241,8 @@ class Ingresso(models.Model):
 
     def save(self, *args, **kwargs):
         self.set_valor()
+        self.validate_lote()
+
         if self.lote.quantidade_restante >= 1:
             self.lote.quantidade_restante -= 1
         else:
@@ -248,5 +250,4 @@ class Ingresso(models.Model):
             self.lote.save()
             raise ValidationError(_('Lote esgotado.'))
 
-        self.validate_lote()
         super().save(*args, **kwargs)
