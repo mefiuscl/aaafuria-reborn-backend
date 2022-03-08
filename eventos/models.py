@@ -193,7 +193,6 @@ class Ingresso(models.Model):
                 self.lote.save()
                 raise ValidationError(_('Lote esgotado.'))
 
-        if self.status == 'pendente' or self.status == 'aguardando':
             self.set_valor()
             stripe.api_key = api_key
             session = stripe.checkout.Session.create(
