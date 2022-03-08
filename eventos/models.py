@@ -183,29 +183,39 @@ class Ingresso(models.Model):
             return session.url
 
     def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
-        self.set_valor()
-        stripe.api_key = api_key
-        session = stripe.checkout.Session.create(
-            success_url='https://aaafuria.site/',
-            cancel_url='https://aaafuria.site/eventos',
-            mode='payment',
-            line_items=[
-                {
-                    'name': self.lote.evento.nome,
-                    'description': f'{self.lote.nome} - {self.participante.get_categoria_display()}',
-                    'quantity': 1,
-                    'currency': 'BRL',
-                    'amount': int(self.valor * 100),
-                    'tax_rates': ['txr_1KT7puH8nuTtWMpP8U05kbNZ']
-                }
-            ],
-            customer=self.participante.stripe_customer_id or None,
-            payment_method_types=['card'],
-            expires_at=timezone.now() + timezone.timedelta(minutes=60),
-        )
+        if self.status == 'pendente':
+            if self.lote.quantidade_restante >= 1:
+                self.lote.quantidade_restante -= 1
+                self.lote.save()
+            else:
+                self.lote.ativo = False
+                self.lote.save()
+                raise ValidationError(_('Lote esgotado.'))
 
-        self.stripe_checkout_id = session.id
-        self.status = 'aguardando'
+        if self.status == 'pendente' or self.status == 'aguardando':
+            self.set_valor()
+            stripe.api_key = api_key
+            session = stripe.checkout.Session.create(
+                success_url='https://aaafuria.site/',
+                cancel_url='https://aaafuria.site/eventos',
+                mode='payment',
+                line_items=[
+                    {
+                        'name': self.lote.evento.nome,
+                        'description': f'{self.lote.nome} - {self.participante.get_categoria_display()}',
+                        'quantity': 1,
+                        'currency': 'BRL',
+                        'amount': int(self.valor * 100),
+                        'tax_rates': ['txr_1KT7puH8nuTtWMpP8U05kbNZ']
+                    }
+                ],
+                customer=self.participante.stripe_customer_id or None,
+                payment_method_types=['card'],
+                expires_at=timezone.now() + timezone.timedelta(minutes=60),
+            )
+
+            self.stripe_checkout_id = session.id
+            self.status = 'aguardando'
 
     def set_paid(self):
         if self.participante.socio:
@@ -240,12 +250,5 @@ class Ingresso(models.Model):
     def save(self, *args, **kwargs):
         self.set_valor()
         self.validate_lote()
-
-        if self.lote.quantidade_restante >= 1:
-            self.lote.quantidade_restante -= 1
-        else:
-            self.lote.ativo = False
-            self.lote.save()
-            raise ValidationError(_('Lote esgotado.'))
 
         super().save(*args, **kwargs)
