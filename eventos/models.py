@@ -189,8 +189,6 @@ class Ingresso(models.Model):
                 self.lote.quantidade_restante -= 1
                 self.lote.save()
             else:
-                self.lote.ativo = False
-                self.lote.save()
                 raise ValidationError(_('Lote esgotado.'))
 
             self.set_valor()
