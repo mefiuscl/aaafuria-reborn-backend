@@ -238,14 +238,15 @@ class Ingresso(models.Model):
             raise ValidationError(_('Lote finalizado.'))
         if not self.lote.ativo:
             raise ValidationError(_('Lote não está ativo.'))
-        if self.lote.quantidade_restante < 0:
-            self.lote.ativo = False
-            self.lote.save()
-            raise ValidationError(_('Lote esgotado.'))
 
     def save(self, *args, **kwargs):
         self.set_valor()
-        self.lote.quantidade_restante -= 1
+        if self.lote.quantidade_restante >= 1:
+            self.lote.quantidade_restante -= 1
+        else:
+            self.lote.ativo = False
+            self.lote.save()
+            raise ValidationError(_('Lote esgotado.'))
 
         self.validate_lote()
         super().save(*args, **kwargs)
