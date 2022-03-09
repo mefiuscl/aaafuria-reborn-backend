@@ -105,6 +105,7 @@ class Lote(models.Model):
     data_inicio = models.DateTimeField()
     data_fim = models.DateTimeField()
     ativo = models.BooleanField(default=True)
+    presencial = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome
@@ -183,7 +184,7 @@ class Ingresso(models.Model):
 
             return session.url
 
-    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
+    def check_quantidade(self):
         if self.status == 'pendente' or self.status == 'expirado':
             if self.lote.quantidade_restante >= 1:
                 self.lote.quantidade_restante -= 1
@@ -192,6 +193,8 @@ class Ingresso(models.Model):
                 raise ValidationError(
                     _('Reservas esgotadas. Tente novamente em 1h.'))
 
+    def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
+        if self.status == 'pendente' or self.status == 'expirado':
             self.set_valor()
             stripe.api_key = api_key
             session = stripe.checkout.Session.create(

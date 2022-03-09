@@ -52,11 +52,12 @@ class LoteRelay(DjangoObjectType):
 class NovoIngresso(graphene.Mutation):
     class Arguments:
         lote_id = graphene.ID(required=True)
+        presencial = graphene.Boolean(required=False)
 
     ok = graphene.Boolean()
     ingresso = graphene.Field(IngressoRelay)
 
-    def mutate(self, info, lote_id):
+    def mutate(self, info, lote_id, presencial=False):
         if not info.context.user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
@@ -85,7 +86,9 @@ class NovoIngresso(graphene.Mutation):
                 participante=participante,
             )
             ingresso.validate_lote()
-            ingresso.create_stripe_checkout()
+            ingresso.check_quantidade()
+            if not presencial:
+                ingresso.create_stripe_checkout()
             ingresso.save()
 
             return NovoIngresso(ok=True, ingresso=ingresso)
