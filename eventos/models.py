@@ -131,9 +131,6 @@ class Lote(models.Model):
                 'A data de fim não pode ser maior que a data de fim do evento')
 
     def save(self, *args, **kwargs):
-        if self.ativo:
-            self.evento.lotes.all().update(ativo=False)
-
         self.clean()
         super().save(*args, **kwargs)
 
