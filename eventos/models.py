@@ -189,7 +189,8 @@ class Ingresso(models.Model):
                 self.lote.quantidade_restante -= 1
                 self.lote.save()
             else:
-                raise ValidationError(_('Lote esgotado.'))
+                raise ValidationError(
+                    _('Reservas esgotadas. Tente novamente em 1h.'))
 
             self.set_valor()
             stripe.api_key = api_key
