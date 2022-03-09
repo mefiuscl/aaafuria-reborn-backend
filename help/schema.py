@@ -10,10 +10,15 @@ from .models import Issue, Comment
 
 
 class IssueRelay(DjangoObjectType):
+    status = graphene.String()
+
     class Meta:
         model = Issue
         filter_fields = ['status']
         interfaces = (graphene.relay.Node, )
+
+    def resolve_status(self, info):
+        return self.get_status_display()
 
 
 class CommentRelay(DjangoObjectType):
@@ -47,6 +52,29 @@ class CreateIssue(graphene.Mutation):
             raise GraphQLError(_('You must be logged in to access this data'))
 
 
+class OpenIssue(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+    issue = graphene.Field(IssueRelay)
+
+    def mutate(self, info, id):
+        if info.context.user.is_authenticated:
+            issue = get_object_or_404(Issue, pk=from_global_id(id)[1])
+            if not info.context.user.is_staff and issue.author.user != info.context.user:
+                raise GraphQLError(
+                    _('You are not allowed to close this issue'))
+
+            if issue.status == Issue.STATUS_OPEN:
+                raise GraphQLError(_('Issue already opened'))
+            issue.status = Issue.STATUS_OPEN
+            issue.save()
+            return OpenIssue(ok=True, issue=issue)
+        else:
+            raise GraphQLError(_('You must be logged in to access this data'))
+
+
 class CloseIssue(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
@@ -57,6 +85,10 @@ class CloseIssue(graphene.Mutation):
     def mutate(self, info, id):
         if info.context.user.is_authenticated:
             issue = get_object_or_404(Issue, pk=from_global_id(id)[1])
+            if not info.context.user.is_staff and issue.author.user != info.context.user:
+                raise GraphQLError(
+                    _('You are not allowed to close this issue'))
+
             if issue.status == Issue.STATUS_CLOSED:
                 raise GraphQLError(_('Issue already closed'))
             issue.status = Issue.STATUS_CLOSED
@@ -103,7 +135,14 @@ class Query(graphene.ObjectType):
         if info.context.user.is_authenticated:
             if id is not None:
                 try:
-                    return Issue.objects.get(pk=from_global_id(id)[1])
+                    issue = Issue.objects.get(pk=from_global_id(id)[1])
+
+                    if not info.context.user.is_staff and issue.author != info.context.user.socio:
+                        raise GraphQLError(
+                            _('You do not have permission to access this data'))
+                    else:
+                        return issue
+
                 except Issue.DoesNotExist:
                     raise GraphQLError(_('Issue not found'))
             else:
@@ -148,3 +187,4 @@ class Mutation(graphene.ObjectType):
     create_issue = CreateIssue.Field()
     create_comment = CreateComment.Field()
     close_issue = CloseIssue.Field()
+    open_issue = OpenIssue.Field()
