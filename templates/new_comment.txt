@@ -1,1 +1,1 @@
-Olá, sua solicitação foi respondida!
+{{ message }}
