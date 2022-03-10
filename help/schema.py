@@ -68,6 +68,9 @@ class OpenIssue(graphene.Mutation):
 
             if issue.status == Issue.STATUS_OPEN:
                 raise GraphQLError(_('Issue already opened'))
+            if issue.status == Issue.STATUS_IN_PROGRESS:
+                raise GraphQLError(_('Issue is in progress'))
+
             issue.status = Issue.STATUS_OPEN
             issue.save()
             return OpenIssue(ok=True, issue=issue)
@@ -91,6 +94,7 @@ class CloseIssue(graphene.Mutation):
 
             if issue.status == Issue.STATUS_CLOSED:
                 raise GraphQLError(_('Issue already closed'))
+
             issue.status = Issue.STATUS_CLOSED
             issue.save()
             return CloseIssue(ok=True, issue=issue)
