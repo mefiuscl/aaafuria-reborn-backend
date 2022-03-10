@@ -187,7 +187,7 @@ class Ingresso(models.Model):
                 self.lote.quantidade_restante -= 1
                 self.lote.save()
             else:
-                self.set_cancelado()
+                self.delete()
                 raise ValidationError(
                     _('Reservas esgotadas. Tente novamente em 1h.'))
 
