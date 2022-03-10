@@ -128,9 +128,8 @@ class CreateComment(graphene.Mutation):
             if info.context.user.is_staff:
                 subject = 'Solicitação respondida'
                 message = 'Olá, a sua solicitação foi respondida!'
-                
+
                 context = {
-                    link: link,
                     message: message,
                 }
                 issue.author.notificar('email', subject,
