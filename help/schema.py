@@ -124,6 +124,16 @@ class CreateComment(graphene.Mutation):
             )
             issue.check_status()
             issue.save()
+
+            if info.context.user.is_staff:
+                subject = 'Solicitação respondida'
+                message = 'Olá, a sua solicitação foi respondida.'
+                context = {
+                    message: message,
+                }
+                issue.author.notificar('email', subject,
+                                       'new_comment.txt', 'new_comment.html', context)
+
             return CreateComment(ok=True, comments=issue.comments.all())
         else:
             raise GraphQLError(_('You must be logged in to access this data'))
