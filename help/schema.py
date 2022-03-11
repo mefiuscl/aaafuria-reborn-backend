@@ -128,7 +128,7 @@ class CreateComment(graphene.Mutation):
             if info.context.user.is_staff:
                 subject = 'Um Diretor respondeu à sua solicitação!'
                 context = {
-                    comment: comment.description,
+                    'comment': comment.description,
                 }
                 issue.author.notificar('email', subject,
                                        'new_comment.txt', 'new_comment.html', context)
