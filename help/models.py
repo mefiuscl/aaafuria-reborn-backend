@@ -1,6 +1,3 @@
-from tabnanny import verbose
-from venv import create
-
 from core.models import Socio
 from django.db import models
 from django.utils.translation import gettext as _
