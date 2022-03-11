@@ -95,14 +95,12 @@ class Socio(models.Model):
             plaintext = get_template(text_template)
             htmly = get_template(html_template)
 
-            ctx = Context(context)
+            from_email, to = settings.EMAIL_HOST_USER, self.user.email
 
-            sub, from_email, to = subject, settings.EMAIL_HOST_USER, self.user.email
+            text_content = plaintext.render(context)
+            html_content = htmly.render(context)
 
-            text_content = plaintext.render(ctx)
-            html_content = htmly.render(ctx)
-
-            msg = EmailMultiAlternatives(sub, text_content, from_email, [
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [
                 to])
 
             msg.attach_alternative(
