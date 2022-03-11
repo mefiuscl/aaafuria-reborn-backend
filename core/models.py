@@ -6,7 +6,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.dispatch import receiver
 from django.forms import ValidationError
-from django.template.loader import render_to_string
+from django.template import Context
+from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 
 
@@ -91,11 +92,15 @@ class Socio(models.Model):
 
     def notificar(self, metodo, subject, text_template, html_template, context):
         def email():
-            from_email = settings.EMAIL_HOST_USER
-            to = self.user.email
+            plaintext = get_template(text_template)
+            htmly = get_template(html_template)
 
-            text_content = render_to_string(text_template, context)
-            html_content = render_to_string(html_template, context)
+            ctx = Context(context)
+
+            subject, from_email, to = subject, settings.EMAIL_HOST_USER, self.user.email
+
+            text_content = plaintext.render(ctx)
+            html_content = htmly.render(ctx)
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, [
                 to])
