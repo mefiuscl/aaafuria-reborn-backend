@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head> </head>
   <body>
-    <h1>{{ comment }}</h1>
+    <div>
+      <h1>{{ issue.title }}</h1>
+      <p>{{ comment.description }}</p>
+      <p>Solicitação aberta em: {{issue.created_at}}</p>
+      <a href="https://aaafuria.site/ajuda/solicitacao/{{issue.id}}"
+        >Ir para solicitação</a
+      >
+    </div>
   </body>
 </html>

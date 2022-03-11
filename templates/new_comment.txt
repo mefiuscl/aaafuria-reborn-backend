@@ -1,1 +1,4 @@
-{{ comment }}
+{{ issue.title }}
+{{ comment.comment }}
+Solicitação aberta em: {{issue.created_at}}
+ID da solicitação: {{issue.id}}
