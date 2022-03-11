@@ -1,8 +1,9 @@
 from tabnanny import verbose
 from venv import create
+
+from core.models import Socio
 from django.db import models
 from django.utils.translation import gettext as _
-from core.models import Socio
 
 
 class Issue(models.Model):
@@ -91,6 +92,6 @@ class Comment(models.Model):
         return self.author.nickname
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['created_at']
         verbose_name = _('comment')
         verbose_name_plural = _('comments')
