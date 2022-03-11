@@ -6,7 +6,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
 from graphql_relay import from_global_id
 
-from .models import Issue, Comment
+from .models import Comment, Issue
 
 
 class IssueRelay(DjangoObjectType):
@@ -118,7 +118,7 @@ class CreateComment(graphene.Mutation):
             if issue.status == Issue.STATUS_CLOSED:
                 raise GraphQLError(_('This issue is closed'))
 
-            issue.comments.create(
+            comment = issue.comments.create(
                 author=info.context.user.socio,
                 description=description,
             )
@@ -126,11 +126,9 @@ class CreateComment(graphene.Mutation):
             issue.save()
 
             if info.context.user.is_staff:
-                subject = 'Solicitação respondida'
-                message = 'Olá, a sua solicitação foi respondida!'
-
+                subject = 'Um Diretor respondeu à sua solicitação!'
                 context = {
-                    message: message,
+                    comment: comment.description,
                 }
                 issue.author.notificar('email', subject,
                                        'new_comment.txt', 'new_comment.html', context)
