@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-07 23:45-0300\n"
+"POT-Creation-Date: 2022-03-11 11:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,73 +18,87 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: help/models.py:47 help/models.py:82
+#: help/models.py:45 help/models.py:80
 msgid "author"
 msgstr "autor"
 
-#: help/models.py:49
+#: help/models.py:47
 msgid "title"
 msgstr "título"
 
-#: help/models.py:50 help/models.py:83
+#: help/models.py:48 help/models.py:81
 msgid "description"
 msgstr "descrição"
 
-#: help/models.py:52
+#: help/models.py:50
 msgid "status"
 msgstr ""
 
-#: help/models.py:54
+#: help/models.py:52
 msgid "priority"
 msgstr "prioridade"
 
-#: help/models.py:56
+#: help/models.py:54
 msgid "category"
 msgstr "categoria"
 
-#: help/models.py:58 help/models.py:85
+#: help/models.py:56 help/models.py:83
 msgid "created at"
 msgstr "criado em"
 
-#: help/models.py:60
+#: help/models.py:58
 msgid "updated at"
 msgstr "atualizado em"
 
-#: help/models.py:74 help/models.py:80
+#: help/models.py:72 help/models.py:78
 msgid "issue"
 msgstr "solicitação"
 
-#: help/models.py:75
+#: help/models.py:73
 msgid "issues"
 msgstr "solicitações"
 
-#: help/models.py:95
+#: help/models.py:93
 msgid "comment"
 msgstr "comentário"
 
-#: help/models.py:96
+#: help/models.py:94
 msgid "comments"
 msgstr "comentários"
 
-#: help/schema.py:47 help/schema.py:66 help/schema.py:93 help/schema.py:111
-#: help/schema.py:123 help/schema.py:133
+#: help/schema.py:58 help/schema.py:84 help/schema.py:108 help/schema.py:145
+#: help/schema.py:171 help/schema.py:183 help/schema.py:193 help/schema.py:203
 msgid "You must be logged in to access this data"
 msgstr "Você deve estar autenticado para acessar estas informações"
 
-#: help/schema.py:61
+#: help/schema.py:73 help/schema.py:99
+msgid "You are not allowed to close this issue"
+msgstr ""
+
+#: help/schema.py:76
+#, fuzzy
+#| msgid "Issue already closed"
+msgid "Issue already opened"
+msgstr "Esta solicitação já está fechada"
+
+#: help/schema.py:78
+msgid "Issue is in progress"
+msgstr "Solicitação em andamento"
+
+#: help/schema.py:102
 msgid "Issue already closed"
 msgstr "Esta solicitação já está fechada"
 
-#: help/schema.py:83
+#: help/schema.py:125
 msgid "This issue is closed"
 msgstr "Esta solicitação está fechada"
 
-#: help/schema.py:107 help/schema.py:109 help/schema.py:119 help/schema.py:121
-msgid "Issue not found"
-msgstr "Solicitação não encontrada"
-
-#: help/schema.py:129
+#: help/schema.py:162 help/schema.py:189 help/schema.py:199
 #, fuzzy
 #| msgid "You must be logged in to access this data"
 msgid "You do not have permission to access this data"
 msgstr "Você deve estar autenticado para acessar estas informações"
+
+#: help/schema.py:167 help/schema.py:169 help/schema.py:179 help/schema.py:181
+msgid "Issue not found"
+msgstr "Solicitação não encontrada"

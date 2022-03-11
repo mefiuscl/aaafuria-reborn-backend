@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-07 23:45-0300\n"
+"POT-Creation-Date: 2022-03-11 11:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,31 +18,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: eventos/models.py:235
-msgid "Lote não está mais disponível para compra"
-msgstr "Lote não está mais disponível para compra"
+#: eventos/models.py:192
+msgid "Reservas esgotadas. Tente novamente em 1h."
+msgstr ""
 
-#: eventos/models.py:239
-msgid "Lote esgotado."
-msgstr "Lote esgotado."
-
-#: eventos/models.py:243
-msgid "Lote inválido."
+#: eventos/models.py:242
+#, fuzzy
+#| msgid "Lote inválido."
+msgid "Lote não iniciado."
 msgstr "Lote inválido."
 
-#: eventos/schema.py:61 eventos/schema.py:101 eventos/schema.py:129
-#: eventos/schema.py:144 eventos/schema.py:157
+#: eventos/models.py:246
+#, fuzzy
+#| msgid "Lote inválido."
+msgid "Lote finalizado."
+msgstr "Lote inválido."
+
+#: eventos/models.py:248
+#, fuzzy
+#| msgid "Lote esgotado."
+msgid "Lote não está ativo."
+msgstr "Lote esgotado."
+
+#: eventos/schema.py:62 eventos/schema.py:105 eventos/schema.py:135
+#: eventos/schema.py:150 eventos/schema.py:163
 msgid "Unauthenticated."
 msgstr "Não autenticado."
 
-#: eventos/schema.py:105
+#: eventos/schema.py:109
 msgid "Unauthorized. Only staff members can invalidate ingressos."
 msgstr "Não autorizado. Somente membros da equipe podem invalidar ingressos."
 
-#: eventos/schema.py:114 eventos/schema.py:140 eventos/schema.py:153
+#: eventos/schema.py:118 eventos/schema.py:146 eventos/schema.py:159
 msgid "Ingresso not found."
 msgstr "Ingresso não encontrado."
 
-#: eventos/schema.py:133 eventos/schema.py:148
+#: eventos/schema.py:139 eventos/schema.py:154
 msgid "Unauthorized. Only staff members can access ingressos."
 msgstr "Não autorizado. Somente membros da equipe podem acessar ingressos."
+
+#~ msgid "Lote não está mais disponível para compra"
+#~ msgstr "Lote não está mais disponível para compra"
