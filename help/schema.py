@@ -12,19 +12,23 @@ from .models import Comment, Issue
 
 
 class IssueRelay(DjangoObjectType):
-    status = graphene.String()
-    category = graphene.String()
+    get_status_display = graphene.String()
+    get_category_display = graphene.String()
+    get_priority_display = graphene.String()
 
     class Meta:
         model = Issue
         filter_fields = ['status']
         interfaces = (graphene.relay.Node, )
 
-    def resolve_status(self, info):
+    def resolve_get_status_display(self, info):
         return self.get_status_display()
 
-    def resolve_category(self, info):
+    def resolve_get_category_display(self, info):
         return self.get_category_display()
+
+    def resolve_get_priority_display(self, info):
+        return self.get_priority_display()
 
 
 class CommentRelay(DjangoObjectType):
