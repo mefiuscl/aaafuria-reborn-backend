@@ -9,18 +9,18 @@ class Issue(models.Model):
     STATUS_CLOSED = 'CLOSED'
 
     STATUS_CHOICES = (
-        (STATUS_OPEN, 'Open'),
-        (STATUS_IN_PROGRESS, 'In Progress'),
-        (STATUS_CLOSED, 'Closed'),
+        (STATUS_OPEN, _('Open')),
+        (STATUS_IN_PROGRESS, _('In Progress')),
+        (STATUS_CLOSED, _('Closed')),
     )
 
     PRIORITY_LOW = 'LOW'
     PRIORITY_MEDIUM = 'MEDIUM'
     PRIORITY_HIGH = 'HIGH'
     PRIORITY_CHOICES = (
-        (PRIORITY_LOW, 'Low'),
-        (PRIORITY_MEDIUM, 'Medium'),
-        (PRIORITY_HIGH, 'High'),
+        (PRIORITY_LOW, _('Low')),
+        (PRIORITY_MEDIUM, _('Medium')),
+        (PRIORITY_HIGH, _('High')),
     )
 
     CATEGORY_ASSOCIACAO = 'ASSOCIACAO'
@@ -28,6 +28,7 @@ class Issue(models.Model):
     CATEGORY_BATERIA = 'BATERIA'
     CATEGORY_EVENTOS = 'EVENTOS'
     CATEGORY_LOJA = 'LOJA'
+    CATEGORY_SITE = 'SITE'
     CATEGORY_OUTRA = 'OUTRA'
     CATEGORY_CHOICES = (
         (CATEGORY_ASSOCIACAO, 'Associação'),
@@ -35,6 +36,7 @@ class Issue(models.Model):
         (CATEGORY_ESPORTES, 'Esportes'),
         (CATEGORY_EVENTOS, 'Eventos'),
         (CATEGORY_LOJA, 'Loja'),
+        (CATEGORY_SITE, 'Site'),
         (CATEGORY_OUTRA, 'Outra'),
     )
 

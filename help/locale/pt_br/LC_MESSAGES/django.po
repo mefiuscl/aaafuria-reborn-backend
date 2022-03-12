@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-11 11:54-0300\n"
+"POT-Creation-Date: 2022-03-12 11:43-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,51 +18,77 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: help/models.py:45 help/models.py:80
+#: help/models.py:12
+msgid "Open"
+msgstr ""
+
+#: help/models.py:13
+#, fuzzy
+#| msgid "Issue is in progress"
+msgid "In Progress"
+msgstr "Solicitação em andamento"
+
+#: help/models.py:14
+msgid "Closed"
+msgstr ""
+
+#: help/models.py:21
+msgid "Low"
+msgstr ""
+
+#: help/models.py:22
+msgid "Medium"
+msgstr ""
+
+#: help/models.py:23
+msgid "High"
+msgstr ""
+
+#: help/models.py:47 help/models.py:82
 msgid "author"
 msgstr "autor"
 
-#: help/models.py:47
+#: help/models.py:49
 msgid "title"
 msgstr "título"
 
-#: help/models.py:48 help/models.py:81
+#: help/models.py:50 help/models.py:83
 msgid "description"
 msgstr "descrição"
 
-#: help/models.py:50
+#: help/models.py:52
 msgid "status"
 msgstr ""
 
-#: help/models.py:52
+#: help/models.py:54
 msgid "priority"
 msgstr "prioridade"
 
-#: help/models.py:54
+#: help/models.py:56
 msgid "category"
 msgstr "categoria"
 
-#: help/models.py:56 help/models.py:83
+#: help/models.py:58 help/models.py:85
 msgid "created at"
 msgstr "criado em"
 
-#: help/models.py:58
+#: help/models.py:60
 msgid "updated at"
 msgstr "atualizado em"
 
-#: help/models.py:72 help/models.py:78
+#: help/models.py:74 help/models.py:80
 msgid "issue"
 msgstr "solicitação"
 
-#: help/models.py:73
+#: help/models.py:75
 msgid "issues"
 msgstr "solicitações"
 
-#: help/models.py:93
+#: help/models.py:95
 msgid "comment"
 msgstr "comentário"
 
-#: help/models.py:94
+#: help/models.py:96
 msgid "comments"
 msgstr "comentários"
 

@@ -1,18 +1,17 @@
 import requests
 import stripe
+from bank.models import Conta
 from decouple import config
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-
-from bank.models import Conta
 
 API_KEY = settings.STRIPE_API_KEY
 
 
 class Produto(models.Model):
     nome = models.CharField(max_length=100, verbose_name='nome do produto')
-    descricao = models.TextField()
+    descricao = models.TextField(blank=True)
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
     preco_staff = models.DecimalField(
