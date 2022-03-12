@@ -5,7 +5,6 @@ from decouple import config
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 API_KEY = settings.STRIPE_API_KEY
 
@@ -18,8 +17,7 @@ class Produto(models.Model):
     preco_staff = models.DecimalField(
         max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
-    imagem = models.ImageField(upload_to='produtos/', blank=True, null=True,
-                               help_text=_('Insert a image of the product. 450x450px.'))
+    imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
     has_variations = models.BooleanField(default=False)
     has_observacoes = models.BooleanField(default=False)
     is_hidden = models.BooleanField(default=False)
