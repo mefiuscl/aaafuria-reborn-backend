@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-12 11:43-0300\n"
+"POT-Creation-Date: 2022-03-12 11:47-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,29 +20,27 @@ msgstr ""
 
 #: help/models.py:12
 msgid "Open"
-msgstr ""
+msgstr "Aberto"
 
 #: help/models.py:13
-#, fuzzy
-#| msgid "Issue is in progress"
 msgid "In Progress"
 msgstr "Solicitação em andamento"
 
 #: help/models.py:14
 msgid "Closed"
-msgstr ""
+msgstr "Fechado"
 
 #: help/models.py:21
 msgid "Low"
-msgstr ""
+msgstr "Baixa"
 
 #: help/models.py:22
 msgid "Medium"
-msgstr ""
+msgstr "Média"
 
 #: help/models.py:23
 msgid "High"
-msgstr ""
+msgstr "Alta"
 
 #: help/models.py:47 help/models.py:82
 msgid "author"
