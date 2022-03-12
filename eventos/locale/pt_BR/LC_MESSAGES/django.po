@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-12 12:44-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: eventos/models.py:192
+msgid "Reservas esgotadas. Tente novamente em 1h."
+msgstr ""
+
+#: eventos/models.py:242
+msgid "Lote não iniciado."
+msgstr ""
+
+#: eventos/models.py:246
+msgid "Lote finalizado."
+msgstr ""
+
+#: eventos/models.py:248
+msgid "Lote não está ativo."
+msgstr ""
+
+#: eventos/schema.py:62 eventos/schema.py:105 eventos/schema.py:135
+#: eventos/schema.py:150 eventos/schema.py:163
+msgid "Unauthenticated."
+msgstr ""
+
+#: eventos/schema.py:109
+msgid "Unauthorized. Only staff members can invalidate ingressos."
+msgstr ""
+
+#: eventos/schema.py:118 eventos/schema.py:146 eventos/schema.py:159
+msgid "Ingresso not found."
+msgstr ""
+
+#: eventos/schema.py:139 eventos/schema.py:154
+msgid "Unauthorized. Only staff members can access ingressos."
+msgstr ""
