@@ -69,6 +69,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Translations
+/*.mo
+
 # Django stuff:
 
 # Flask stuff:
