@@ -161,9 +161,11 @@ class Query(graphene.ObjectType):
                 try:
                     issue = Issue.objects.get(pk=from_global_id(id)[1])
 
-                    if not info.context.user.is_staff and issue.author != info.context.user.socio:
-                        raise GraphQLError(
-                            _('You do not have permission to access this data'))
+
+                    if issue.author != info.context.user.socio:
+                        if not info.context.user.is_staff:
+                            raise GraphQLError(
+                                _('You do not have permission to access this data'))
                     else:
                         return issue
 
