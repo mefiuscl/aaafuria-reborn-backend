@@ -56,7 +56,7 @@ msgstr "descrição"
 
 #: help/models.py:52
 msgid "status"
-msgstr ""
+msgstr "status"
 
 #: help/models.py:54
 msgid "priority"
