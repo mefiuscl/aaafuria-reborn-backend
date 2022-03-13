@@ -1,10 +1,10 @@
-import requests
 import graphene
+import requests
 from core.models import Socio
 from decouple import config
+from django.utils import timezone
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-from django.utils import timezone
 
 from .models import Conta, Movimentacao, Resgate
 
@@ -39,33 +39,32 @@ class ResgatarIntermed(graphene.Mutation):
         socio: Socio = conta.socio
 
         if socio.is_socio and socio.data_fim:
-            response = requests.post(
-                url='https://cheersshop.com.br/socio/adicionar',
-                data={
-                    "nome": socio.nome,
-                    "email": socio.email,
-                    "telefone": socio.whatsapp,
-                    "matricula": socio.matricula,
-                    "observacao": "",
-                    "cpf": socio.cpf,
-                    "data_fim_plano": socio.data_fim,
-                    "vendedor": "1874"
-                },
-                headers={
-                    "Authorization": f"Bearer {config('CHEERS_TOKEN')}",
-                }
+            resgate, _ = Resgate.objects.get_or_create(
+                conta=conta,
+                descricao='Resgate desconto Intermed',
+                valor_calangos=900,
             )
+            resgate.resolver()
 
-            if response.status_code == 200:
-                resgate, _ = Resgate.objects.get_or_create(
-                    conta=conta,
-                    descricao='Resgate desconto Intermed',
-                    valor_calangos=900,
+            if resgate.resolvida:
+                requests.post(
+                    url='https://cheersshop.com.br/socio/adicionar',
+                    data={
+                        "nome": socio.nome,
+                        "email": socio.email,
+                        "telefone": socio.whatsapp,
+                        "matricula": socio.matricula,
+                        "observacao": "",
+                        "cpf": socio.cpf,
+                        "data_fim_plano": socio.data_fim,
+                        "vendedor": "1874"
+                    },
+                    headers={
+                        "Authorization": f"Bearer {config('CHEERS_TOKEN')}",
+                    }
                 )
-                resgate.resolver()
-                return ResgatarIntermed(ok=True)
-            else:
-                return ResgatarIntermed(ok=False)
+
+            return ResgatarIntermed(ok=True)
         else:
             return ResgatarIntermed(ok=False)
 
