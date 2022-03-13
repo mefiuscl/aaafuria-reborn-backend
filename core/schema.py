@@ -1,14 +1,14 @@
 import datetime
+
 import graphene
+from bank.models import Conta, Movimentacao
 from django.contrib.auth.models import User
+from django.utils import timezone
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-from django.utils import timezone
 from graphql import GraphQLError
 
-from bank.models import Conta, Movimentacao
-
-from .models import Socio, Pagamento, TipoPlano
+from .models import Pagamento, Socio, TipoPlano
 
 
 class UserType(DjangoObjectType):
@@ -206,13 +206,7 @@ class Query(graphene.ObjectType):
             return Exception('Não encontrado.')
 
     def resolve_socio_by_matricula(self, info, matricula=None):
-        if matricula:
-            try:
-                return Socio.objects.get(user__username=matricula)
-            except Socio.DoesNotExist:
-                raise GraphQLError('Matrícula não encontrada.')
-            except Exception as e:
-                raise GraphQLError(e)
+        return Socio.objects.get(user__username=matricula) if matricula else Socio.objects.none()
 
     def resolve_query_stripe_portal_url(self, info, **kwargs):
         if not info.context.user.is_authenticated:
