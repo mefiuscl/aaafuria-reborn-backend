@@ -161,7 +161,6 @@ class Query(graphene.ObjectType):
                 try:
                     issue = Issue.objects.get(pk=from_global_id(id)[1])
 
-
                     if issue.author != info.context.user.socio:
                         if not info.context.user.is_staff:
                             raise GraphQLError(
@@ -200,14 +199,15 @@ class Query(graphene.ObjectType):
 
     def resolve_socio_issues(self, info, **kwargs):
         if info.context.user.is_authenticated:
-            issue = Issue.objects.filter(author=info.context.user.socio)
+            issues = Issue.objects.filter(author=info.context.user.socio)
 
-            if issue.author.user != info.context.user:
-                if not info.context.user.is_staff:
-                    raise GraphQLError(
-                        _('You do not have permission to access this data'))
+            for issue in issues:
+                if issue.author.user != info.context.user:
+                    if not info.context.user.is_staff:
+                        raise GraphQLError(
+                            _('You do not have permission to access this data'))
 
-            return Issue.objects.filter(author=info.context.user.socio)
+            return issues
         else:
             raise GraphQLError(_('You must be logged in to access this data'))
 
