@@ -64,7 +64,9 @@ class ResgatarIntermed(graphene.Mutation):
                     }
                 )
 
-            return ResgatarIntermed(ok=True)
+                return ResgatarIntermed(ok=True)
+            else:
+                return ResgatarIntermed(ok=False)
         else:
             return ResgatarIntermed(ok=False)
 
