@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-12 12:44-0300\n"
+"POT-Creation-Date: 2022-03-13 11:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
 #: help/models.py:12
 msgid "Open"
 msgstr "Aberto"
@@ -89,35 +90,35 @@ msgstr "comentário"
 msgid "comments"
 msgstr "comentários"
 
-#: help/schema.py:58 help/schema.py:84 help/schema.py:108 help/schema.py:145
-#: help/schema.py:171 help/schema.py:183 help/schema.py:193 help/schema.py:203
+#: help/schema.py:62 help/schema.py:88 help/schema.py:112 help/schema.py:149
+#: help/schema.py:175 help/schema.py:187 help/schema.py:197 help/schema.py:214
 msgid "You must be logged in to access this data"
 msgstr "Você deve estar logado para acessar esses dados"
 
-#: help/schema.py:73 help/schema.py:99
+#: help/schema.py:77 help/schema.py:103
 msgid "You are not allowed to close this issue"
 msgstr "Você não tem permissão para fechar essa solicitação"
 
-#: help/schema.py:76
+#: help/schema.py:80
 msgid "Issue already opened"
 msgstr "Solictação já aberta"
 
-#: help/schema.py:78
+#: help/schema.py:82
 msgid "Issue is in progress"
 msgstr "Solicitação em andamento"
 
-#: help/schema.py:102
+#: help/schema.py:106
 msgid "Issue already closed"
 msgstr "Solicitação já fechada"
 
-#: help/schema.py:125
+#: help/schema.py:129
 msgid "This issue is closed"
 msgstr "Esta solicitação está fechada"
 
-#: help/schema.py:162 help/schema.py:189 help/schema.py:199
+#: help/schema.py:170 help/schema.py:193 help/schema.py:211
 msgid "You do not have permission to access this data"
 msgstr "Você não tem permissão para acessar esses dados"
 
-#: help/schema.py:167 help/schema.py:169 help/schema.py:179 help/schema.py:181
+#: help/schema.py:173 help/schema.py:183 help/schema.py:185
 msgid "Issue not found"
 msgstr "Solicitação não encontrada"

@@ -18,10 +18,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: files/schema.py:33 files/schema.py:35 files/schema.py:67
-msgid "File not found"
-msgstr "Arquivo não encontrado"
+#: reborn/validators.py:12
+#, python-format
+msgid "This password must contain exactly %(length)d numbers."
+msgstr "Esta senha deve conter exatamente %(length)d números."
 
-#: files/schema.py:37 files/schema.py:43 files/schema.py:49 files/schema.py:69
-msgid "You must be logged in to access this data"
-msgstr "Você deve estar logado para acessar esses dados"
+#: reborn/validators.py:19
+#, python-format
+msgid "Your password must contain exactly %(length)d numbers."
+msgstr "Sua senha deve conter exatamente %(length)d números."
+
+#: reborn/validators.py:28
+msgid "This password must contain only numbers."
+msgstr "Esta senha deve conter apenas números."
+
+#: reborn/validators.py:34
+msgid "Your password must contain only numbers."
+msgstr "Sua senha deve conter apenas números."

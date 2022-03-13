@@ -157,20 +157,19 @@ class Query(graphene.ObjectType):
 
     def resolve_issue(self, info, id, **kwargs):
         if info.context.user.is_authenticated:
-            if id is not None:
-                try:
-                    issue = Issue.objects.get(pk=from_global_id(id)[1])
+            try:
+                issue = Issue.objects.get(pk=from_global_id(id)[1])
 
-                    if issue.author != info.context.user.socio:
-                        if not info.context.user.is_staff:
-                            raise GraphQLError(
-                                _('You do not have permission to access this data'))
-                    else:
+                if info.context.user.is_staff:
+                    return issue
+                else:
+                    if issue.author.user == info.context.user:
                         return issue
+                    else:
+                        raise GraphQLError(
+                            _('You do not have permission to access this data'))
 
-                except Issue.DoesNotExist:
-                    raise GraphQLError(_('Issue not found'))
-            else:
+            except Issue.DoesNotExist:
                 raise GraphQLError(_('Issue not found'))
         else:
             raise GraphQLError(_('You must be logged in to access this data'))
@@ -201,13 +200,16 @@ class Query(graphene.ObjectType):
         if info.context.user.is_authenticated:
             issues = Issue.objects.filter(author=info.context.user.socio)
 
-            for issue in issues:
-                if issue.author.user != info.context.user:
-                    if not info.context.user.is_staff:
+            if info.context.user.is_staff:
+                return issues
+            else:
+                for issue in issues:
+                    if issue.author.user == info.context.user:
+                        return issues
+                    else:
                         raise GraphQLError(
                             _('You do not have permission to access this data'))
 
-            return issues
         else:
             raise GraphQLError(_('You must be logged in to access this data'))
 
