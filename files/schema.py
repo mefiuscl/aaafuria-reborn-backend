@@ -1,7 +1,7 @@
 import graphene
+from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
-from django.utils.translation import gettext as _
 from graphql_relay import from_global_id
 
 from files.models import File
@@ -43,7 +43,7 @@ class Query(graphene.ObjectType):
             return GraphQLError(_('You must be logged in to access this data'))
 
     def resolve_unread_files(self, info):
-        if info.context.user.is_authenticated:
+        if info.context.user.is_authenticated and info.context.user.socio:
             return File.objects.exclude(viewers=info.context.user.socio)
         else:
             return GraphQLError(_('You must be logged in to access this data'))
