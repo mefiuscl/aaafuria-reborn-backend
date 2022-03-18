@@ -5,6 +5,9 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+    replaces = [('eventos', '0001_initial_squashed_0009_auto_20220308_2155_squashed_0002_ingressotransfer'),
+                ('eventos', '0002_auto_20220317_2230')]
+
     dependencies = [
         ('core', '0001_initial'),
     ]
