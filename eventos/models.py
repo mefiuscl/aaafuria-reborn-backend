@@ -120,15 +120,15 @@ class Lote(models.Model):
     def clean(self):
         if self.data_fim < self.data_inicio:
             raise ValidationError(
-                'A data de início não pode ser maior que a data de fim')
+                'Start date must be before end date.')
 
         if self.data_inicio > self.evento.data_inicio:
             raise ValidationError(
-                'A data de início não pode ser maior que a data de início do evento')
+                'Start date must be before event start date.')
 
         if self.data_fim > self.evento.data_fim:
             raise ValidationError(
-                'A data de fim não pode ser maior que a data de fim do evento')
+                'End date must be before event end date.')
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -189,7 +189,7 @@ class Ingresso(models.Model):
             else:
                 self.delete()
                 raise ValidationError(
-                    _('Reservas esgotadas. Tente novamente em 1h.'))
+                    _('Sold off. Try again in 1h.'))
 
     def create_stripe_checkout(self, api_key=settings.STRIPE_API_KEY):
         if self.status == 'pendente' or self.status == 'expirado':
@@ -239,14 +239,32 @@ class Ingresso(models.Model):
 
     def validate_lote(self):
         if self.lote.data_inicio > timezone.now():
-            raise ValidationError(_('Lote não iniciado.'))
+            raise ValidationError(_('Lote is not started.'))
         if self.lote.data_fim < timezone.now():
             self.lote.ativo = False
             self.lote.save()
-            raise ValidationError(_('Lote finalizado.'))
+            raise ValidationError(_('Lote has ended.'))
         if not self.lote.ativo:
-            raise ValidationError(_('Lote não está ativo.'))
+            raise ValidationError(_('Lote is inactive.'))
+
+    def transfer(self, new_owner):
+        self.participante = new_owner
+        self.save()
 
     def save(self, *args, **kwargs):
         self.set_valor()
         super().save(*args, **kwargs)
+
+
+class IngressoTransfer(models.Model):
+    ingresso: Ingresso = models.ForeignKey(
+        Ingresso, on_delete=models.CASCADE, related_name=_('transfers'))
+    previous_owner: Participante = models.ForeignKey(
+        Participante, on_delete=models.CASCADE, related_name=_('transfered_ingressos'))
+    current_owner: Participante = models.ForeignKey(
+        Participante, on_delete=models.CASCADE, related_name=_('received_ingressos'))
+    transfer_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('ingresso transfer')
+        verbose_name_plural = _('ingressos transfers')

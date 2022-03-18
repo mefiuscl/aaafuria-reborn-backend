@@ -1,7 +1,8 @@
 from django.contrib import admin
-import eventos.models as eventos_models
 from django.urls import reverse
 from django.utils.html import format_html
+
+import eventos.models as eventos_models
 
 
 def linkify(field_name):
@@ -66,3 +67,8 @@ class IngressoAdmin(admin.ModelAdmin):
 
     def categoria(self, obj):
         return obj.participante.get_categoria_display()
+
+
+@admin.register(eventos_models.IngressoTransfer)
+class IngressoTransferAdmin(admin.ModelAdmin):
+    pass

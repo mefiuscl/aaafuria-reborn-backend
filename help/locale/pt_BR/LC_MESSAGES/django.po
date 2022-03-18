@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-13 11:54-0300\n"
+"POT-Creation-Date: 2022-03-17 22:09-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,7 +91,7 @@ msgid "comments"
 msgstr "comentários"
 
 #: help/schema.py:62 help/schema.py:88 help/schema.py:112 help/schema.py:149
-#: help/schema.py:175 help/schema.py:187 help/schema.py:197 help/schema.py:214
+#: help/schema.py:175 help/schema.py:187 help/schema.py:197 help/schema.py:203
 msgid "You must be logged in to access this data"
 msgstr "Você deve estar logado para acessar esses dados"
 
@@ -115,7 +115,7 @@ msgstr "Solicitação já fechada"
 msgid "This issue is closed"
 msgstr "Esta solicitação está fechada"
 
-#: help/schema.py:170 help/schema.py:193 help/schema.py:211
+#: help/schema.py:170 help/schema.py:193
 msgid "You do not have permission to access this data"
 msgstr "Você não tem permissão para acessar esses dados"
 

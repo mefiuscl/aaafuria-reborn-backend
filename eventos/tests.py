@@ -214,6 +214,18 @@ class IngressoModelTest(TestCase):
             rg='123456789',
             data_nascimento='2000-01-01',
             stripe_customer_id='cus_00000000',).save()
+        Socio(
+            user=User.objects.create_user(
+                username='11111111',
+                password='1111111'
+            ),
+            nome='Maria de Souza',
+            apelido='Maria',
+            whatsapp='(86) 9 9123-4567',
+            cpf='123.456.789-00',
+            rg='123456789',
+            data_nascimento='2000-01-01',
+            stripe_customer_id='cus_11111111',).save()
 
     def test_criar_ingresso(self):
         print('test_criar_ingresso')
@@ -470,3 +482,48 @@ class IngressoModelTest(TestCase):
         self.assertEqual(ingresso.status, 'pago')
         self.assertEqual(ingresso.lote.quantidade_restante, 1)
         self.assertEqual(ingresso.lote.evento.participantes.count(), 1)
+
+    def test_ingresso_transfer(self):
+        print('test_ingresso_transfer')
+        evento = Evento(nome='Evento Teste',
+                        data_inicio=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)), data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)))
+        evento.save()
+
+        lote = Lote(
+            evento=evento,
+            nome='Lote Teste',
+            preco=100,
+            preco_socio=70,
+            preco_convidado=130,
+            quantidade_restante=2,
+            data_inicio=timezone.make_aware(
+                datetime.datetime(2020, 1, 1, 15, 0)),
+            data_fim=timezone.make_aware(datetime.datetime(2020, 1, 1, 15, 0)),
+        )
+
+        lote.save()
+
+        participante_1 = Participante(
+            socio=Socio.objects.get(matricula='00000000'),)
+
+        participante_1.save()
+
+        ingresso: Ingresso = Lote.objects.get(nome='Lote Teste').ingresso_set.create(
+            participante=participante_1,
+            lote=lote,
+        )
+
+        participante_2 = Participante(
+            socio=Socio.objects.get(matricula='11111111'),)
+
+        participante_2.save()
+
+        ingresso.transfer(participante_2)
+        ingresso.transfers.create(
+            previous_owner=participante_1,
+            current_owner=participante_2,
+            transfer_date=timezone.now(),
+        )
+
+        self.assertEqual(ingresso.participante, participante_2)
+        self.assertEqual(ingresso.transfers.count(), 1)

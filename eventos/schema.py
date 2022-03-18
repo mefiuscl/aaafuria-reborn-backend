@@ -1,4 +1,7 @@
 import graphene
+from bank.models import Conta
+from core.models import Socio
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
@@ -94,6 +97,63 @@ class NovoIngresso(graphene.Mutation):
             return NovoIngresso(ok=True, ingresso=ingresso)
 
 
+class TransferIngresso(graphene.Mutation):
+    class Arguments:
+        ingresso_id = graphene.ID(required=True)
+        new_owner_matricula = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+    ingresso = graphene.Field(IngressoRelay)
+
+    def mutate(self, info, ingresso_id, new_owner_matricula):
+        ingresso_transfer_cost = 90  # C$
+        socio_authenticated = info.context.user.socio
+
+        if not info.context.user.is_authenticated:
+            raise GraphQLError(_('Unauthenticated.'))
+
+        try:
+            new_owner = Socio.objects.get(matricula=new_owner_matricula)
+            ingresso = Ingresso.objects.get(id=from_global_id(ingresso_id)[1])
+            previous_owner = Participante.objects.get(
+                socio=ingresso.participante.socio)
+        except Socio.DoesNotExist:
+            raise GraphQLError(_('Sócio not found.'))
+        except Participante.DoesNotExist:
+            raise GraphQLError(_('Participante not found.'))
+        except Ingresso.DoesNotExist:
+            raise GraphQLError(_('Ingresso not found.'))
+
+        new_owner, created = Participante.objects.get_or_create(
+            socio=new_owner
+        )
+
+        if previous_owner == new_owner:
+            raise GraphQLError(
+                _('You cannot transfer an ingresso to yourself.'))
+
+        if socio_authenticated.is_socio:
+
+            conta, created = Conta.objects.get_or_create(
+                socio=socio_authenticated)
+
+            if conta.calangos >= ingresso_transfer_cost:
+                conta.calangos -= ingresso_transfer_cost
+                conta.save()
+            else:
+                raise GraphQLError(_('Not enough Calangos.'))
+
+            ingresso.transfer(new_owner)
+            ingresso.transfers.create(
+                ingresso=self,
+                previous_owner=previous_owner,
+                current_owner=new_owner,
+                transfer_date=timezone.now())
+            return TransferIngresso(ok=True, ingresso=ingresso)
+        else:
+            raise GraphQLError(_('Not a Sócio.'))
+
+
 class InvalidarIngresso(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
@@ -168,3 +228,4 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     novo_ingresso = NovoIngresso.Field()
     invalidar_ingresso = InvalidarIngresso.Field()
+    transfer_ingresso = TransferIngresso.Field()
