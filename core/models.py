@@ -214,7 +214,7 @@ class Pagamento(models.Model):
         stripe.api_key = api_key
         checkout_session = stripe.checkout.Session.create(
             customer=self.socio.stripe_customer_id,
-            success_url="https://aaafuria.site/areasocio",
+            success_url="https://aaafuria.site/pagamento-confirmado",
             cancel_url="https://aaafuria.site/sejasocio",
             line_items=[
                 {

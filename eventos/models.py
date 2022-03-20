@@ -196,7 +196,7 @@ class Ingresso(models.Model):
             self.set_valor()
             stripe.api_key = api_key
             session = stripe.checkout.Session.create(
-                success_url='https://aaafuria.site/',
+                success_url='https://aaafuria.site/pagamento-confirmado',
                 cancel_url='https://aaafuria.site/eventos',
                 mode='payment',
                 line_items=[

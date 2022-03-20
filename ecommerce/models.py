@@ -162,7 +162,7 @@ class Carrinho(models.Model):
     def create_stripe_checkout_session(self, api_key=API_KEY):
         stripe.api_key = api_key
         session = stripe.checkout.Session.create(
-            success_url='https://aaafuria.site/',
+            success_url='https://aaafuria.site/pagamento-confirmado',
             cancel_url='https://aaafuria.site/carrinho',
             mode='payment',
             line_items=[
