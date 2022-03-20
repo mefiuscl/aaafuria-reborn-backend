@@ -2,9 +2,10 @@ import graphene
 import requests
 from core.models import Socio
 from decouple import config
-from django.utils import timezone
+from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql import GraphQLError
 
 from .models import Conta, Movimentacao, Resgate
 
@@ -35,6 +36,8 @@ class ResgatarIntermed(graphene.Mutation):
     ok = graphene.Boolean()
 
     def mutate(self, info):
+        if not info.context.user.is_authenticated:
+            raise GraphQLError(_('Unauthenticated.'))
         conta = Conta.objects.get(socio__user=info.context.user)
         socio: Socio = conta.socio
 
