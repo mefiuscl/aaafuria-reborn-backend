@@ -66,7 +66,9 @@ class SocioAdmin(admin.ModelAdmin):
 
 @admin.register(core_models.Pagamento)
 class PagamentoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['socio', 'tipo_plano', 'status', 'data_pagamento']
+    search_fields = ['socio__matricula', 'socio__email', 'socio__nome']
+    list_filter = ['tipo_plano']
 
 
 @admin.register(core_models.TipoPlano)

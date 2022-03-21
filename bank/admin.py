@@ -12,9 +12,12 @@ class ContaAdmin(admin.ModelAdmin):
 
 @admin.register(Movimentacao)
 class MovimentacaoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['descricao', 'conta_origem',
+                    'conta_destino',  'valor']
+    search_fields = ['descricao', 'conta_origem__socio__nome',
+                     'conta_origem__socio__matricula', 'conta_origem__socio__email']
 
 
-@admin.register(Resgate)
+@ admin.register(Resgate)
 class ResgateAdmin(admin.ModelAdmin):
     pass
