@@ -14,6 +14,7 @@ class Produto(models.Model):
     descricao = models.TextField(blank=True)
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
+    preco_atleta = models.DecimalField(max_digits=8, decimal_places=2)
     preco_staff = models.DecimalField(
         max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
@@ -36,6 +37,7 @@ class VariacaoProduto(models.Model):
     nome = models.CharField(max_length=100, verbose_name='variação')
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
+    preco_atleta = models.DecimalField(max_digits=8, decimal_places=2)
     preco_staff = models.DecimalField(
         max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
@@ -62,6 +64,8 @@ class ProdutoPedido(models.Model):
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     preco_socio = models.DecimalField(
         max_digits=8, decimal_places=2, default=0)
+    preco_atleta = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0)
     preco_staff = models.DecimalField(
         max_digits=8, decimal_places=2, default=0)
 
@@ -74,10 +78,12 @@ class ProdutoPedido(models.Model):
         if self.variacao:
             self.preco = self.variacao.preco
             self.preco_socio = self.variacao.preco_socio
+            self.preco_atleta = self.variacao.preco_atleta
             self.preco_staff = self.variacao.preco_staff
         else:
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
+            self.preco_atleta = self.produto.preco_atleta
             self.preco_staff = self.produto.preco_staff
 
     def get_price(self):
@@ -85,10 +91,15 @@ class ProdutoPedido(models.Model):
             self.total = self.preco_staff * self.quantidade
             self.save()
             return self.preco_staff
-        if self.user.socio.is_socio:
-            self.total = self.preco_socio * self.quantidade
-            self.save()
-            return self.preco_socio
+        elif self.user.socio.is_socio:
+            if self.user.socio.is_atleta:
+                self.total = self.preco_atleta * self.quantidade
+                self.save()
+                return self.preco_atleta
+            else:
+                self.total = self.preco_socio * self.quantidade
+                self.save()
+                return self.preco_socio
         else:
             self.total = self.preco * self.quantidade
             self.save()
