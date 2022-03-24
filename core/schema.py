@@ -4,6 +4,7 @@ import graphene
 from bank.models import Conta, Movimentacao
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
@@ -45,6 +46,34 @@ class SocioRelay(DjangoObjectType):
 
     def resolve_avatar(self, info, *args, **kwargs):
         return info.context.build_absolute_uri(self.avatar.url)
+
+
+class VerifyEmail(graphene.Mutation):
+    class Arguments:
+        email = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, email):
+        if not info.context.user or not info.context.user.is_authenticated:
+            raise GraphQLError(_('Unauthenticated.'))
+        if not email:
+            raise GraphQLError(_('Email is required'))
+
+        user = info.context.user
+
+        if user.socio.verified_email:
+            return VerifyEmail(ok=False)
+
+        user.socio.verified_email = True
+
+        user.email = email
+        user.socio.email = email
+
+        user.save()
+        user.socio.save()
+
+        return VerifyEmail(ok=True)
 
 
 class NovoUser(graphene.Mutation):
@@ -222,3 +251,4 @@ class Mutation(graphene.ObjectType):
     novo_user = NovoUser.Field()
     novo_pagamento = NovoPagamento.Field()
     associacao_manual = AssociacaoManual.Field()
+    verify_email = VerifyEmail.Field()

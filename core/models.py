@@ -24,7 +24,8 @@ class Socio(models.Model):
     matricula = models.CharField(max_length=8, default="00000000")
     turma = models.CharField(max_length=10, default="MED: 00")
     nome = models.CharField(max_length=100)
-    email = models.CharField(max_length=100, null=True, blank=True)
+    email = models.EmailField(max_length=254, null=True, blank=True)
+    verified_email = models.BooleanField(default=False)
     apelido = models.CharField(max_length=100, null=True, blank=True)
     avatar = models.ImageField(
         upload_to=avatar_dir, null=True, blank=True)
