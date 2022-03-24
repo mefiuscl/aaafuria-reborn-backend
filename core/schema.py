@@ -111,6 +111,7 @@ class NovoUser(graphene.Mutation):
             username=matricula, password=pin, email=email)
         user.save()
         socio = Socio(user=user, turma=turma, nome=nome, cpf=cpf,
+                      email=email, verified_email=True,
                       data_nascimento=data_nascimento, whatsapp=whatsapp, rg=rg, apelido=apelido)
         socio.save()
 
