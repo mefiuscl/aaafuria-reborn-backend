@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql import GraphQLError
 from graphql_relay.node.node import from_global_id
 
 from .models import (Carrinho, Pagamento, Produto, ProdutoPedido,
@@ -150,7 +151,7 @@ class AdicionarAoCarrinho(graphene.Mutation):
     def mutate(self, info, product_id, quantidade, variacao_id=None, observacoes=None):
         try:
             if not info.context.user.is_authenticated:
-                raise Exception('Usuário não autenticado.')
+                raise GraphQLError(_('Unauthenticated.'))
 
             user = info.context.user
             produto = Produto.objects.get(id=from_global_id(product_id)[1])
@@ -175,8 +176,6 @@ class AdicionarAoCarrinho(graphene.Mutation):
             return AdicionarAoCarrinho(ok=ok, carrinho=carrinho)
         except Produto.DoesNotExist:
             return Exception('Produto não encontrado.')
-        except Carrinho.DoesNotExist:
-            return Exception('Carrinho não encontrado.')
         except Exception as e:
             return Exception(e)
 
@@ -190,7 +189,7 @@ class RemoverDoCarrinho(graphene.Mutation):
     def mutate(self, info, produto_pedido_id):
         try:
             if not info.context.user.is_authenticated:
-                raise Exception('Usuário não autenticado')
+                raise GraphQLError('Unauthenticated.')
 
             produto_pedido = ProdutoPedido.objects.get(
                 id=from_global_id(produto_pedido_id)[1])
