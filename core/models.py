@@ -138,11 +138,9 @@ class Socio(models.Model):
     @property
     def is_atleta(self):
         if not self.competidor:
-            self.competidor.create(socio=self)
-
+            return False
         if self.competidor.modalidades.count() > 0:
             return True
-
         return False
 
     def adicionar_coupom_cheers(self):
