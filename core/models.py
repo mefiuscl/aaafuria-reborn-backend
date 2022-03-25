@@ -137,7 +137,10 @@ class Socio(models.Model):
 
     @property
     def is_atleta(self):
-        if self.competidor and self.competidor.modalidades.count() > 0:
+        if not self.competidor:
+            self.competidor.create(socio=self)
+
+        if self.competidor.modalidades.count() > 0:
             return True
 
         return False
