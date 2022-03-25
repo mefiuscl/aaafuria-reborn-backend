@@ -1,5 +1,6 @@
 import requests
 import stripe
+from atividades.models import Competidor
 from decouple import config
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -137,7 +138,8 @@ class Socio(models.Model):
 
     @property
     def is_atleta(self):
-        self.competidor.create(socio=self)
+        if not Competidor.objects.filter(socio=self).exists():
+            return False
         if self.competidor.modalidades.count() > 0:
             return True
         return False
