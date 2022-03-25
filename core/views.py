@@ -5,6 +5,7 @@ import stripe
 from bank.models import Conta
 from django.conf import settings
 from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from core.models import Pagamento, Socio
@@ -203,6 +204,29 @@ def core_webhook(request):
             socio.is_socio = False
             socio.data_fim = timezone.now()
             socio.save()
+        except Exception as e:
+            return HttpResponse(content=e, status=400)
+    if event['type'] == 'invoice.paid':
+        try:
+            invoice = event['data']['object']
+
+            if invoice['billing_reason'] == 'subscription_cycle':
+                customer_id = invoice['customer']
+                subscription_id = invoice['subscription']
+
+                stripe.api_key = settings.STRIPE_API_KEY
+                subscription = stripe.Subscription.retrieve(subscription_id)
+
+                if subscription:
+                    socio = get_object_or_404(
+                        Socio, stripe_customer_id=customer_id)
+
+                    current_period_end = datetime.fromtimestamp(
+                        subscription['current_period_end'])
+                    socio.data_fim = current_period_end
+
+                    socio.save()
+
         except Exception as e:
             return HttpResponse(content=e, status=400)
 
