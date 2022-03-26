@@ -1,6 +1,5 @@
-from django.db import models
-
 from core.models import Socio
+from django.db import models
 
 
 class File(models.Model):
@@ -8,6 +7,7 @@ class File(models.Model):
         'core.Socio', on_delete=models.CASCADE, blank=True, null=True)
     title: str = models.CharField(max_length=100, default='Untitled')
     content: str = models.TextField()
+    url = models.URLField(blank=True, null=True)
     file = models.FileField(upload_to='files/', blank=True, null=True)
     viewers = models.ManyToManyField(
         'core.Socio', related_name='files_viwers', blank=True)
