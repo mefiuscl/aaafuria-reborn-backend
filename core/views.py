@@ -100,8 +100,6 @@ def core_webhook(request):
 
             except Exception as e:
                 return HttpResponse(content=e, status=400)
-        else:
-            return HttpResponse(status=204)
 
     if event['type'] == 'checkout.session.async_payment_failed':
         checkout_session = event['data']['object']
@@ -120,8 +118,6 @@ def core_webhook(request):
 
             except Exception as e:
                 return HttpResponse(content=e, status=400)
-        else:
-            return HttpResponse(status=204)
 
     if event['type'] == 'checkout.session.async_payment_succeeded':
         checkout_session = event['data']['object']
@@ -188,10 +184,10 @@ def core_webhook(request):
                         ((checkout_session['amount_total'] / 100) // 5 * 50))
                 conta.save()
 
+                return HttpResponse(status=200)
+
             except Exception as e:
                 return HttpResponse(content=e, status=400)
-        else:
-            return HttpResponse(status=204)
 
     # Handle the customer.subscription.deleted event
     if event['type'] == 'customer.subscription.deleted':
@@ -204,6 +200,7 @@ def core_webhook(request):
             socio.is_socio = False
             socio.data_fim = timezone.now()
             socio.save()
+            return HttpResponse(status=200)
         except Exception as e:
             return HttpResponse(content=e, status=400)
     if event['type'] == 'invoice.paid':
@@ -227,7 +224,9 @@ def core_webhook(request):
 
                     socio.save()
 
+            return HttpResponse(status=200)
+
         except Exception as e:
             return HttpResponse(content=e, status=400)
 
-    return HttpResponse(status=200)
+    return HttpResponse(status=204)
