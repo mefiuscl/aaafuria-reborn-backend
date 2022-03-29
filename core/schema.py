@@ -119,8 +119,8 @@ class NovoUser(graphene.Mutation):
             'socio': socio,
         }
 
-        socio.notificar('email', 'Bem vind@ à plataforma de sócios @aaafuria!',
-                        'novo_user.txt', 'novo_user.html', context)
+        socio.notificar(metodo='email', subject='Bem vind@ à plataforma de sócios @aaafuria!',
+                        text_template='novo_user.txt', html_template='novo_user.html', context=context)
         ok = True
         return NovoUser(socio=socio, ok=ok)
 

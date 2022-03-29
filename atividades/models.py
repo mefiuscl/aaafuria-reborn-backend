@@ -1,6 +1,6 @@
+from babel.dates import format_datetime, get_timezone
 from django.db import models
 from django.utils import timezone
-from babel.dates import format_datetime, get_timezone
 
 CATEGORIA_ATIVIDADE = (
     ('Diretoria', 'Diretoria'),
@@ -66,6 +66,7 @@ class Programacao(models.Model):
         max_length=150, blank=True, null=True)
 
     estado = models.CharField(max_length=20, default='Agendado')
+    notify = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'programação'
@@ -99,6 +100,20 @@ class Programacao(models.Model):
         self.save()
         return self.estado
 
+    def notificar_competidores(self):
+        if self.notify:
+            competidores = self.modalidade.competidores.all()
+
+            for competidor in competidores:
+                context = {
+                    'programacao': self,
+                }
+
+                competidor.socio.notificar(
+                    'sms', text_template='atividades_sms_notification.txt', context=context)
+
+            self.notify = False
+
     def notificar_confirmacao(self):
         self.save()
 
@@ -113,3 +128,7 @@ class Programacao(models.Model):
 
         self.modalidade.responsavel.notificar('email', subject,
                                               'programacao_confirmada.txt', 'programacao_confirmada.html', context)
+
+    def save(self, *args, **kwargs):
+        self.notificar_competidores()
+        super().save(*args, **kwargs)

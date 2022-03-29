@@ -1,0 +1,12 @@
+[@aaafuria] NOVA ATIVIDADE
+
+Eai {{ socio.apelido }}, se liga na programação!
+
+Modalidade: {{ programacao.modalidade.nome }}
+Data e hora: {{ programacao.data_hora }}
+Local: {{ programacao.local }}
+
+{{ programacao.descricao }}
+
+Confirme sua presença em: https://aaafuria.site/atividades
+_Esta é uma mensagem automática, não responda._

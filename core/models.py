@@ -92,7 +92,7 @@ class Socio(models.Model):
                 )
                 self.stripe_customer_id = customer.id
 
-    def notificar(self, metodo, subject, text_template, html_template, context):
+    def notificar(self, metodo, text_template, subject=None, context=None, html_template=None):
         def email():
             plaintext = get_template(text_template)
             htmly = get_template(html_template)
@@ -111,7 +111,24 @@ class Socio(models.Model):
             return msg.send(fail_silently=False)
 
         def sms():
-            return 'Enviando sms...'
+            from twilio.rest import Client
+            account_sid = config("TWILIO_ACCOUNT_SID")
+            auth_token = config("TWILIO_AUTH_TOKEN")
+            client = Client(account_sid, auth_token)
+
+            context.update({'socio': self})
+
+            plaintext = get_template(text_template)
+            text_content = plaintext.render(context)
+
+            message = client.messages \
+                            .create(
+                                body=text_content,
+                                from_='+17655772714',
+                                to=f'+55{self.whatsapp}'
+                            )
+
+            return message.sid
 
         def whatsapp():
             return 'Enviando whatsapp...'
