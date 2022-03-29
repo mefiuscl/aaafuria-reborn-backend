@@ -9,4 +9,3 @@ Local: {{ programacao.local }}
 {{ programacao.descricao }}
 
 Confirme sua presença em: https://aaafuria.site/atividades
-_Esta é uma mensagem automática, não responda._
