@@ -108,7 +108,7 @@ class Socio(models.Model):
             msg.attach_alternative(
                 html_content, "text/html")
 
-            return msg.send(fail_silently=False)
+            msg.send(fail_silently=False)
 
         def sms():
             from twilio.rest import Client
