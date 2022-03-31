@@ -4,6 +4,7 @@ from core.models import Socio
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
@@ -154,11 +155,16 @@ class AdicionarAoCarrinho(graphene.Mutation):
                 raise GraphQLError(_('Unauthenticated.'))
 
             user = info.context.user
-            produto = Produto.objects.get(id=from_global_id(product_id)[1])
+            produto: Produto = Produto.objects.get(
+                id=from_global_id(product_id)[1])
+
+            if produto.exclusivo_competidor and not user.socio.is_atleta:
+                raise GraphQLError(_('Produto exclusivo!'))
+
             variacao = VariacaoProduto.objects.get(
                 id=from_global_id(variacao_id)[1], produto=produto) if variacao_id else None
 
-            carrinho, _ = Carrinho.objects.get_or_create(
+            carrinho, created = Carrinho.objects.get_or_create(
                 user=user, ordered=False)
 
             produto_pedido, created = ProdutoPedido.objects.get_or_create(
