@@ -1,6 +1,8 @@
 from babel.dates import format_datetime, get_timezone
 from django.db import models
+from django.forms import ValidationError
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 CATEGORIA_ATIVIDADE = (
     ('Diretoria', 'Diretoria'),
@@ -42,8 +44,16 @@ class Modalidade(models.Model):
     def __str__(self):
         return self.nome
 
+    def validate_competidor(self):
+        for competidor in self.competidores.all():
+            if not competidor.socio.is_socio:
+                raise ValidationError(
+                    _(f'{competidor.socio.matricula} is not Socio.'))
+
     # Define o usuário da requisição como responsavel
+
     def save(self, *args, **kwargs):
+        self.validate_competidor()
         super().save(*args, **kwargs)
 
 

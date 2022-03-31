@@ -7,8 +7,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.dispatch import receiver
 from django.forms import ValidationError
-from django.template import Context
-from django.template.loader import get_template, render_to_string
+from django.template.loader import get_template
 from django.utils import timezone
 
 
