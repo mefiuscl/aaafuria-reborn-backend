@@ -52,7 +52,6 @@ class Migration(migrations.Migration):
                 ('has_observacoes', models.BooleanField(default=False)),
                 ('preco_atleta', models.DecimalField(
                     decimal_places=2, max_digits=8)),
-                ('exclusivo_competidor', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
