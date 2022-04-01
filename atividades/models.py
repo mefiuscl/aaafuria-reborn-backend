@@ -50,10 +50,8 @@ class Modalidade(models.Model):
                 raise ValidationError(
                     _(f'{competidor.socio.matricula} is not Socio.'))
 
-    # Define o usuário da requisição como responsavel
-
     def save(self, *args, **kwargs):
-        self.validate_competidor()
+        # self.validate_competidor()
         super().save(*args, **kwargs)
 
 
