@@ -1,10 +1,10 @@
-[@aaafuria] NOVA ATIVIDADE
+🟢 *[@aaafuria] NOVA ATIVIDADE* 🟢
 
-Eai {{ socio.apelido }}, se liga na programação!
+_Eai *{{ socio.apelido }}*, se liga na programação!_
 
-Modalidade: {{ programacao.modalidade.nome }}
-Data e hora: {{ programacao.data_hora }}
-Local: {{ programacao.local }}
+⚽ 🥁 Modalidade: {{ programacao.modalidade.nome }}
+📅 Data e hora: {{ programacao.data_hora }}
+📍 Local: {{ programacao.local }}
 
 {{ programacao.descricao }}
 
