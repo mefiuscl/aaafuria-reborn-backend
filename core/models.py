@@ -126,14 +126,8 @@ class Socio(models.Model):
                     from_='+17655772714',
                     to=f'+55{self.whatsapp}'
                 )
-            message_wpp = client.messages \
-                .create(
-                    body=text_content,
-                    from_='whatsapp:+14155238886',
-                    to=f'whatsapp:+55{self.whatsapp[:2] + self.whatsapp[3:]}'
-                )
 
-            return message_sms.sid, message_wpp.sid
+            return message_sms.sid
 
         def whatsapp():
             return 'Enviando whatsapp...'
