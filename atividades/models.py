@@ -120,6 +120,9 @@ class Programacao(models.Model):
                 competidor.socio.notificar(
                     'sms', text_template='atividades_sms_notification.txt', context=context)
 
+                competidor.socio.notificar(
+                    'whatsapp', text_template='atividades_sms_notification.txt', context=context)
+
             self.notify = False
 
     def notificar_confirmacao(self):

@@ -120,17 +120,33 @@ class Socio(models.Model):
             plaintext = get_template(text_template)
             text_content = plaintext.render(context)
 
-            message_sms = client.messages \
-                .create(
-                    body=text_content,
-                    from_='+17655772714',
-                    to=f'+55{self.whatsapp}'
-                )
+            message_sms = client.messages.create(
+                body=text_content,
+                from_='+17655772714',
+                to=f'+55{self.whatsapp}'
+            )
 
             return message_sms.sid
 
         def whatsapp():
-            return 'Enviando whatsapp...'
+            from twilio.rest import Client
+            account_sid = config("TWILIO_ACCOUNT_SID")
+            auth_token = config("TWILIO_AUTH_TOKEN")
+            client = Client(account_sid, auth_token)
+
+            context.update({'socio': self})
+
+            plaintext = get_template(text_template)
+            text_content = plaintext.render(context)
+
+            message_wpp = client.messages \
+                .create(
+                    body=text_content,
+                    from_='whatsapp:+14155238886',
+                    to=f'whatsapp:+55{self.whatsapp[:2] + self.whatsapp[3:]}'
+                )
+
+            return message_wpp.sid
 
         metodos = {
             'email': email,
