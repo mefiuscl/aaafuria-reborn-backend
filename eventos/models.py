@@ -258,11 +258,11 @@ class Ingresso(models.Model):
 
 class IngressoTransfer(models.Model):
     ingresso: Ingresso = models.ForeignKey(
-        Ingresso, on_delete=models.CASCADE, related_name='transfers')
+        Ingresso, on_delete=models.CASCADE, related_name=_('transfers'))
     previous_owner: Participante = models.ForeignKey(
-        Participante, on_delete=models.CASCADE, related_name='transfered_ingressos')
+        Participante, on_delete=models.CASCADE, related_name=_('transfered_ingressos'))
     current_owner: Participante = models.ForeignKey(
-        Participante, on_delete=models.CASCADE, related_name='received_ingressos')
+        Participante, on_delete=models.CASCADE, related_name=_('received_ingressos'))
     transfer_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
