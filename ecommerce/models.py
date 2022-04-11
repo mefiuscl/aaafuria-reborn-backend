@@ -36,11 +36,14 @@ class VariacaoProduto(models.Model):
     produto = models.ForeignKey(
         Produto, on_delete=models.CASCADE, related_name='variacoes')
     nome = models.CharField(max_length=100, verbose_name='variação')
-    preco = models.DecimalField(max_digits=8, decimal_places=2)
-    preco_socio = models.DecimalField(max_digits=8, decimal_places=2)
-    preco_atleta = models.DecimalField(max_digits=8, decimal_places=2)
+    preco = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    preco_socio = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    preco_atleta = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
     preco_staff = models.DecimalField(
-        max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
+        max_digits=8, decimal_places=2, blank=True, null=True, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
     imagem = models.ImageField(
         upload_to='produtos/variacoes/', blank=True, null=True)
@@ -77,10 +80,10 @@ class ProdutoPedido(models.Model):
 
     def set_price(self):
         if self.variacao:
-            self.preco = self.variacao.preco
-            self.preco_socio = self.variacao.preco_socio
-            self.preco_atleta = self.variacao.preco_atleta
-            self.preco_staff = self.variacao.preco_staff
+            self.preco = self.variacao.preco if self.variacao.preco else self.produto.preco
+            self.preco_socio = self.variacao.preco_socio if self.variacao.preco_socio else self.produto.preco_socio
+            self.preco_atleta = self.variacao.preco_atleta if self.variacao.preco_atleta else self.produto.preco_atleta
+            self.preco_staff = self.variacao.preco_staff if self.variacao.preco_staff else self.produto.preco_staff
         else:
             self.preco = self.produto.preco
             self.preco_socio = self.produto.preco_socio
