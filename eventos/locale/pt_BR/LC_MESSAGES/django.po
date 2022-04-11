@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-17 22:09-0300\n"
+"POT-Creation-Date: 2022-04-11 10:17-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
 #: eventos/models.py:192
 msgid "Sold off. Try again in 1h."
-msgstr "Esgotado. Tente novamente em 1h"
+msgstr "Esgotado. Tente novamente em 1h."
 
 #: eventos/models.py:242
 msgid "Lote is not started."
@@ -28,23 +27,11 @@ msgstr "Lote não iniciado."
 
 #: eventos/models.py:246
 msgid "Lote has ended."
-msgstr "Lote encerrado."
+msgstr "Lote terminado."
 
 #: eventos/models.py:248
 msgid "Lote is inactive."
 msgstr "Lote inativo."
-
-#: eventos/models.py:261
-msgid "transfers"
-msgstr "transferências"
-
-#: eventos/models.py:263
-msgid "transfered_ingressos"
-msgstr "ingressos_transferidos"
-
-#: eventos/models.py:265
-msgid "received_ingressos"
-msgstr "ingressos_recebidos"
 
 #: eventos/models.py:269
 msgid "ingresso transfer"
@@ -54,8 +41,8 @@ msgstr "transferência de ingresso"
 msgid "ingressos transfers"
 msgstr "transferências de ingressos"
 
-#: eventos/schema.py:65 eventos/schema.py:113 eventos/schema.py:165
-#: eventos/schema.py:195 eventos/schema.py:210 eventos/schema.py:223
+#: eventos/schema.py:65 eventos/schema.py:113 eventos/schema.py:166
+#: eventos/schema.py:196 eventos/schema.py:211 eventos/schema.py:224
 msgid "Unauthenticated."
 msgstr "Não autenticado."
 
@@ -67,8 +54,8 @@ msgstr "Sócio não encontrado."
 msgid "Participante not found."
 msgstr "Participante não encontrado."
 
-#: eventos/schema.py:125 eventos/schema.py:178 eventos/schema.py:206
-#: eventos/schema.py:219
+#: eventos/schema.py:125 eventos/schema.py:179 eventos/schema.py:207
+#: eventos/schema.py:220
 msgid "Ingresso not found."
 msgstr "Ingresso não encontrado."
 
@@ -76,18 +63,18 @@ msgstr "Ingresso não encontrado."
 msgid "You cannot transfer an ingresso to yourself."
 msgstr "Você não pode transferir um ingresso para si mesmo."
 
-#: eventos/schema.py:144
+#: eventos/schema.py:150
 msgid "Not enough Calangos."
-msgstr "Você não tem Calangos suficientes."
+msgstr "Calangos insuficientes."
 
-#: eventos/schema.py:154
+#: eventos/schema.py:155
 msgid "Not a Sócio."
-msgstr "Você não é um Sócio."
+msgstr "Não é um Sócio."
 
-#: eventos/schema.py:169
+#: eventos/schema.py:170
 msgid "Unauthorized. Only staff members can invalidate ingressos."
 msgstr "Não autorizado. Somente membros da equipe podem invalidar ingressos."
 
-#: eventos/schema.py:199 eventos/schema.py:214
+#: eventos/schema.py:200 eventos/schema.py:215
 msgid "Unauthorized. Only staff members can access ingressos."
 msgstr "Não autorizado. Somente membros da equipe podem acessar ingressos."

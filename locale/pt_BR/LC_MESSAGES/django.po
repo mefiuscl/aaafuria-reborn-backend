@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-17 22:09-0300\n"
+"POT-Creation-Date: 2022-04-11 10:17-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: atividades/models.py:51
+#, python-brace-format
+msgid "{competidor.socio.matricula} is not Socio."
+msgstr ""
+
+#: bank/schema.py:40 core/schema.py:59 ecommerce/schema.py:155
+msgid "Unauthenticated."
+msgstr ""
+
+#: core/schema.py:61
+msgid "Email is required"
+msgstr ""
+
+#: ecommerce/schema.py:162
+msgid "Produto exclusivo!"
+msgstr ""
 
 #: reborn/validators.py:12
 #, python-format
