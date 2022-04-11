@@ -69,6 +69,8 @@ class IngressoAdmin(admin.ModelAdmin):
         return obj.participante.get_categoria_display()
 
 
+'''
 @admin.register(eventos_models.IngressoTransfer)
 class IngressoTransferAdmin(admin.ModelAdmin):
     pass
+'''
