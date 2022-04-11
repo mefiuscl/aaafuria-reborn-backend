@@ -1,0 +1,13 @@
+{
+  "builds": [{
+      "src": "reborn/wsgi.py",
+      "use": "@natanffs/vercel-python-wsgi",
+      "config": { "maxLambdaSize": "15mb" }
+  }],
+  "routes": [
+      {
+          "src": "/(.*)",
+          "dest": "reborn/wsgi.py"
+      }
+  ]
+}

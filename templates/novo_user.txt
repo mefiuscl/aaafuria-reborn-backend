@@ -1,0 +1,7 @@
+Olá, {{ socio.apelido }}, seja bem vind@!
+
+Obrigado por se cadastrar na nossa plataforma. É um prazer ter
+você aqui, esperamos que você tenha ótimas experiências junto
+com a gente. E para aproveitar todos os benefícios e ainda
+ajudar a nossa comunidade, você pode se tornar um Sócio da
+@aaafuria.
