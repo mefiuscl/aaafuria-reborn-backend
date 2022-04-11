@@ -137,6 +137,12 @@ class TransferIngresso(graphene.Mutation):
             conta, created = Conta.objects.get_or_create(
                 socio=socio_authenticated)
 
+            ingresso.transfers.create(
+                ingresso=self,
+                previous_owner=previous_owner,
+                current_owner=new_owner,
+                transfer_date=timezone.now())
+
             if conta.calangos >= ingresso_transfer_cost:
                 conta.calangos -= ingresso_transfer_cost
                 conta.save()
@@ -144,11 +150,6 @@ class TransferIngresso(graphene.Mutation):
                 raise GraphQLError(_('Not enough Calangos.'))
 
             ingresso.transfer(new_owner)
-            ingresso.transfers.create(
-                ingresso=self,
-                previous_owner=previous_owner,
-                current_owner=new_owner,
-                transfer_date=timezone.now())
             return TransferIngresso(ok=True, ingresso=ingresso)
         else:
             raise GraphQLError(_('Not a Sócio.'))
