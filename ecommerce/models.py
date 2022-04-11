@@ -18,7 +18,7 @@ class Produto(models.Model):
     preco_staff = models.DecimalField(
         max_digits=8, decimal_places=2, default=0, verbose_name='preço diretor')
     estoque = models.IntegerField(default=0)
-    imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
+    imagem = models.ImageField(upload_to='produtos/')
     has_variations = models.BooleanField(default=False)
     has_observacoes = models.BooleanField(default=False)
     is_hidden = models.BooleanField(default=False)
