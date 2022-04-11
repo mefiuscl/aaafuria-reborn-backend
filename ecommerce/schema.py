@@ -170,7 +170,10 @@ class AdicionarAoCarrinho(graphene.Mutation):
             produto_pedido, created = ProdutoPedido.objects.get_or_create(
                 produto=produto, user=user, ordered=False, variacao=variacao, observacoes=observacoes)
 
-            if not created:
+            if created:
+                produto_pedido.quantidade += quantidade - 1
+                produto_pedido.save()
+            else:
                 produto_pedido.quantidade += quantidade
                 produto_pedido.save()
 

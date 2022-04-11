@@ -3,6 +3,7 @@ import datetime
 import graphene
 from bank.models import Conta, Movimentacao
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
@@ -226,26 +227,15 @@ class Query(graphene.ObjectType):
     query_stripe_portal_url = graphene.Field(SocioRelay)
 
     def resolve_socio_autenticado(self, info, **kwargs):
-        if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
-
-        try:
-            socio = Socio.objects.get(user=info.context.user)
-            return socio
-        except Socio.DoesNotExist:
-            return Exception('Não encontrado.')
+        if info.context.user.is_authenticated:
+            return get_object_or_404(Socio, user=info.context.user)
 
     def resolve_socio_by_matricula(self, info, matricula=None):
-        return Socio.objects.get(user__username=matricula) if matricula else Socio.objects.none()
+        return get_object_or_404(Socio, user__username=matricula)
 
     def resolve_query_stripe_portal_url(self, info, **kwargs):
-        if not info.context.user.is_authenticated:
-            raise Exception('Usuário não autenticado.')
-
-        try:
-            return Socio.objects.get(user=info.context.user)
-        except Socio.DoesNotExist:
-            return Exception('Sócio não encontrado.')
+        if info.context.user.is_authenticated:
+            return get_object_or_404(Socio, user=info.context.user)
 
 
 class Mutation(graphene.ObjectType):
