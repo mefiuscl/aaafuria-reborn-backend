@@ -256,7 +256,6 @@ class Ingresso(models.Model):
         super().save(*args, **kwargs)
 
 
-'''
 class IngressoTransfer(models.Model):
     ingresso: Ingresso = models.ForeignKey(
         Ingresso, on_delete=models.CASCADE, related_name=_('transfers'))
@@ -269,4 +268,3 @@ class IngressoTransfer(models.Model):
     class Meta:
         verbose_name = _('ingresso transfer')
         verbose_name_plural = _('ingressos transfers')
-'''
