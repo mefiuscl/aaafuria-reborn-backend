@@ -294,8 +294,6 @@ class RemoverDoCarrinhoPlantao(graphene.Mutation):
 class Query(graphene.ObjectType):
     produto = graphene.relay.Node.Field(ProdutoRelay)
     variacao = graphene.relay.Node.Field(VariacaoRelay)
-    variacao_by_product_id = graphene.List(
-        VariacaoRelay, id=graphene.String(required=True))
 
     all_produto = DjangoFilterConnectionField(ProdutoRelay)
     all_variacao = DjangoFilterConnectionField(VariacaoRelay)
@@ -315,11 +313,6 @@ class Query(graphene.ObjectType):
         carrinho.get_total()
 
         return carrinho
-
-    def resolve_variacao_by_product_id(self, info, id):
-        variacao_produto = VariacaoProduto.objects.filter(
-            produto=from_global_id(id)[1])
-        return variacao_produto
 
     def resolve_user_carrinho(self, info, **kwargs):
         user = info.context.user
