@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.loader import get_template
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 
 def avatar_dir(instance, filename):
@@ -292,3 +293,24 @@ class TipoPlano(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class FeaturePost(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    image = models.ImageField(upload_to='feature_posts/')
+    button_target = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.active:
+            FeaturePost.objects.filter(active=True).update(active=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = _('feature post')
+        verbose_name_plural = _('feature posts')

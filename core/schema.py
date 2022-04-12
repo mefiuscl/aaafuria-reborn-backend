@@ -10,7 +10,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
 
-from .models import Pagamento, Socio, TipoPlano
+from .models import FeaturePost, Pagamento, Socio, TipoPlano
 
 
 class UserType(DjangoObjectType):
@@ -47,6 +47,16 @@ class SocioRelay(DjangoObjectType):
 
     def resolve_avatar(self, info, *args, **kwargs):
         return info.context.build_absolute_uri(self.avatar.url)
+
+
+class FeaturePostRelay(DjangoObjectType):
+    class Meta:
+        model = FeaturePost
+        filter_fields = ['active']
+        interfaces = (graphene.relay.Node, )
+
+    def resolve_image(self, info, *args, **kwargs):
+        return info.context.build_absolute_uri(self.image.url)
 
 
 class VerifyEmail(graphene.Mutation):
@@ -226,6 +236,8 @@ class Query(graphene.ObjectType):
 
     query_stripe_portal_url = graphene.Field(SocioRelay)
 
+    feature_post = graphene.Field(FeaturePostRelay)
+
     def resolve_socio_autenticado(self, info, **kwargs):
         if info.context.user.is_authenticated:
             return get_object_or_404(Socio, user=info.context.user)
@@ -236,6 +248,13 @@ class Query(graphene.ObjectType):
     def resolve_query_stripe_portal_url(self, info, **kwargs):
         if info.context.user.is_authenticated:
             return get_object_or_404(Socio, user=info.context.user)
+
+    def resolve_feature_post(self, info, **kwargs):
+        features = FeaturePost.objects.filter(active=True)
+        if features.count() > 0:
+            return features.first()
+        else:
+            return None
 
 
 class Mutation(graphene.ObjectType):

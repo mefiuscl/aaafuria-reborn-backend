@@ -74,3 +74,8 @@ class PagamentoAdmin(admin.ModelAdmin):
 @admin.register(core_models.TipoPlano)
 class TipoPlanoAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(core_models.FeaturePost)
+class FeaturePostAdmin(admin.ModelAdmin):
+    pass
