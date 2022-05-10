@@ -79,6 +79,7 @@ class Programacao(models.Model):
     class Meta:
         verbose_name = 'programação'
         verbose_name_plural = 'programações'
+        ordering = ['data_hora']
 
     def __str__(self):
         datetime = format_datetime(self.data_hora, locale="pt_BR",

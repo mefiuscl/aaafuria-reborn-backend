@@ -1,10 +1,10 @@
 import graphene
+from django_filters import FilterSet, OrderingFilter
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
-from django_filters import FilterSet, OrderingFilter
 
-from .models import Programacao, Competidor, Modalidade
+from .models import Competidor, Modalidade, Programacao
 
 
 class CompetidorType(DjangoObjectType):
@@ -24,19 +24,6 @@ class ModalidadeType(DjangoObjectType):
     class Meta:
         model = Modalidade
         filter_fields = '__all__'
-
-
-class ProgramacaoFilter(FilterSet):
-    class Meta:
-        model = Programacao
-        fields = ['modalidade__categoria',
-                  'estado', ]
-
-    order_by = OrderingFilter(
-        fields=(
-            ('data_hora', 'data_hora'),
-        )
-    )
 
 
 class ProgramacaoType(DjangoObjectType):
@@ -101,14 +88,16 @@ class RemoverCompetidorNaProgramacao(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    all_programacao = DjangoFilterConnectionField(
-        ProgramacaoRelay, filterset_class=ProgramacaoFilter)
+    all_programacao = DjangoFilterConnectionField(ProgramacaoRelay)
 
     programacao = graphene.Field(
         ProgramacaoRelay, id=graphene.ID(required=True))
 
     def resolve_programacao(self, info, id, *args, **kwargs):
         return Programacao.objects.get(id=from_global_id(id)[1])
+
+    def resolve_all_programacao(self, info, *args, **kwargs):
+        return Programacao.objects.exclude(estado='Finalizado')
 
 
 class Mutation(graphene.ObjectType):
