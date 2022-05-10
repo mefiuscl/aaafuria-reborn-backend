@@ -52,6 +52,7 @@ class Modalidade(models.Model):
 
     def save(self, *args, **kwargs):
         # self.validate_competidor()
+        self.nome = self.nome.upper()
         super().save(*args, **kwargs)
 
 
