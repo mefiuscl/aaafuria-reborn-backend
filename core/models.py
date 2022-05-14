@@ -67,12 +67,17 @@ class Socio(models.Model):
 
     def sanitize_fields(self):
         self.nome = self.nome.strip().upper()
-        self.apelido = self.apelido.strip()
-        self.email = self.user.email.strip().lower()
 
-        self.cpf = self.sanitize_number_string(self.cpf)
-        self.rg = self.sanitize_number_string(self.rg)
-        self.whatsapp = self.sanitize_number_string(self.whatsapp)
+        if self.apelido:
+            self.apelido = self.apelido.strip()
+        if self.email:
+            self.email = self.user.email.strip().lower()
+        if self.cpf:
+            self.cpf = self.sanitize_number_string(self.cpf)
+        if self.rg:
+            self.rg = self.sanitize_number_string(self.rg)
+        if self.whatsapp:
+            self.whatsapp = self.sanitize_number_string(self.whatsapp)
 
     def create_stripe_customer(self, api_key=API_KEY, *args, **kwargs):
         if not self.stripe_customer_id:
