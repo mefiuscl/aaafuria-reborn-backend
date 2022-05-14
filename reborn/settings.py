@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'eventos',
 
     'files',
-    'help'
+    'help',
+    'partnerships'
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
