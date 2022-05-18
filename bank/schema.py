@@ -10,11 +10,6 @@ from graphql import GraphQLError
 from .models import Conta, Movimentacao, Resgate
 
 
-class MovimentacaoType(DjangoObjectType):
-    class Meta:
-        model = Movimentacao
-
-
 class MovimentacaoRelay(DjangoObjectType):
     class Meta:
         model = Movimentacao

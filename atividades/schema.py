@@ -1,16 +1,9 @@
 import graphene
-from django_filters import FilterSet, OrderingFilter
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
 
-from .models import Competidor, Modalidade, Programacao
-
-
-class CompetidorType(DjangoObjectType):
-    class Meta:
-        model = Competidor
-        filter_fields = '__all__'
+from .models import Competidor, Programacao
 
 
 class CompetidorRelay(DjangoObjectType):
@@ -18,19 +11,6 @@ class CompetidorRelay(DjangoObjectType):
         model = Competidor
         filter_fields = '__all__'
         interfaces = (graphene.relay.Node, )
-
-
-class ModalidadeType(DjangoObjectType):
-    class Meta:
-        model = Modalidade
-        filter_fields = '__all__'
-
-
-class ProgramacaoType(DjangoObjectType):
-    finalizado = graphene.Boolean(source='finalizado')
-
-    class Meta:
-        model = Programacao
 
 
 class ProgramacaoRelay(DjangoObjectType):

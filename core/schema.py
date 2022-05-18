@@ -13,21 +13,11 @@ from graphql import GraphQLError
 from .models import FeaturePost, Pagamento, Socio, TipoPlano
 
 
-class UserType(DjangoObjectType):
+class UserRelay(DjangoObjectType):
     class Meta:
         model = User
-        filter_fields = '__all__'
-
-
-class SocioType(DjangoObjectType):
-    stripe_portal_url = graphene.String(source='stripe_portal_url')
-
-    class Meta:
-        model = Socio
-        filter_fields = ['nome', 'cpf', 'user__username']
-
-    def resolve_avatar(self, info, *args, **kwargs):
-        return info.context.build_absolute_uri(self.avatar.url)
+        filter_fields = []
+        interfaces = [graphene.relay.Node, ]
 
 
 class PagamentoType(DjangoObjectType):
@@ -101,7 +91,7 @@ class NovoUser(graphene.Mutation):
         whatsapp = graphene.String(required=True)
 
     ok = graphene.Boolean()
-    socio = graphene.Field(SocioType)
+    socio = graphene.Field(SocioRelay)
 
     def mutate(self, info, matricula, turma, pin, email, nome, apelido, cpf, rg, data_nascimento, whatsapp):
         if matricula == '' or turma == '' or pin == '' or email == '' or nome == '' or apelido == '' or cpf == '' or rg == '' or data_nascimento == '' or whatsapp == '':

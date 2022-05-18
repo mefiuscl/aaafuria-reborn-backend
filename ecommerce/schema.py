@@ -14,21 +14,6 @@ from .models import (Carrinho, Pagamento, Produto, ProdutoPedido,
                      VariacaoProduto)
 
 
-class ProdutoType(DjangoObjectType):
-    class Meta:
-        model = Produto
-        filter_fields = []
-
-    def resolve_imagem(self, info, *args, **kwargs):
-        return info.context.build_absolute_uri(self.imagem.url)
-
-
-class ProdutoPedidoType(DjangoObjectType):
-    class Meta:
-        model = ProdutoPedido
-        filter_fields = []
-
-
 class ProdutoPedidoRelay(DjangoObjectType):
     get_price = graphene.Float(source='get_price')
 
@@ -298,7 +283,7 @@ class Query(graphene.ObjectType):
     all_produto = DjangoFilterConnectionField(ProdutoRelay)
     all_variacao = DjangoFilterConnectionField(VariacaoRelay)
 
-    produto_pedido = graphene.Field(ProdutoPedidoType)
+    produto_pedido = graphene.Field(ProdutoPedidoRelay)
     all_produto_pedido = DjangoFilterConnectionField(ProdutoPedidoRelay)
 
     carrinho = graphene.relay.Node.Field(CarrinhoRelay)
