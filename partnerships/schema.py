@@ -17,8 +17,4 @@ class PartnershipRelay(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    partnerships = graphene.List(PartnershipRelay)
     all_partnerships = DjangoFilterConnectionField(PartnershipRelay)
-
-    def resolve_partnerships(self, info):
-        return Partnership.objects.all()
