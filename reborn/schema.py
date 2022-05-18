@@ -1,13 +1,13 @@
-import graphene
-import graphql_jwt
-
-import core.schema
-import ecommerce.schema
 import atividades.schema
 import bank.schema
+import core.schema
+import ecommerce.schema
 import eventos.schema
 import files.schema
+import graphene
+import graphql_jwt
 import help.schema
+import partnerships.schema
 
 
 class Query(
@@ -18,6 +18,7 @@ class Query(
     eventos.schema.Query,
     files.schema.Query,
     help.schema.Query,
+    partnerships.schema.Query,
     graphene.ObjectType
 ):
     pass
