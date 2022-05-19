@@ -3,14 +3,21 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
 
-from .models import Competidor, Programacao
+from .models import Competidor, Modalidade, Programacao
+
+
+class ModalidadeRelay(DjangoObjectType):
+    class Meta:
+        model = Modalidade
+        filter_fields = []
+        interface = [graphene.relay.Node]
 
 
 class CompetidorRelay(DjangoObjectType):
     class Meta:
         model = Competidor
-        filter_fields = '__all__'
-        interfaces = (graphene.relay.Node, )
+        filter_fields = []
+        interfaces = [graphene.relay.Node]
 
 
 class ProgramacaoRelay(DjangoObjectType):

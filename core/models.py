@@ -3,10 +3,10 @@ import stripe
 from atividades.models import Competidor
 from decouple import config
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.dispatch import receiver
-from django.forms import ValidationError
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import gettext as _

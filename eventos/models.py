@@ -131,7 +131,6 @@ class Lote(models.Model):
                 'End date must be before event end date.')
 
     def save(self, *args, **kwargs):
-        self.clean()
         super().save(*args, **kwargs)
 
 

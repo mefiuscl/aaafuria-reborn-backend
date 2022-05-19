@@ -1,6 +1,6 @@
 from babel.dates import format_datetime, get_timezone
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -141,6 +141,11 @@ class Programacao(models.Model):
 
         self.modalidade.responsavel.notificar('email', subject,
                                               'programacao_confirmada.txt', 'programacao_confirmada.html', context)
+
+    def clean(self):
+        if self.data_hora < timezone.now():
+            raise ValidationError(
+                'Data e hora da programação deve ser maior que a atual.')
 
     def save(self, *args, **kwargs):
         self.notificar_competidores()
