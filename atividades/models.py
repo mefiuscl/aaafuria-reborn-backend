@@ -143,9 +143,7 @@ class Programacao(models.Model):
                                               'programacao_confirmada.txt', 'programacao_confirmada.html', context)
 
     def clean(self):
-        if self.data_hora < timezone.now():
-            raise ValidationError(
-                'Data e hora da programação deve ser maior que a atual.')
+        pass
 
     def save(self, *args, **kwargs):
         self.notificar_competidores()
