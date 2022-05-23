@@ -6,7 +6,7 @@ import ecommerce.models as ecommerce_models
 @admin.register(ecommerce_models.Produto)
 class ProdutoAdmin(admin.ModelAdmin):
     list_display = ['nome', 'preco', 'preco_socio',
-                    'estoque', 'has_variations', 'is_hidden']
+                    'estoque', 'has_variations', 'plantao_only', 'is_active']
 
 
 @admin.register(ecommerce_models.ProdutoPedido)

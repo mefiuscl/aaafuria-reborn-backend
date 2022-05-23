@@ -21,7 +21,7 @@ class Produto(models.Model):
     imagem = models.ImageField(upload_to='produtos/')
     has_variations = models.BooleanField(default=False)
     has_observacoes = models.BooleanField(default=False)
-    is_hidden = models.BooleanField(default=False)
+    plantao_only = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     exclusivo_competidor = models.BooleanField(default=False)
 
@@ -30,6 +30,9 @@ class Produto(models.Model):
 
     def save(self, *args, **kwargs):
         self.nome = self.nome.upper()
+        if self.estoque == 0:
+            self.is_active = False
+
         super().save(*args, *kwargs)
 
 
