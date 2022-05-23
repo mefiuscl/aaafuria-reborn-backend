@@ -26,7 +26,7 @@ class ProdutoPedidoRelay(DjangoObjectType):
 class ProdutoRelay(DjangoObjectType):
     class Meta:
         model = Produto
-        filter_fields = ['is_hidden']
+        filter_fields = ['plantao_only', 'is_active']
         interfaces = (graphene.relay.Node, )
 
     def resolve_imagem(self, info, *args, **kwargs):
