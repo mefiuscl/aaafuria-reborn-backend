@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 
-def avatar_dir(instance, filename):
+def socio_dir(instance, filename):
     filename = 'avatar' + '.' + filename.split('.')[-1]
     return f'socios/{instance.user.username}/{filename}'
 
@@ -29,7 +29,7 @@ class Socio(models.Model):
     verified_email = models.BooleanField(default=False)
     apelido = models.CharField(max_length=100, null=True, blank=True)
     avatar = models.ImageField(
-        upload_to=avatar_dir, null=True, blank=True)
+        upload_to=socio_dir, null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
     whatsapp = models.CharField(max_length=25, null=True, blank=True)
     whatsapp_url = models.CharField(max_length=50, null=True, blank=True)
@@ -39,14 +39,20 @@ class Socio(models.Model):
     data_inicio = models.DateField(null=True, blank=True)
     data_fim = models.DateField(null=True, blank=True)
 
-    stripe_customer_id = models.CharField(max_length=50, null=True, blank=True)
+    vaccine_card = models.FileField(
+        upload_to=socio_dir, null=True, blank=True)
+    declaracao_matricula = models.FileField(
+        upload_to=socio_dir, null=True, blank=True)
+
+    stripe_customer_id = models.CharField(
+        max_length=50, null=True, blank=True)
     stripe_subscription_id = models.CharField(
         max_length=250, null=True, blank=True)
 
     def __str__(self):
         return f'{self.matricula}: {self.apelido or self.nome}'
 
-    @property
+    @ property
     def stripe_portal_url(self, api_key=API_KEY, *args, **kwargs):
         stripe.api_key = api_key
         session = stripe.billing_portal.Session.create(

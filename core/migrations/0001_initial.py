@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(blank=True, max_length=254, null=True)),
                 ('apelido', models.CharField(blank=True, max_length=100, null=True)),
                 ('avatar', models.ImageField(blank=True,
-                 null=True, upload_to=core.models.avatar_dir)),
+                 null=True, upload_to=core.models.socio_dir)),
                 ('data_nascimento', models.DateField(blank=True, null=True)),
                 ('whatsapp', models.CharField(blank=True, max_length=25, null=True)),
                 ('whatsapp_url', models.CharField(

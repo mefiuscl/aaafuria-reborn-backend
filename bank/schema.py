@@ -46,19 +46,24 @@ class ResgatarIntermed(graphene.Mutation):
 
             if resgate.resolvida:
                 requests.post(
-                    url='https://cheersshop.com.br/socio/adicionar',
+                    url='http://intermednordeste.com/api/user',
                     data={
-                        "nome": socio.nome,
                         "email": socio.email,
-                        "telefone": socio.whatsapp,
-                        "matricula": socio.matricula,
-                        "observacao": "",
+                        "password": socio.matricula,
+                        "name": socio.nome,
+                        "birth date": socio.data_nascimento,
+                        "rg": socio.rg,
                         "cpf": socio.cpf,
-                        "data_fim_plano": socio.data_fim,
-                        "vendedor": "1874"
-                    },
-                    headers={
-                        "Authorization": f"Bearer {config('CHEERS_TOKEN')}",
+                        "street": "Rua Aristides Saraiva de Almeida",
+                        "number": "960",
+                        "id_city": 3585,
+                        "id_state": 22,
+                        "id_type": 1,
+                        "phone": "(86) 9 8131-2488",
+                        "id_club": 9,
+                        "photo": socio.avatar,
+                        "vaccine_card": socio.vaccine_card,
+                        "enroll": socio.declaracao_matricula,
                     }
                 )
 
