@@ -95,7 +95,8 @@ class ProdutoPedido(models.Model):
             self.total = self.preco_staff * self.quantidade
             self.save()
             return self.preco_staff
-        elif self.user.socio.is_socio:
+
+        if self.user.socio.is_socio:
             if self.user.socio.is_atleta:
                 self.total = self.preco_atleta * self.quantidade
                 self.save()
@@ -104,10 +105,10 @@ class ProdutoPedido(models.Model):
                 self.total = self.preco_socio * self.quantidade
                 self.save()
                 return self.preco_socio
-        else:
-            self.total = self.preco * self.quantidade
-            self.save()
-            return self.preco
+
+        self.total = self.preco * self.quantidade
+        self.save()
+        return self.preco
 
     def save(self, *args, **kwargs):
         self.set_price()
