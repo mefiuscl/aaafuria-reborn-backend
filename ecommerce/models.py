@@ -22,6 +22,7 @@ class Produto(models.Model):
     has_variations = models.BooleanField(default=False)
     has_observacoes = models.BooleanField(default=False)
     is_hidden = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     exclusivo_competidor = models.BooleanField(default=False)
 
     def __str__(self):
