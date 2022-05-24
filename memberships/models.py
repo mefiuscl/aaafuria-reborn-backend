@@ -1,5 +1,7 @@
 from django.db import models
 
+# teste
+
 
 def member_avatar_dir(instance, filename):
     filename = 'avatar' + '.' + filename.split('.')[-1]
