@@ -68,32 +68,3 @@ class Movimentacao(models.Model):
         if self.resolvida:
             if self.resolvida_em is None:
                 self.resolver()
-
-
-class Resgate(models.Model):
-    conta = models.ForeignKey(
-        Conta, on_delete=models.CASCADE, related_name='resgates')
-    descricao = models.CharField(max_length=100)
-    valor_calangos = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    resolvida = models.BooleanField(default=False)
-
-    class Meta:
-        verbose_name = 'resgate'
-        verbose_name_plural = 'resgates'
-
-    def __str__(self):
-        return f'{self.conta}'
-
-    def resolver(self):
-        if not self.resolvida:
-            if self.conta.calangos < self.valor_calangos:
-                self.delete()
-                raise Exception('Saldo insuficiente')
-
-            self.conta.calangos -= self.valor_calangos
-            self.resolvida = True
-            self.conta.save()
-            self.save()
-        else:
-            raise Exception('Resgate já resolvido')

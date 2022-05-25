@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Conta, Movimentacao, Resgate
+from .models import Conta, Movimentacao
 
 
 @admin.register(Conta)
@@ -16,8 +16,3 @@ class MovimentacaoAdmin(admin.ModelAdmin):
                     'conta_destino',  'valor']
     search_fields = ['descricao', 'conta_origem__socio__nome',
                      'conta_origem__socio__matricula', 'conta_origem__socio__email']
-
-
-@ admin.register(Resgate)
-class ResgateAdmin(admin.ModelAdmin):
-    pass

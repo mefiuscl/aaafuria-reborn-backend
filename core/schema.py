@@ -29,6 +29,7 @@ class PagamentoType(DjangoObjectType):
 
 class SocioRelay(DjangoObjectType):
     stripe_portal_url = graphene.String(source='stripe_portal_url')
+    is_atleta = graphene.Boolean(source='is_atleta')
 
     class Meta:
         model = Socio
