@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from pyexpat import model
 
 
 def socio_dir(instance, filename):
