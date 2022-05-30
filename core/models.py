@@ -224,16 +224,21 @@ class Socio(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
 
-    @receiver(models.signals.post_delete, sender='core.Socio')
-    def remove_avatar_from_s3(sender, instance, **kwargs):
-        if instance.avatar:
-            instance.avatar.delete(save=False)
-
     @receiver(models.signals.post_save, sender='core.Socio')
-    def create_socio_conta(sender, instance, created, **kwargs):
-        from bank.models import Conta
-        conta, _ = Conta.objects.get_or_create(socio=instance)
-        conta.save()
+    def create_member(sender, instance, created, **kwargs):
+        from members.models import Member
+        member, _ = Member.objects.get_or_create(
+            user=instance.user,
+            registration=instance.matricula,
+            group=instance.turma,
+            name=instance.nome,
+            nickname=instance.apelido,
+            email=instance.email,
+            phone=instance.whatsapp,
+            birth_date=instance.data_nascimento,
+            cpf=instance.cpf,
+            rg=instance.rg,
+        )
 
 
 class Pagamento(models.Model):
