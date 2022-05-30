@@ -7,6 +7,8 @@ import files.schema
 import graphene
 import graphql_jwt
 import help.schema
+import members.schema.mutation as members_mutation
+import members.schema.query as members_query
 import partnerships.schema
 
 
@@ -19,6 +21,7 @@ class Query(
     files.schema.Query,
     help.schema.Query,
     partnerships.schema.Query,
+    members_query.Query,
     graphene.ObjectType
 ):
     pass
@@ -32,6 +35,7 @@ class Mutation(
     eventos.schema.Mutation,
     files.schema.Mutation,
     help.schema.Mutation,
+    members_mutation.Mutation,
     graphene.ObjectType
 ):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
