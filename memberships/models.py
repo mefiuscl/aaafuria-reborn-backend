@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.db import models
+
+API_KEY = settings.STRIPE_API_KEY
 
 
 class Membership(models.Model):
@@ -19,6 +22,7 @@ class Membership(models.Model):
     def refresh(self):
         def refetch_stripe():
             import stripe
+            stripe.api_base = API_KEY
 
             subscription_id = self.attachments.filter(
                 title='stripe_subscription_id').first().content
