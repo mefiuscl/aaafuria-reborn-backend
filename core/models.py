@@ -235,7 +235,7 @@ class Socio(models.Model):
                     ref='STRIPE',
                     member=socio.user.member,
                     plan=MembershipPlan.objects.get(
-                        title=MembershipPlan.SOCIO_ANUAL),
+                        title='ANUAL'),
                     is_active=True
                 )
                 Attachment.objects.get_or_create(
