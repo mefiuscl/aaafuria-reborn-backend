@@ -12,8 +12,8 @@ class Membership(models.Model):
         'members.Member', on_delete=models.CASCADE, related_name='memberships')
     membership_plan = models.ForeignKey(
         'memberships.MembershipPlan', on_delete=models.CASCADE, related_name='memberships')
-    payment = models.ForeignKey('bank.Payment', on_delete=models.SET_NULL,
-                                related_name='memberships', blank=True, null=True)
+    payment = models.OneToOneField('bank.Payment', on_delete=models.SET_NULL,
+                                   related_name='memberships', blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     current_start_date = models.DateField(blank=True, null=True)
