@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Conta, Movimentacao
+from .models import Conta, Movimentacao, Payment
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Conta)

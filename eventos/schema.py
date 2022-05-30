@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
-from graphql_relay.node.node import from_global_id
+from graphql_relay import from_global_id
 
 from .models import Evento, Ingresso, Lote, Participante
 
