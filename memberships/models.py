@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 API_KEY = settings.STRIPE_API_KEY
 
@@ -31,9 +32,12 @@ class Membership(models.Model):
                 subscription_id)
 
             self.ref_id = subscription.id
-            self.start_date = subscription.start_date
-            self.current_start_date = subscription.current_period_start
-            self.current_end_date = subscription.current_period_end
+            self.start_date = timezone.datetime.fromtimestamp(
+                subscription.start_date)
+            self.current_start_date = timezone.datetime.fromtimestamp(
+                subscription.current_period_start)
+            self.current_end_date = timezone.datetime.fromtimestamp(
+                subscription.current_period_end)
             self.is_active = subscription.status == 'active'
             self.save()
 
