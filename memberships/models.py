@@ -31,6 +31,7 @@ class Membership(models.Model):
             self.end_date = subscription.end_date
             self.current_start_date = subscription.current_period_start
             self.current_end_date = subscription.current_period_end
+            self.is_active = subscription.status == 'active'
             self.save()
 
         refs = {

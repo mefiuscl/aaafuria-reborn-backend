@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from memberships.models import Membership, MembershipPlan
 
 
 def socio_dir(instance, filename):
@@ -227,12 +228,23 @@ class Socio(models.Model):
     @receiver(models.signals.post_save, sender='core.Socio')
     def create_attachment(sender, instance, created, **kwargs):
         from memberships.models import Attachment
-        if instance.stripe_subscription_id:
-            Attachment.objects.get_or_create(
-                member=instance.user.member,
-                title='stripe_subscription_id',
-                content=instance.stripe_subscription_id
-            )
+        socio = instance
+        if socio.stripe_subscription_id:
+            if socio.is_socio and socio.data_fim.month == 12:
+                membership, created = Membership.objects.get_or_create(
+                    ref='STRIPE',
+                    member=socio.user.member,
+                    plan=MembershipPlan.objects.get(
+                        title=MembershipPlan.SOCIO_ANUAL),
+                    is_active=True
+                )
+                Attachment.objects.get_or_create(
+                    membership=socio.user.member,
+                    title='stripe_subscription_id',
+                    content=instance.stripe_subscription_id
+                )
+
+                membership.refresh()
 
 
 class Pagamento(models.Model):
