@@ -30,7 +30,8 @@ class Attachment(models.Model):
         Member, on_delete=models.CASCADE, related_name='attachments')
     title = models.CharField(max_length=255, editable=False)
     content = models.TextField(blank=True, null=True)
-    file = models.FileField(upload_to='attachments/', blank=True, null=True)
+    file = models.FileField(
+        upload_to='members/attachments/', blank=True, null=True)
 
     def __str__(self) -> str:
         return self.title

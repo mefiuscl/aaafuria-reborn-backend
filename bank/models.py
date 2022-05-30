@@ -1,5 +1,9 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from graphql_relay import to_global_id
+
+API_KEY = settings.STRIPE_API_KEY
 
 
 class Conta(models.Model):
@@ -68,3 +72,65 @@ class Movimentacao(models.Model):
         if self.resolvida:
             if self.resolvida_em is None:
                 self.resolver()
+
+
+class Payment(models.Model):
+    STRIPE = 'ST'
+    METHOD_CHOICES = (
+        (STRIPE, 'Stripe'),
+    )
+    user = models.ForeignKey(
+        'auth.User', on_delete=models.CASCADE, related_name='payments')
+    method = models.CharField(max_length=2, choices=METHOD_CHOICES)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+    currency = models.CharField(max_length=3, default='BRL')
+    description = models.CharField(max_length=255)
+    paid = models.BooleanField(default=False)
+    expired = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.description
+
+    def set_expired(self,  description):
+        self.expired = True
+        self.description = description
+
+        self.save()
+
+    def set_paid(self, description):
+        self.paid = True
+        self.description = description
+
+        self.membership.refresh() if self.membership else None
+
+        self.save()
+
+    def checkout(self, mode, items, discounts):
+        def checkout_stripe():
+            import stripe
+            stripe.api_key = API_KEY
+            checkout_session = stripe.checkout.Session.create(
+                customer=self.user.member.attachments.filter(
+                    title='stripe_customer_id').first().content,
+                success_url=f"https://aaafuria.site/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
+                cancel_url="https://aaafuria.site",
+                line_items=items,
+                mode=mode,
+                discounts=discounts,
+                payment_method_types=['card', 'boleto'],
+            )
+
+            self.description = checkout_session['id']
+            self.save()
+
+            return {
+                'url': checkout_session['url']
+            }
+
+        refs = {
+            self.STRIPE: checkout_stripe,
+        }
+
+        return refs[self.method]()
