@@ -28,7 +28,7 @@ class Member(models.Model):
 class Attachment(models.Model):
     member = models.ForeignKey(
         Member, on_delete=models.CASCADE, related_name='attachments')
-    title = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255, editable=False)
     content = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to='attachments/', blank=True, null=True)
 

@@ -225,19 +225,12 @@ class Socio(models.Model):
         super().delete(*args, **kwargs)
 
     @receiver(models.signals.post_save, sender='core.Socio')
-    def create_member(sender, instance, created, **kwargs):
-        from members.models import Member
-        member, _ = Member.objects.get_or_create(
-            user=instance.user,
-            registration=instance.matricula,
-            group=instance.turma,
-            name=instance.nome,
-            nickname=instance.apelido,
-            email=instance.email,
-            phone=instance.whatsapp,
-            birth_date=instance.data_nascimento,
-            cpf=instance.cpf,
-            rg=instance.rg,
+    def create_attachment(sender, instance, created, **kwargs):
+        from members.models import Attachment
+        Attachment.objects.get_or_create(
+            member=instance.user.member,
+            title='stripe_customer_id',
+            content=instance.stripe_customer_id
         )
 
 
