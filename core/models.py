@@ -239,7 +239,7 @@ class Socio(models.Model):
                     is_active=True
                 )
                 Attachment.objects.get_or_create(
-                    membership=socio.user.member,
+                    membership=membership,
                     title='stripe_subscription_id',
                     content=instance.stripe_subscription_id
                 )
