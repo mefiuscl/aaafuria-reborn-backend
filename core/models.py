@@ -227,11 +227,12 @@ class Socio(models.Model):
     @receiver(models.signals.post_save, sender='core.Socio')
     def create_attachment(sender, instance, created, **kwargs):
         from members.models import Attachment
-        Attachment.objects.get_or_create(
-            member=instance.user.member,
-            title='stripe_customer_id',
-            content=instance.stripe_customer_id
-        )
+        if instance.stripe_customer_id:
+            Attachment.objects.get_or_create(
+                member=instance.user.member,
+                title='stripe_customer_id',
+                content=instance.stripe_customer_id
+            )
 
 
 class Pagamento(models.Model):
