@@ -31,3 +31,6 @@ class Attachment(models.Model):
     title = models.CharField(max_length=255, unique=True)
     content = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to='attachments/', blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.title
