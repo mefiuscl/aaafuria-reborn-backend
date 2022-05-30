@@ -1,4 +1,3 @@
-# Teste
 
 from pathlib import Path
 
@@ -39,7 +38,8 @@ INSTALLED_APPS = [
     'help',
     'partnerships',
 
-    'members'
+    'memberships'
+    'members',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
