@@ -234,7 +234,7 @@ class Socio(models.Model):
                 membership, created = Membership.objects.get_or_create(
                     ref='STRIPE',
                     member=socio.user.member,
-                    plan=MembershipPlan.objects.get(
+                    membership_plan=MembershipPlan.objects.get(
                         title='ANUAL'),
                     is_active=True
                 )
