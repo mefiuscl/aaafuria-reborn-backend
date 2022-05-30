@@ -42,7 +42,7 @@ class Membership(models.Model):
 
 
 class Attachment(models.Model):
-    member = models.ForeignKey(
+    membership = models.ForeignKey(
         Membership, on_delete=models.CASCADE, related_name='attachments')
     title = models.CharField(max_length=255, editable=False)
     content = models.TextField(blank=True, null=True)
