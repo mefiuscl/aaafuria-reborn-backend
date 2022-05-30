@@ -68,3 +68,21 @@ class Movimentacao(models.Model):
         if self.resolvida:
             if self.resolvida_em is None:
                 self.resolver()
+
+
+class Payment(models.Model):
+    STRIPE = 'ST'
+    METHOD_CHOICES = (
+        (STRIPE, 'Stripe'),
+    )
+    user = models.ForeignKey(
+        'auth.User', on_delete=models.CASCADE, related_name='payments')
+    method = models.CharField(max_length=2, choices=METHOD_CHOICES)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+    currency = models.CharField(max_length=3, default='BRL')
+    description = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.description
