@@ -42,7 +42,7 @@ class Membership(models.Model):
             self.save()
 
         refs = {
-            'STRIPE': refetch_stripe
+            'ST': refetch_stripe
         }
 
         return refs[self.ref]()

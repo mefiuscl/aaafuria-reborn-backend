@@ -7,7 +7,7 @@ class MembershipNode(DjangoObjectType):
     class Meta:
         model = Membership
         interfaces = (graphene.relay.Node, )
-        filter_fields = []
+        filter_fields = ['is_active']
 
 
 class MembershipPlanNode(DjangoObjectType):

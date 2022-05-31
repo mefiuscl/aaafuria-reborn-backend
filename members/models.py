@@ -1,4 +1,5 @@
 from django.db import models
+from genericpath import exists
 
 
 def member_avatar_dir(instance, filename):
@@ -23,6 +24,16 @@ class Member(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def has_active_membership(self):
+        membership = self.memberships.filter(is_active=True).first()
+        if membership and membership.is_active:
+            return True
+        return False
+
+    def get_active_membership(self):
+        return self.memberships.filter(is_active=True).first() if self.has_active_membership else None
 
 
 class Attachment(models.Model):
