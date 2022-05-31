@@ -76,14 +76,18 @@ class Movimentacao(models.Model):
 
 class Payment(models.Model):
     STRIPE = 'ST'
+    PIX = 'PX'
     METHOD_CHOICES = (
         (STRIPE, 'Stripe'),
+        (PIX, 'Pix'),
     )
+
     user = models.ForeignKey(
         'auth.User', on_delete=models.CASCADE, related_name='payments')
     method = models.CharField(max_length=2, choices=METHOD_CHOICES)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     currency = models.CharField(max_length=3, default='BRL')
+    status = models.CharField(max_length=50, default='PENDENTE')
     description = models.CharField(max_length=255)
     paid = models.BooleanField(default=False)
     expired = models.BooleanField(default=False)
@@ -94,16 +98,19 @@ class Payment(models.Model):
         return self.description
 
     def set_expired(self,  description):
+        self.paid = False
         self.expired = True
         self.description = description
+        self.status = 'EXPIRADO'
 
         self.save()
 
     def set_paid(self, description):
         self.paid = True
         self.description = description
+        self.status = 'PAGO'
 
-        self.membership.refresh() if self.membership else None
+        self.user.member.get_active_membership().refresh()
 
         self.save()
 
@@ -114,7 +121,7 @@ class Payment(models.Model):
             checkout_session = stripe.checkout.Session.create(
                 customer=self.user.member.attachments.filter(
                     title='stripe_customer_id').first().content,
-                success_url=f"https://aaafuria.site/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
+                success_url=f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
                 cancel_url="https://aaafuria.site",
                 line_items=items,
                 mode=mode,
@@ -134,3 +141,17 @@ class Payment(models.Model):
         }
 
         return refs[self.method]()
+
+
+class Attachment(models.Model):
+    payment = models.ForeignKey(
+        Payment, on_delete=models.CASCADE, related_name='attachments')
+    title = models.CharField(max_length=255, editable=False)
+    content = models.TextField(blank=True, null=True)
+    file = models.FileField(
+        upload_to='bank/attachments/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.title

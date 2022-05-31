@@ -4,9 +4,10 @@ from members.models import Member
 
 
 class MemberNode(DjangoObjectType):
+    first_teamer = graphene.Boolean(source='first_teamer')
     has_active_membership = graphene.Boolean(source='has_active_membership')
-    membership = graphene.Field(
-        'memberships.schema.nodes.MembershipNode', source='get_active_membership')
+    active_membership = graphene.Field(
+        'memberships.schema.nodes.MembershipNode', source='active_membership')
 
     class Meta:
         model = Member

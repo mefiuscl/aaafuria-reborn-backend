@@ -1,10 +1,9 @@
 import stripe
-from core.models import Socio
 from django.conf import settings
 from django.http.response import HttpResponse
-from django.utils import timezone
+from memberships.models import Attachment, Membership
 
-from .models import Conta, Movimentacao, Payment
+from .models import Payment
 
 
 def bank_webhook(request):
@@ -26,27 +25,65 @@ def bank_webhook(request):
 
     if event['type'] == 'checkout.session.completed':
         try:
-            checkout_session = event['data']['object']
+            invoice = event['data']['object']
 
-            if checkout_session['mode'] == 'subscription':
-                if checkout_session['payment_status'] == 'paid':
+            if invoice['mode'] == 'subscription':
+                if invoice['payment_status'] == 'paid':
                     payment = Payment.objects.get(
-                        description=checkout_session['id'])
+                        description=invoice['id'])
+                    payment.membership.attachments.create(
+                        title='stripe_subscription_id',
+                        content=invoice['subscription'])
+
                     payment.set_paid('Subscription creation')
 
-            if checkout_session['mode'] == 'payment':
+                    return HttpResponse(status=200)
+
+            if invoice['mode'] == 'payment':
                 pass
 
             return HttpResponse(status=200)
         except Exception as e:
+            print(e)
+            return HttpResponse(content=e, status=400)
+
+    if event['type'] == 'invoice.paid':
+        try:
+            invoice = event['data']['object']
+
+            if invoice['billing_reason'] == 'subscription_cycle':
+                if invoice['status'] == 'paid':
+                    membership = Attachment.objects.get(
+                        content=invoice['subscription']).membership
+
+                    payment = Payment.objects.create(
+                        user=membership.member.user,
+                        method=Payment.STRIPE,
+                        amount=invoice['amount_paid'],
+                        description=invoice['id'],
+                    )
+
+                    payment.set_paid('Subscription cycle')
+
+                    membership.payment = payment
+                    membership.refresh()
+
+                    return HttpResponse(status=200)
+
+            if invoice['mode'] == 'payment':
+                pass
+
+            return HttpResponse(status=200)
+        except Exception as e:
+            print(e)
             return HttpResponse(content=e, status=400)
 
     if event['type'] == 'checkout.session.expired':
         try:
-            checkout_session = event['data']['object']
+            invoice = event['data']['object']
 
             payment = Payment.objects.get(
-                description=checkout_session['id'])
+                description=invoice['id'])
             payment.set_expired('Session expired')
 
             return HttpResponse(status=200)

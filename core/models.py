@@ -219,7 +219,6 @@ class Socio(models.Model):
 
         if self.stripe_customer_id and Socio.objects.filter(
                 stripe_customer_id=self.stripe_customer_id).count() > 1:
-            self.delete()
             raise ValidationError('Já existe um usuário com esse email.')
 
     def delete(self, *args, **kwargs):

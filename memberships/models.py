@@ -6,14 +6,21 @@ API_KEY = settings.STRIPE_API_KEY
 
 
 class Membership(models.Model):
-    ref = models.CharField(max_length=100)
+    STRIPE = 'ST'
+    NONE = 'N'
+    REFS = (
+        (STRIPE, 'Stripe'),
+        (NONE, 'None'),
+    )
+
+    ref = models.CharField(max_length=2, choices=REFS)
     ref_id = models.CharField(max_length=255, blank=True, null=True)
     member = models.ForeignKey(
         'members.Member', on_delete=models.CASCADE, related_name='memberships')
     membership_plan = models.ForeignKey(
         'memberships.MembershipPlan', on_delete=models.CASCADE, related_name='memberships')
     payment = models.OneToOneField('bank.Payment', on_delete=models.SET_NULL,
-                                   related_name='memberships', blank=True, null=True)
+                                   related_name='membership', blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     current_start_date = models.DateField(blank=True, null=True)
@@ -42,10 +49,18 @@ class Membership(models.Model):
             self.save()
 
         refs = {
-            'ST': refetch_stripe
+            self.STRIPE: refetch_stripe,
+            self.NONE: lambda: None,
         }
 
         return refs[self.ref]()
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            self.member.memberships.filter(
+                is_active=True).update(is_active=False)
+
+        super().save(*args, **kwargs)
 
 
 class Attachment(models.Model):
@@ -55,6 +70,9 @@ class Attachment(models.Model):
     content = models.TextField(blank=True, null=True)
     file = models.FileField(
         upload_to='memberships/attachments/', blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.title
