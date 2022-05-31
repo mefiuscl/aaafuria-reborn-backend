@@ -225,27 +225,6 @@ class Socio(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
 
-    @receiver(models.signals.post_save, sender='core.Socio')
-    def create_attachment(sender, instance, created, **kwargs):
-        from memberships.models import Attachment
-        socio = instance
-        if socio.stripe_subscription_id:
-            if socio.is_socio and socio.data_fim.month == 12:
-                membership, created = Membership.objects.get_or_create(
-                    ref='STRIPE',
-                    member=socio.user.member,
-                    membership_plan=MembershipPlan.objects.get(
-                        title='ANUAL'),
-                    is_active=True
-                )
-                Attachment.objects.get_or_create(
-                    membership=membership,
-                    title='stripe_subscription_id',
-                    content=instance.stripe_subscription_id
-                )
-
-                membership.refresh()
-
 
 class Pagamento(models.Model):
     socio = models.ForeignKey(
