@@ -13,7 +13,7 @@ class Membership(models.Model):
         (NONE, 'None'),
     )
 
-    ref = models.CharField(max_length=2, choices=REFS)
+    ref = models.CharField(max_length=5, choices=REFS)
     ref_id = models.CharField(max_length=255, blank=True, null=True)
     member = models.ForeignKey(
         'members.Member', on_delete=models.CASCADE, related_name='memberships')
