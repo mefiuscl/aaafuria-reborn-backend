@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from ecommerce.views import ecommerce_webhook
 from eventos.views import eventos_webhook
 from graphene_file_upload.django import FileUploadGraphQLView
+from memberships.views import memberships_webhook
 
 from .views import index
 
@@ -15,8 +16,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("graphql", csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True))),
-    path("core_webhook/", csrf_exempt(core_webhook)),
-    path("ecommerce_webhook/", csrf_exempt(ecommerce_webhook)),
-    path("bank_webhook/", csrf_exempt(bank_webhook)),
-    path("eventos_webhook/", csrf_exempt(eventos_webhook)),
+    path("ecommerce/wh/", csrf_exempt(ecommerce_webhook)),
+    path("memberships/wh/", csrf_exempt(memberships_webhook)),
+    path("bank/wh/", csrf_exempt(bank_webhook)),
+    path("eventos/wh/", csrf_exempt(eventos_webhook)),
 ]

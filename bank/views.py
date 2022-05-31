@@ -1,10 +1,9 @@
 import stripe
-from core.models import Socio
 from django.conf import settings
 from django.http.response import HttpResponse
-from django.utils import timezone
+from memberships.models import Attachment, Membership
 
-from .models import Conta, Movimentacao
+from .models import Payment
 
 
 def bank_webhook(request):
@@ -18,49 +17,77 @@ def bank_webhook(request):
             payload, sig_header, endpoint_secret
         )
     except ValueError as e:
-        # Invalid payload
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        print(e)
         return HttpResponse(status=400)
     except Exception as e:
         return HttpResponse(content=e, status=400)
 
-    # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         try:
-            checkout_session = event['data']['object']
+            invoice = event['data']['object']
 
-            socio = Socio.objects.get(
-                stripe_customer_id=checkout_session['customer'])
+            if invoice['mode'] == 'subscription':
+                if invoice['payment_status'] == 'paid':
+                    payment = Payment.objects.get(
+                        description=invoice['id'])
+                    payment.membership.attachments.create(
+                        title='stripe_subscription_id',
+                        content=invoice['subscription'])
 
-            aaafuria = Socio.objects.get(user__username="22238742")
-            conta, _ = Conta.objects.get_or_create(socio=socio)
-            conta.save()
+                    payment.set_paid('Subscription creation')
 
-            if checkout_session['mode'] == 'subscription':
-                movimentacao = Movimentacao.objects.create(
-                    conta_origem=conta,
-                    conta_destino=aaafuria.conta,
-                    descricao=f'ASSOCIAÇÃO DE [{socio.apelido}] PARA [{aaafuria.apelido}] | MODE: {checkout_session["mode"]}',
-                    valor=checkout_session['amount_total']/100.00,
-                    resolvida=True,
-                    resolvida_em=timezone.now()
-                )
-                movimentacao.save()
+                    return HttpResponse(status=200)
 
-            else:
-                movimentacao = Movimentacao.objects.create(
-                    conta_origem=conta,
-                    conta_destino=aaafuria.conta,
-                    descricao=f'PAGAMENTO DE [{socio.apelido}] PARA [{aaafuria.apelido}] | MODE: {checkout_session["mode"]}',
-                    valor=checkout_session['amount_total']/100.00,
-                    resolvida=True,
-                    resolvida_em=timezone.now()
-                )
-                movimentacao.save()
+            if invoice['mode'] == 'payment':
+                pass
+
+            return HttpResponse(status=200)
+        except Exception as e:
+            print(e)
+            return HttpResponse(content=e, status=400)
+
+    if event['type'] == 'invoice.paid':
+        try:
+            invoice = event['data']['object']
+
+            if invoice['billing_reason'] == 'subscription_cycle':
+                if invoice['status'] == 'paid':
+                    membership = Attachment.objects.get(
+                        content=invoice['subscription']).membership
+
+                    payment = Payment.objects.create(
+                        user=membership.member.user,
+                        method=Payment.STRIPE,
+                        amount=invoice['amount_paid'],
+                        description=invoice['id'],
+                    )
+
+                    payment.set_paid('Subscription cycle')
+
+                    membership.payment = payment
+                    membership.refresh()
+
+                    return HttpResponse(status=200)
+
+            if invoice['mode'] == 'payment':
+                pass
+
+            return HttpResponse(status=200)
+        except Exception as e:
+            print(e)
+            return HttpResponse(content=e, status=400)
+
+    if event['type'] == 'checkout.session.expired':
+        try:
+            invoice = event['data']['object']
+
+            payment = Payment.objects.get(
+                description=invoice['id'])
+            payment.set_expired('Session expired')
+
+            return HttpResponse(status=200)
         except Exception as e:
             return HttpResponse(content=e, status=400)
 
-    return HttpResponse(status=200)
+    return HttpResponse(status=204)

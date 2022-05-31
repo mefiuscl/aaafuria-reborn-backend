@@ -24,6 +24,30 @@ class Member(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def has_active_membership(self):
+        membership = self.memberships.filter(is_active=True).first()
+        if membership and membership.is_active:
+            return True
+        return False
+
+    @property
+    def active_membership(self):
+        return self.get_active_membership()
+
+    @property
+    def first_teamer(self):
+        from atividades.models import Modalidade
+        for modalidade in Modalidade.objects.all():
+            if not self.user.socio.competidor:
+                return False
+            if self.user.socio.competidor in modalidade.competidores.all():
+                return True
+        return False
+
+    def get_active_membership(self):
+        return self.memberships.filter(is_active=True).first() if self.has_active_membership else None
+
 
 class Attachment(models.Model):
     member = models.ForeignKey(
@@ -32,6 +56,9 @@ class Attachment(models.Model):
     content = models.TextField(blank=True, null=True)
     file = models.FileField(
         upload_to='members/attachments/', blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.title
