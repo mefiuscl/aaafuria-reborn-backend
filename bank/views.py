@@ -25,21 +25,21 @@ def bank_webhook(request):
 
     if event['type'] == 'checkout.session.completed':
         try:
-            invoice = event['data']['object']
+            chechout_session = event['data']['object']
 
-            if invoice['mode'] == 'subscription':
-                if invoice['payment_status'] == 'paid':
+            if chechout_session['mode'] == 'subscription':
+                if chechout_session['payment_status'] == 'paid':
                     payment = Payment.objects.get(
-                        description=invoice['id'])
+                        description=chechout_session['id'])
                     payment.membership.attachments.create(
                         title='stripe_subscription_id',
-                        content=invoice['subscription'])
+                        content=chechout_session['subscription'])
 
                     payment.set_paid('Subscription creation')
 
                     return HttpResponse(status=200)
 
-            if invoice['mode'] == 'payment':
+            if chechout_session['mode'] == 'payment':
                 pass
 
             return HttpResponse(status=200)
@@ -49,18 +49,18 @@ def bank_webhook(request):
 
     if event['type'] == 'invoice.paid':
         try:
-            invoice = event['data']['object']
+            chechout_session = event['data']['object']
 
-            if invoice['billing_reason'] == 'subscription_cycle':
-                if invoice['status'] == 'paid':
+            if chechout_session['billing_reason'] == 'subscription_cycle':
+                if chechout_session['status'] == 'paid':
                     membership = Attachment.objects.get(
-                        content=invoice['subscription']).membership
+                        content=chechout_session['subscription']).membership
 
                     payment = Payment.objects.create(
                         user=membership.member.user,
                         method=Payment.STRIPE,
-                        amount=invoice['amount_paid'],
-                        description=invoice['id'],
+                        amount=chechout_session['amount_paid'],
+                        description=chechout_session['id'],
                     )
 
                     payment.set_paid('Subscription cycle')
@@ -70,7 +70,7 @@ def bank_webhook(request):
 
                     return HttpResponse(status=200)
 
-            if invoice['mode'] == 'payment':
+            if chechout_session['mode'] == 'payment':
                 pass
 
             return HttpResponse(status=200)
@@ -80,10 +80,10 @@ def bank_webhook(request):
 
     if event['type'] == 'checkout.session.expired':
         try:
-            invoice = event['data']['object']
+            checkout_session = event['data']['object']
 
             payment = Payment.objects.get(
-                description=invoice['id'])
+                description=checkout_session['id'])
             payment.set_expired('Session expired')
 
             return HttpResponse(status=200)
