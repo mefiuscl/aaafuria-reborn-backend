@@ -31,7 +31,7 @@ def bank_webhook(request):
                 if chechout_session['payment_status'] == 'paid':
                     payment = Payment.objects.get(
                         description=chechout_session['id'])
-                    payment.membership.attachments.create(
+                    payment.membership.attachments.get_or_create(
                         title='stripe_subscription_id',
                         content=chechout_session['subscription'])
 

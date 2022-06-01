@@ -32,11 +32,14 @@ class Membership(models.Model):
             import stripe
             stripe.api_key = API_KEY
 
-            subscription_id = self.attachments.filter(
-                title='stripe_subscription_id').first().content
+            try:
+                subscription_id = self.attachments.filter(
+                    title='stripe_subscription_id').first().content
 
-            subscription = stripe.Subscription.retrieve(
-                subscription_id)
+                subscription = stripe.Subscription.retrieve(
+                    subscription_id)
+            except:
+                return False
 
             self.ref_id = subscription.id
             self.start_date = timezone.datetime.fromtimestamp(

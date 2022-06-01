@@ -110,7 +110,7 @@ class Payment(models.Model):
         self.description = description
         self.status = 'PAGO'
 
-        self.user.member.get_active_membership().refresh()
+        self.membership.refresh() if self.membership else None
 
         self.save()
 
