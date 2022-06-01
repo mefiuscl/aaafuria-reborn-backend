@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from graphql_relay import to_global_id
-from memberships.models import Membership
 
 API_KEY = settings.STRIPE_API_KEY
 
@@ -111,9 +110,7 @@ class Payment(models.Model):
         self.description = description
         self.status = 'PAGO'
 
-        membership = Membership.objects.filter(payment=self)
-        if membership.exists():
-            membership.first().refresh()
+        self.membership.refresh() if self.membership else None
 
         self.save()
 
