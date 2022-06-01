@@ -1,6 +1,9 @@
 import graphene
+from django.conf import settings
 from graphene_django import DjangoObjectType
 from members.models import Member
+
+API_KEY = settings.STRIPE_API_KEY
 
 
 class MemberNode(DjangoObjectType):
@@ -8,11 +11,22 @@ class MemberNode(DjangoObjectType):
     has_active_membership = graphene.Boolean(source='has_active_membership')
     active_membership = graphene.Field(
         'memberships.schema.nodes.MembershipNode', source='active_membership')
+    billing_portal_url = graphene.String()
 
     class Meta:
         model = Member
         interfaces = (graphene.relay.Node,)
         filter_fields = []
+
+    def resolve_billing_portal_url(self, info, *args, **kwargs):
+        import stripe
+        stripe.api_key = API_KEY
+        session = stripe.billing_portal.Session.create(
+            customer=self.attachments.get(title="stripe_customer_id").content,
+            return_url="https://aaafuria.site",
+            locale='pt-BR',
+        )
+        return session.url
 
     def resolve_avatar(self, info, *args, **kwargs):
         if self.avatar:
