@@ -6,11 +6,12 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from memberships.models import Membership, MembershipPlan
+from memberships.models import Attachment, MembershipPlan
 
 
 def socio_dir(instance, filename):
@@ -223,6 +224,29 @@ class Socio(models.Model):
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
+
+    @receiver(post_save, sender='core.Socio')
+    def socio_post_save(sender, instance, created, **kwargs):
+        from memberships.models import Membership
+        socio: Socio = instance
+
+        if socio.is_socio and socio.data_fim:
+            if (socio.data_fim.day, socio.data_fim.month) == (30, 5):
+                membership = Membership.objects.create(
+                    ref=Membership.STRIPE,
+                    member=socio.user,
+                    membership_plan=MembershipPlan.objects.get(
+                        title='SEMESTRAL'),
+                    is_active=True
+                )
+
+                Attachment.objects.get_or_create(
+                    membership=membership,
+                    title='stripe_subscription_id',
+                    content=socio.stripe_subscription_id
+                )
+
+                membership.refresh()
 
 
 class Pagamento(models.Model):
