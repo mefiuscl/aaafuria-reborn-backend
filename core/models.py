@@ -231,7 +231,7 @@ class Socio(models.Model):
         socio: Socio = instance
 
         if socio.is_socio and socio.data_fim:
-            if (socio.data_fim.day, socio.data_fim.month) == (30, 5):
+            if (socio.data_fim.day, socio.data_fim.month) == (30, 6):
                 membership = Membership.objects.create(
                     ref=Membership.STRIPE,
                     member=socio.user,
