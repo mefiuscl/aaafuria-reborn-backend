@@ -44,33 +44,29 @@ def bank_webhook(request):
 
             return HttpResponse(status=200)
         except Exception as e:
-            print(e)
             return HttpResponse(content=e, status=400)
 
     if event['type'] == 'invoice.paid':
         try:
-            chechout_session = event['data']['object']
-            if chechout_session['billing_reason'] == 'subscription_cycle':
-                if chechout_session['status'] == 'paid':
+            invoice = event['data']['object']
+            if invoice['billing_reason'] == 'subscription_cycle':
+                if invoice['status'] == 'paid':
                     membership = Attachment.objects.get(
-                        content=chechout_session['subscription']).membership
+                        content=invoice['subscription']).membership
 
                     payment = Payment.objects.create(
                         user=membership.member.user,
                         method=Payment.STRIPE,
-                        amount=chechout_session['amount_paid'],
-                        description=chechout_session['id'],
+                        amount=invoice['amount_paid'],
+                        description=invoice['id'],
                     )
+
+                    membership.payment = payment
+                    membership.save()
 
                     payment.set_paid('Subscription cycle')
 
-                    membership.payment = payment
-                    membership.refresh()
-
                     return HttpResponse(status=200)
-
-            if chechout_session['mode'] == 'payment':
-                pass
 
             return HttpResponse(status=200)
         except Exception as e:
