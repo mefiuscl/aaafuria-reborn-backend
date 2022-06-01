@@ -234,7 +234,7 @@ class Socio(models.Model):
             if (socio.data_fim.day, socio.data_fim.month) == (30, 6):
                 membership = Membership.objects.create(
                     ref=Membership.STRIPE,
-                    member=socio.user,
+                    member=socio.user.member,
                     membership_plan=MembershipPlan.objects.get(
                         title='SEMESTRAL'),
                     is_active=True
