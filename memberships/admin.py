@@ -5,7 +5,7 @@ from memberships.models import Attachment, Membership, MembershipPlan
 
 @admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('member', 'membership_plan', 'is_active')
 
 
 @admin.register(MembershipPlan)
@@ -15,4 +15,4 @@ class MembershipPlanAdmin(admin.ModelAdmin):
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('title', 'content', 'membership')

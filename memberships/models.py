@@ -27,6 +27,9 @@ class Membership(models.Model):
     current_end_date = models.DateField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f'{self.member} - {self.membership_plan}'
+
     def refresh(self):
         def refetch_stripe():
             import stripe

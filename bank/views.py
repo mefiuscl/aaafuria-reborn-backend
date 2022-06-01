@@ -50,7 +50,6 @@ def bank_webhook(request):
     if event['type'] == 'invoice.paid':
         try:
             chechout_session = event['data']['object']
-
             if chechout_session['billing_reason'] == 'subscription_cycle':
                 if chechout_session['status'] == 'paid':
                     membership = Attachment.objects.get(
@@ -75,7 +74,6 @@ def bank_webhook(request):
 
             return HttpResponse(status=200)
         except Exception as e:
-            print(e)
             return HttpResponse(content=e, status=400)
 
     if event['type'] == 'checkout.session.expired':
