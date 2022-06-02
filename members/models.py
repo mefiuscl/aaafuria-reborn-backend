@@ -48,7 +48,12 @@ class Member(models.Model):
         return False
 
     def get_active_membership(self):
-        return self.memberships.filter(is_active=True).first() if self.has_active_membership else None
+        from memberships.models import Membership
+        membership = Membership.objects.filter(
+            member=self, is_active=True).first()
+        if membership.exists() and membership.is_active:
+            return membership
+        return None
 
     def clean(self):
         self.name = self.name.upper()
