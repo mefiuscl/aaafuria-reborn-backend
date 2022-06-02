@@ -55,8 +55,10 @@ class Member(models.Model):
         self.email = self.email.lower()
         self.phone = self.phone.replace(
             '(', '').replace(')', '').replace('-', '')
-        self.rg = self.rg.replace('.', '').replace('-', '')
-        self.cpf = self.cpf.replace('.', '').replace('-', '')
+        self.rg = self.rg.replace('.', '').replace(
+            '-', '') if self.rg else None
+        self.cpf = self.cpf.replace('.', '').replace(
+            '-', '') if self.cpf else None
 
         return super().clean()
 
