@@ -225,26 +225,6 @@ class Socio(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
 
-    @receiver(post_save, sender='core.Socio')
-    def socio_post_save(sender, instance, created, **kwargs):
-        from memberships.models import Membership
-        socio: Socio = instance
-
-        if socio.is_socio and socio.data_fim:
-            membership, created = Membership.objects.get_or_create(
-                ref=Membership.STRIPE,
-                member=socio.user.member,
-                membership_plan=MembershipPlan.objects.get(
-                    title='MENSAL'),
-                is_active=True
-            )
-            Attachment.objects.get_or_create(
-                membership=membership,
-                title='stripe_subscription_id',
-                content=socio.stripe_subscription_id
-            )
-            membership.refresh()
-
 
 class Pagamento(models.Model):
     socio = models.ForeignKey(
