@@ -231,21 +231,19 @@ class Socio(models.Model):
         socio: Socio = instance
 
         if socio.is_socio and socio.data_fim:
-            if (socio.data_fim.day, socio.data_fim.month) == (30, 6):
-                membership = Membership.objects.create(
-                    ref=Membership.STRIPE,
-                    member=socio.user.member,
-                    membership_plan=MembershipPlan.objects.get(
-                        title='SEMESTRAL'),
-                    is_active=True
-                )
-
+            membership, created = Membership.objects.get_or_create(
+                ref=Membership.STRIPE,
+                member=socio.user.member,
+                membership_plan=MembershipPlan.objects.get(
+                    title='SEMESTRAL'),
+                is_active=True
+            )
+            if created:
                 Attachment.objects.get_or_create(
                     membership=membership,
                     title='stripe_subscription_id',
                     content=socio.stripe_subscription_id
                 )
-
                 membership.refresh()
 
 
