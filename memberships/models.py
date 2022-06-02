@@ -38,11 +38,11 @@ class Membership(models.Model):
             try:
                 subscription_id = self.attachments.filter(
                     title='stripe_subscription_id').first().content
-
-                subscription = stripe.Subscription.retrieve(
-                    subscription_id)
             except:
                 return False
+
+            subscription = stripe.Subscription.retrieve(
+                subscription_id)
 
             self.ref_id = subscription.id
             self.start_date = timezone.datetime.fromtimestamp(

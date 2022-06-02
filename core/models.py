@@ -231,20 +231,21 @@ class Socio(models.Model):
         socio: Socio = instance
 
         if socio.is_socio and socio.data_fim and socio.stripe_subscription_id:
-            membership, created = Membership.objects.get_or_create(
-                ref=Membership.STRIPE,
-                member=socio.user.member,
-                membership_plan=MembershipPlan.objects.get(
-                    title='MENSAL'),
-                is_active=True
-            )
-            if created:
-                Attachment.objects.get_or_create(
-                    membership=membership,
-                    title='stripe_subscription_id',
-                    content=socio.stripe_subscription_id
+            if (socio.data_fim.day < 30 and socio.data_fim.month < 6):
+                membership, created = Membership.objects.get_or_create(
+                    ref=Membership.STRIPE,
+                    member=socio.user.member,
+                    membership_plan=MembershipPlan.objects.get(
+                        title='MENSAL'),
+                    is_active=True
                 )
-                membership.refresh()
+                if created:
+                    Attachment.objects.get_or_create(
+                        membership=membership,
+                        title='stripe_subscription_id',
+                        content=socio.stripe_subscription_id
+                    )
+                    membership.refresh()
 
 
 class Pagamento(models.Model):
