@@ -54,13 +54,11 @@ class Member(models.Model):
         self.nickname = self.nickname.upper()
         self.email = self.email.lower()
         self.phone = self.phone.replace(
-            '(', '').replace(')', '').replace('-', '')
+            '(', '').replace(')', '').replace('-', '').replace(' ', '')
         self.rg = self.rg.replace('.', '').replace(
             '-', '') if self.rg else None
         self.cpf = self.cpf.replace('.', '').replace(
             '-', '') if self.cpf else None
-
-        return super().clean()
 
 
 class Attachment(models.Model):
