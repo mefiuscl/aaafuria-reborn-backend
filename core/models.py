@@ -225,6 +225,7 @@ class Socio(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
 
+    '''
     @receiver(post_save, sender='core.Socio')
     def socio_post_save(sender, instance, created, **kwargs):
         from memberships.models import Membership
@@ -246,6 +247,7 @@ class Socio(models.Model):
                         content=socio.stripe_subscription_id
                     )
                     membership.refresh()
+    '''
 
 
 class Pagamento(models.Model):
