@@ -49,6 +49,17 @@ class Member(models.Model):
     def get_active_membership(self):
         return self.memberships.filter(is_active=True).first() if self.has_active_membership else None
 
+    def clean(self):
+        self.name = self.name.upper()
+        self.nickname = self.nickname.upper()
+        self.email = self.email.lower()
+        self.phone = self.phone.replace(
+            '(', '').replace(')', '').replace('-', '')
+        self.rg = self.rg.replace('.', '').replace('-', '')
+        self.cpf = self.cpf.replace('.', '').replace('-', '')
+
+        return super().clean()
+
 
 class Attachment(models.Model):
     member = models.ForeignKey(
