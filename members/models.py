@@ -27,7 +27,7 @@ class Member(models.Model):
     @property
     def has_active_membership(self):
         membership = self.memberships.filter(is_active=True).first()
-        if membership and membership.is_active:
+        if membership.exists() and membership.is_active:
             return True
         return False
 

@@ -9,7 +9,7 @@ class PaymentNode(DjangoObjectType):
     class Meta:
         model = Payment
         interfaces = (graphene.relay.Node, )
-        filter_fields = []
+        filter_fields = ['status']
 
     def resolve_method(self, info):
         return self.get_method_display()

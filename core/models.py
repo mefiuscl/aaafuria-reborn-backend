@@ -59,7 +59,7 @@ class Socio(models.Model):
         stripe.api_key = api_key
         session = stripe.billing_portal.Session.create(
             customer=self.stripe_customer_id,
-            return_url="https://aaafuria.site/areasocio",
+            return_url="https://aaafuria.site/areamembro",
             locale='pt-BR',
         )
         return session.url
