@@ -8,9 +8,9 @@ API_KEY = settings.STRIPE_API_KEY
 
 class MemberNode(DjangoObjectType):
     first_teamer = graphene.Boolean(source='first_teamer')
-    has_active_membership = graphene.Boolean(source='has_active_membership')
+    has_active_membership = graphene.Boolean()
     active_membership = graphene.Field(
-        'memberships.schema.nodes.MembershipNode', source='active_membership')
+        'memberships.schema.nodes.MembershipNode')
     billing_portal_url = graphene.String()
 
     class Meta:

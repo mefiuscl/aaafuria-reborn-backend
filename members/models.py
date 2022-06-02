@@ -29,7 +29,7 @@ class Member(models.Model):
         from memberships.models import Membership
         membership = Membership.objects.filter(
             member=self, is_active=True).first()
-        if membership.exists() and membership.is_active:
+        if membership and membership.is_active:
             return True
         return False
 
@@ -51,7 +51,7 @@ class Member(models.Model):
         from memberships.models import Membership
         membership = Membership.objects.filter(
             member=self, is_active=True).first()
-        if membership.exists() and membership.is_active:
+        if membership and membership.is_active:
             return membership
         return None
 
