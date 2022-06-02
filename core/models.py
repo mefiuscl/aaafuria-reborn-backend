@@ -238,12 +238,13 @@ class Socio(models.Model):
                     title='MENSAL'),
                 is_active=True
             )
-            Attachment.objects.get_or_create(
-                membership=membership,
-                title='stripe_subscription_id',
-                content=socio.stripe_subscription_id
-            )
-            membership.refresh()
+            if created:
+                Attachment.objects.get_or_create(
+                    membership=membership,
+                    title='stripe_subscription_id',
+                    content=socio.stripe_subscription_id
+                )
+                membership.refresh()
 
 
 class Pagamento(models.Model):
