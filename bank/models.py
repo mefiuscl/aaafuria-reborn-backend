@@ -129,7 +129,8 @@ class Payment(models.Model):
                 line_items=items,
                 mode=mode,
                 discounts=discounts,
-                payment_method_types=['card', 'boleto'],
+                payment_method_types=['card'],
+                expires_at=1
             )
 
             self.description = checkout_session['id']
