@@ -235,16 +235,15 @@ class Socio(models.Model):
                 ref=Membership.STRIPE,
                 member=socio.user.member,
                 membership_plan=MembershipPlan.objects.get(
-                    title='SEMESTRAL'),
+                    title='MENSAL'),
                 is_active=True
             )
-            if created:
-                Attachment.objects.get_or_create(
-                    membership=membership,
-                    title='stripe_subscription_id',
-                    content=socio.stripe_subscription_id
-                )
-                membership.refresh()
+            Attachment.objects.get_or_create(
+                membership=membership,
+                title='stripe_subscription_id',
+                content=socio.stripe_subscription_id
+            )
+            membership.refresh()
 
 
 class Pagamento(models.Model):
