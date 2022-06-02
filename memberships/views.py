@@ -32,7 +32,7 @@ def memberships_webhook(request):
             return HttpResponse(status=200)
         except Exception as e:
             return HttpResponse(content=e, status=400)
-    if event['type'] == 'customer.subscription.update':
+    if event['type'] == 'customer.subscription.updated':
         try:
             subscription = event['data']['object']
             membership = Attachment.objects.get(
