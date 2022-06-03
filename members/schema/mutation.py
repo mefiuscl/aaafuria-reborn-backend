@@ -1,4 +1,5 @@
 import graphene
+import requests
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from graphene_file_upload.scalars import Upload
@@ -54,5 +55,81 @@ class CreateAccount(graphene.Mutation):
         return CreateAccount(ok=True, member=member)
 
 
+class CreateIntermedProfile(graphene.Mutation):
+    class Arguments:
+        avatar = Upload(required=True)
+        vaccine_card = Upload(required=True)
+        enroll = Upload(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, **kwargs):
+        if not info.context.user.is_authenticated:
+            raise GraphQLError(_('Unauthenticated'))
+
+        member = info.context.user.member
+        if not member.avatar:
+            member.avatar = kwargs.get('avatar')
+            member.save()
+
+        vaccine_card, created = member.attachments.get_or_create(
+            title='vaccine_card')
+        vaccine_card.file = kwargs.get('vaccine_card')
+        vaccine_card.save()
+
+        enroll, created = member.attachments.get_or_create(title='enroll')
+        enroll.file = kwargs.get('enroll')
+        enroll.save()
+
+        response = requests.post('http://intermednordeste.com/api/user',
+                                 data={
+                                     "name": member.name,
+                                     "email": member.email,
+                                     "nickname": member.nickname,
+                                     "password": member.registration,
+                                     "birth_date": member.birth_date.strftime('%Y-%m-%d'),
+                                     "rg": member.rg,
+                                     "cpf": member.cpf,
+                                     "street": "Rua Vitorino Orthiges Fernandes",
+                                     "number": "6123",
+                                     "college": "UNINOVAFAPI",
+                                     "course": "MEDICINA",
+                                     "id_city": "3585",
+                                     "id_state": "22",
+                                     "id_type": "1",
+                                     "phone": f'{member.phone[0:2]} {member.phone[2]} {member.phone[3:7]}-{member.phone[7:]}',
+                                     "id_club": "9",
+                                 }, files={
+                                     "photo": member.avatar,
+                                     "vaccine_card": vaccine_card.file,
+                                     "enroll": enroll.file
+                                 })
+
+        if response.status_code != 201:
+            raise GraphQLError(response.content)
+
+        response = requests.post('http://intermednordeste.com/api/auth/login',
+                                 data={
+                                     "email": member.email,
+                                     "password": member.registration
+                                 })
+        JWT = response.headers['authorization']
+
+        if response.status_code != 201:
+            raise GraphQLError(_('Error signing in INTERMED.'))
+
+        response = requests.post('http://intermednordeste.com/api/event/registerTicket',
+                                 data={
+                                     "id_batch": 7,
+                                 }, headers={
+                                     "Authorization": f'Bearer {JWT}'})
+
+        if response.status_code != 201:
+            raise GraphQLError(_('Error registering in INTERMED.'))
+
+        return CreateIntermedProfile(ok=True)
+
+
 class Mutation(graphene.ObjectType):
     create_account = CreateAccount.Field()
+    create_intermed_profile = CreateIntermedProfile.Field()

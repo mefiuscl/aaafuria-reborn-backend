@@ -1,3 +1,5 @@
+import requests
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
 
@@ -65,6 +67,10 @@ class Member(models.Model):
             '-', '') if self.rg else None
         self.cpf = self.cpf.replace('.', '').replace(
             '-', '') if self.cpf else None
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Attachment(models.Model):
