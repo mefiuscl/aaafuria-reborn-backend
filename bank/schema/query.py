@@ -1,5 +1,6 @@
 import graphene
 from bank.models import Payment
+from bank.schema.nodes import PaymentPaginatedNode
 from django.utils.translation import gettext as _
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
@@ -24,7 +25,7 @@ class Query(graphene.ObjectType):
     def resolve_all_payments(self, info, page):
         page_size = 10
         qs = Payment.objects.all()
-        return get_paginator(qs, page_size, page, 'bank.schema.nodes.PaymentPaginatedNode')
+        return get_paginator(qs, page_size, page, PaymentPaginatedNode)
 
     def resolve_my_payments(self, info, **kwargs):
         if info.context.user.is_anonymous:
