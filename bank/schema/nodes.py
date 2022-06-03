@@ -4,15 +4,20 @@ from graphene_django import DjangoObjectType
 
 
 class PaymentNode(DjangoObjectType):
-    method = graphene.String()
+    method = graphene.String(source='get_method_display')
 
     class Meta:
         model = Payment
         interfaces = (graphene.relay.Node, )
         filter_fields = ['status']
 
-    def resolve_method(self, info):
-        return self.get_method_display()
+
+class PaymentPaginatedNode(graphene.ObjectType):
+    page = graphene.Int()
+    pages = graphene.Int()
+    has_next = graphene.Boolean()
+    has_prev = graphene.Boolean()
+    objects = graphene.List(PaymentNode)
 
 
 class AttachmentNode(DjangoObjectType):
