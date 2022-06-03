@@ -11,7 +11,7 @@ from utils.utils import get_paginator
 class Query(graphene.ObjectType):
     payment = graphene.Field('bank.schema.nodes.PaymentNode', id=graphene.ID())
     all_payments = graphene.Field(
-        'bank.schema.nodes.PaymentPaginatedNode', page=graphene.Int())
+        'bank.schema.nodes.PaymentPaginatedNode', page=graphene.Int(), status=graphene.String())
 
     my_payments = DjangoFilterConnectionField('bank.schema.nodes.PaymentNode')
 
@@ -22,9 +22,11 @@ class Query(graphene.ObjectType):
         global_id = from_global_id(id)[1]
         return Payment.objects.get(id=global_id)
 
-    def resolve_all_payments(self, info, page):
+    def resolve_all_payments(self, info, page, **kwargs):
         page_size = 10
         qs = Payment.objects.all()
+        qs = qs.filter(status=kwargs.get('status')
+                       ) if kwargs.get('status') else qs
         return get_paginator(qs, page_size, page, PaymentPaginatedNode)
 
     def resolve_my_payments(self, info, **kwargs):
