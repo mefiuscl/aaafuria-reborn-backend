@@ -23,6 +23,11 @@ class Query(graphene.ObjectType):
         return Payment.objects.get(id=global_id)
 
     def resolve_all_payments(self, info, page, **kwargs):
+        if info.context.user.is_anonymous:
+            raise GraphQLError(_('Unauthenticated'))
+        if not info.context.user.is_staff:
+            raise GraphQLError(_('Unauthorized'))
+
         page_size = 10
         qs = Payment.objects.all()
         qs = qs.filter(status=kwargs.get('status')
