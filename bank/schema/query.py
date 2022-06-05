@@ -29,7 +29,7 @@ class Query(graphene.ObjectType):
             raise GraphQLError(_('Unauthorized'))
 
         page_size = 10
-        qs = Payment.objects.exclude(expired=True)
+        qs = Payment.objects.all()
         qs = qs.filter(status=kwargs.get('status')
                        ) if kwargs.get('status') else qs
         return get_paginator(qs, page_size, page, PaymentPaginatedNode)
