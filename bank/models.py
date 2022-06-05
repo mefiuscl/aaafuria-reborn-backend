@@ -95,6 +95,9 @@ class Payment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
         return self.description
 
@@ -129,7 +132,8 @@ class Payment(models.Model):
                 line_items=items,
                 mode=mode,
                 discounts=discounts,
-                payment_method_types=['card', 'boleto'],
+                payment_method_types=['card'],
+                expires_at=1
             )
 
             self.description = checkout_session['id']

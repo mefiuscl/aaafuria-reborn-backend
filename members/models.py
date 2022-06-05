@@ -1,3 +1,5 @@
+import requests
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
 
@@ -27,8 +29,9 @@ class Member(models.Model):
     @property
     def has_active_membership(self):
         from memberships.models import Membership
-        membership = Membership.objects.filter(is_active=True).first()
-        if membership.exists() and membership.is_active:
+        membership = Membership.objects.filter(
+            member=self, is_active=True).first()
+        if membership and membership.is_active:
             return True
         return False
 
@@ -47,7 +50,12 @@ class Member(models.Model):
         return False
 
     def get_active_membership(self):
-        return self.memberships.filter(is_active=True).first() if self.has_active_membership else None
+        from memberships.models import Membership
+        membership = Membership.objects.filter(
+            member=self, is_active=True).first()
+        if membership and membership.is_active:
+            return membership
+        return None
 
     def clean(self):
         self.name = self.name.upper()
@@ -59,6 +67,10 @@ class Member(models.Model):
             '-', '') if self.rg else None
         self.cpf = self.cpf.replace('.', '').replace(
             '-', '') if self.cpf else None
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Attachment(models.Model):

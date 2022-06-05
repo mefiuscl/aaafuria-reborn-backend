@@ -15,6 +15,14 @@ class PaymentNode(DjangoObjectType):
         return self.get_method_display()
 
 
+class PaymentPaginatedNode(graphene.ObjectType):
+    page = graphene.Int()
+    pages = graphene.Int()
+    has_next = graphene.Boolean()
+    has_prev = graphene.Boolean()
+    objects = graphene.List(PaymentNode)
+
+
 class AttachmentNode(DjangoObjectType):
     class Meta:
         model = Attachment
