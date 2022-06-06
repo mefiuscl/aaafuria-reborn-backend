@@ -11,7 +11,7 @@ from utils.utils import get_paginator
 class Query(graphene.ObjectType):
     payment = graphene.Field('bank.schema.nodes.PaymentNode', id=graphene.ID())
     all_payments = graphene.Field(
-        'bank.schema.nodes.PaymentPaginatedNode', page=graphene.Int(), status=graphene.String())
+        'bank.schema.nodes.PaymentPaginatedNode', page=graphene.Int(), page_size=graphene.Int(), status=graphene.String())
 
     my_payments = DjangoFilterConnectionField('bank.schema.nodes.PaymentNode')
 
@@ -22,13 +22,12 @@ class Query(graphene.ObjectType):
         global_id = from_global_id(id)[1]
         return Payment.objects.get(id=global_id)
 
-    def resolve_all_payments(self, info, page, **kwargs):
+    def resolve_all_payments(self, info, page, page_size=10, **kwargs):
         if info.context.user.is_anonymous:
             raise GraphQLError(_('Unauthenticated'))
         if not info.context.user.is_staff:
             raise GraphQLError(_('Unauthorized'))
 
-        page_size = 10
         qs = Payment.objects.all()
         qs = qs.filter(status=kwargs.get('status')
                        ) if kwargs.get('status') else qs

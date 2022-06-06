@@ -7,9 +7,11 @@ API_KEY = settings.STRIPE_API_KEY
 
 class Membership(models.Model):
     STRIPE = 'ST'
+    PIX = 'PX'
     NONE = 'N'
     REFS = (
         (STRIPE, 'Stripe'),
+        (PIX, 'Pix'),
         (NONE, 'None'),
     )
 

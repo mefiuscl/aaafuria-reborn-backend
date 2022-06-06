@@ -11,7 +11,12 @@ class MembershipNode(DjangoObjectType):
 
 
 class MembershipPlanNode(DjangoObjectType):
+    count = graphene.Int()
+
     class Meta:
         model = MembershipPlan
         interfaces = (graphene.relay.Node, )
         filter_fields = []
+
+    def resolve_count(self, info):
+        return Membership.objects.filter(membership_plan=self).count()
