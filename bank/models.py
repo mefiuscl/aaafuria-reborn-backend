@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from graphql_relay import to_global_id
 from memberships.models import Membership
+from store.models import Cart
 
 API_KEY = settings.STRIPE_API_KEY
 
@@ -113,12 +114,17 @@ class Payment(models.Model):
         self.paid = True
         self.description = description
         self.status = 'PAGO'
-
-        membership = Membership.objects.filter(payment=self)
-        if membership.exists():
-            membership.first().refresh()
-
         self.save()
+
+        membership = Membership.objects.filter(payment=self).first()
+        cart = Cart.objects.filter(payment=self).first()
+
+        if membership:
+            membership.refresh()
+            membership.save()
+        if cart:
+            cart.refresh()
+            cart.save()
 
     def checkout(self, mode, items, discounts):
         def checkout_stripe():
@@ -133,7 +139,7 @@ class Payment(models.Model):
                 mode=mode,
                 discounts=discounts,
                 payment_method_types=['card'],
-                expires_at=1
+                expires_at=timezone.now() + timezone.timedelta(minutes=60)
             )
 
             self.description = checkout_session['id']
@@ -143,8 +149,13 @@ class Payment(models.Model):
                 'url': checkout_session['url']
             }
 
+        def checkout_pix():
+            return {
+                'url': f"http://localhost:3000/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
+            }
         refs = {
             self.STRIPE: checkout_stripe,
+            self.PIX: checkout_pix
         }
 
         return refs[self.method]()

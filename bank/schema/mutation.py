@@ -1,5 +1,5 @@
 import graphene
-from bank.models import Payment
+from bank.models import Attachment, Payment
 from django.utils.translation import gettext as _
 from graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
@@ -31,6 +31,62 @@ class CreatePayment(graphene.Mutation):
             )
 
         return CreatePayment(payment=payment, payment_created=created)
+
+
+class CreateAttachment(graphene.Mutation):
+    class Arguments:
+        payment_id = graphene.ID(required=True)
+        title = graphene.String(required=True)
+        file = Upload(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, **kwargs):
+        user = info.context.user
+        payment = Payment.objects.filter(
+            id=from_global_id(kwargs.get('payment_id'))[1]).first()
+
+        if not payment:
+            raise GraphQLError(_('Payment not found'))
+
+        if payment.user != user:
+            if user.is_staff is False:
+                raise GraphQLError(_('You are not allowed to do this action.'))
+
+        payment.attachments.create(
+            title=kwargs.get('title'),
+            file=kwargs.get('file'),
+        )
+        payment.save()
+
+        ok = True
+
+        return CreateAttachment(ok=ok)
+
+
+class DeleteAttachment(graphene.Mutation):
+    class Arguments:
+        attachment_id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, **kwargs):
+        user = info.context.user
+        attachment = Attachment.objects.filter(
+            id=from_global_id(kwargs.get('attachment_id'))[1]).first()
+
+        if not attachment:
+            raise GraphQLError(_('Attachment not found'))
+
+        if attachment.payment.user != user:
+            if user.is_staff is False:
+                raise GraphQLError(_('You are not allowed to do this action.'))
+
+        attachment.delete()
+
+        ok = True
+
+        return DeleteAttachment(ok=ok)
 
 
 class ConfirmPayment(graphene.Mutation):
@@ -71,5 +127,7 @@ class CancelPayment(graphene.Mutation):
 
 class Mutation(graphene.ObjectType):
     create_payment = CreatePayment.Field()
+    create_attachment = CreateAttachment.Field()
+    delete_attachment = DeleteAttachment.Field()
     confirm_payment = ConfirmPayment.Field()
     cancel_payment = CancelPayment.Field()
