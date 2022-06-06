@@ -151,7 +151,7 @@ class Payment(models.Model):
 
         def checkout_pix():
             return {
-                'url': f"http://localhost:3000/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
+                'url': f"https://aaafuria.site/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
             }
         refs = {
             self.STRIPE: checkout_stripe,
