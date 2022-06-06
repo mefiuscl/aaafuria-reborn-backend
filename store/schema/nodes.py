@@ -30,7 +30,9 @@ class CartItemNode(DjangoObjectType):
         filter_fields = []
 
 
-class Cart(DjangoObjectType):
+class CartNode(DjangoObjectType):
+    total = graphene.Float(source='get_total')
+
     class Meta:
         model = Cart
         interfaces = (graphene.relay.Node, )

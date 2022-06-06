@@ -13,6 +13,8 @@ import members.schema.query as members_query
 import memberships.schema.mutation as memberships_mutation
 import memberships.schema.query as memberships_query
 import partnerships.schema
+import store.schema.mutation as store_mutation
+import store.schema.query as store_query
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from graphene_django import DjangoObjectType
@@ -39,6 +41,7 @@ class Query(
     partnerships.schema.Query,
     members_query.Query,
     memberships_query.Query,
+    store_query.Query,
     graphene.ObjectType
 ):
     user = graphene.Field(UserNode)
@@ -68,6 +71,7 @@ class Mutation(
     help.schema.Mutation,
     members_mutation.Mutation,
     memberships_mutation.Mutation,
+    store_mutation.Mutation,
     graphene.ObjectType
 ):
     token_auth = ObtainJSONWebToken.Field()

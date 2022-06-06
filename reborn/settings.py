@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'help',
     'partnerships',
 
+    # Refactored apps
     'memberships',
     'members',
+    'store'
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
