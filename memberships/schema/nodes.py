@@ -19,4 +19,4 @@ class MembershipPlanNode(DjangoObjectType):
         filter_fields = []
 
     def resolve_count(self, info):
-        return Membership.objects.filter(membership_plan=self).count()
+        return Membership.objects.filter(membership_plan=self, is_active=True).count()

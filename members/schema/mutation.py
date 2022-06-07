@@ -65,7 +65,7 @@ class CreateIntermedProfile(graphene.Mutation):
 
     def mutate(self, info, **kwargs):
         if not info.context.user.is_authenticated:
-            raise GraphQLError(_('Unauthenticated'))
+            raise GraphQLError(_('Unauthenticated.'))
 
         member = info.context.user.member
         if not member.avatar:

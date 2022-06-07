@@ -24,9 +24,9 @@ class Query(graphene.ObjectType):
 
     def resolve_all_payments(self, info, page, page_size=10, **kwargs):
         if info.context.user.is_anonymous:
-            raise GraphQLError(_('Unauthenticated'))
+            raise GraphQLError(_('Unauthenticated.'))
         if not info.context.user.is_staff:
-            raise GraphQLError(_('Unauthorized'))
+            raise GraphQLError(_('Unauthorized.'))
 
         qs = Payment.objects.all()
         qs = qs.filter(status=kwargs.get('status')
@@ -35,6 +35,6 @@ class Query(graphene.ObjectType):
 
     def resolve_my_payments(self, info, **kwargs):
         if info.context.user.is_anonymous:
-            raise GraphQLError(_('Unauthenticated'))
+            raise GraphQLError(_('Unauthenticated.'))
 
         return Payment.objects.filter(user=info.context.user)

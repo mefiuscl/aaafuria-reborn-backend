@@ -1,5 +1,3 @@
-import requests
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 
 

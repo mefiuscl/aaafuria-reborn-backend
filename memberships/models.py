@@ -11,7 +11,7 @@ class Membership(models.Model):
     NONE = 'N'
     REFS = (
         (STRIPE, 'Stripe'),
-        (PIX, 'Pix'),
+        (PIX, 'PIX'),
         (NONE, 'None'),
     )
 
@@ -36,7 +36,7 @@ class Membership(models.Model):
         return f'{self.member} - {self.membership_plan}'
 
     def refresh(self):
-        def refetch_stripe():
+        def stripe():
             import stripe
             stripe.api_key = API_KEY
 
@@ -59,8 +59,18 @@ class Membership(models.Model):
             self.is_active = subscription.status == 'active'
             self.save()
 
+        def pix():
+            if self.is_active is False:
+                self.start_date = timezone.now()
+                self.current_start_date = timezone.now()
+                self.current_end_date = timezone.now(
+                ) + timezone.timedelta(days=self.membership_plan.days)
+                self.is_active = True
+                self.save()
+
         refs = {
-            self.STRIPE: refetch_stripe,
+            self.STRIPE: stripe,
+            self.PIX: pix,
             self.NONE: lambda: None,
         }
 
@@ -95,6 +105,8 @@ class MembershipPlan(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(blank=True, null=True)
+    days = models.IntegerField(default=30)
+
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

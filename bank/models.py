@@ -81,7 +81,7 @@ class Payment(models.Model):
     PIX = 'PX'
     METHOD_CHOICES = (
         (STRIPE, 'Stripe'),
-        (PIX, 'Pix'),
+        (PIX, 'PIX'),
     )
 
     user = models.ForeignKey(
