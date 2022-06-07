@@ -136,8 +136,8 @@ class Payment(models.Model):
             checkout_session = stripe.checkout.Session.create(
                 customer=self.user.member.attachments.filter(
                     title='stripe_customer_id').first().content,
-                success_url=f"http://localhost:3000/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
-                cancel_url="http://localhost:3000",
+                success_url=f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
+                cancel_url="https://aaafuria.site",
                 line_items=items,
                 mode=mode,
                 discounts=discounts,
@@ -154,7 +154,7 @@ class Payment(models.Model):
 
         def checkout_pix():
             return {
-                'url': f"http://localhost:3000/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
+                'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
             }
         refs = {
             'ST': checkout_stripe,
