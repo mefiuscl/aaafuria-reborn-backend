@@ -81,20 +81,15 @@ class PaymentMethod(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Payment(models.Model):
-    STRIPE = 'ST'
-    PIX = 'PX'
-    METHOD_CHOICES = (
-        (STRIPE, 'Stripe'),
-        (PIX, 'PIX'),
-    )
-
     user = models.ForeignKey(
         'auth.User', on_delete=models.CASCADE, related_name='payments')
     method = models.ForeignKey(
         'PaymentMethod', on_delete=models.CASCADE, blank=True, null=True)
-    method_deprecated = models.CharField(max_length=2, choices=METHOD_CHOICES)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     currency = models.CharField(max_length=3, default='BRL')
     status = models.CharField(max_length=50, default='PENDENTE')
@@ -141,8 +136,8 @@ class Payment(models.Model):
             checkout_session = stripe.checkout.Session.create(
                 customer=self.user.member.attachments.filter(
                     title='stripe_customer_id').first().content,
-                success_url=f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
-                cancel_url="https://aaafuria.site",
+                success_url=f"http://localhost:3000/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}",
+                cancel_url="http://localhost:3000",
                 line_items=items,
                 mode=mode,
                 discounts=discounts,
@@ -159,14 +154,14 @@ class Payment(models.Model):
 
         def checkout_pix():
             return {
-                'url': f"https://aaafuria.site/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
+                'url': f"http://localhost:3000/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
             }
         refs = {
-            self.STRIPE: checkout_stripe,
-            self.PIX: checkout_pix
+            'ST': checkout_stripe,
+            'PX': checkout_pix
         }
 
-        return refs[self.method]()
+        return refs[self.method.title]()
 
 
 class Attachment(models.Model):

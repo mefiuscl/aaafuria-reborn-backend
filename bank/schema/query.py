@@ -1,5 +1,5 @@
 import graphene
-from bank.models import Payment
+from bank.models import Payment, PaymentMethod
 from bank.schema.nodes import PaymentPaginatedNode
 from django.utils.translation import gettext as _
 from graphene_django.filter import DjangoFilterConnectionField
@@ -12,6 +12,9 @@ class Query(graphene.ObjectType):
     payment = graphene.Field('bank.schema.nodes.PaymentNode', id=graphene.ID())
     all_payments = graphene.Field(
         'bank.schema.nodes.PaymentPaginatedNode', page=graphene.Int(), page_size=graphene.Int(), status=graphene.String())
+
+    all_payment_methods = graphene.List(
+        'bank.schema.nodes.PaymentMethodNode')
 
     my_payments = DjangoFilterConnectionField('bank.schema.nodes.PaymentNode')
 
@@ -32,6 +35,12 @@ class Query(graphene.ObjectType):
         qs = qs.filter(status=kwargs.get('status')
                        ) if kwargs.get('status') else qs
         return get_paginator(qs, page_size, page, PaymentPaginatedNode)
+
+    def resolve_all_payment_methods(self, info, **kwargs):
+        if info.context.user.is_anonymous:
+            raise GraphQLError(_('Unauthenticated.'))
+
+        return PaymentMethod.objects.all()
 
     def resolve_my_payments(self, info, **kwargs):
         if info.context.user.is_anonymous:

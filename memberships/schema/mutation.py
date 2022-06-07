@@ -1,5 +1,5 @@
 import graphene
-from bank.models import Payment
+from bank.models import Payment, PaymentMethod
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from graphql_relay import from_global_id
@@ -9,13 +9,13 @@ from memberships.models import Membership, MembershipPlan
 class CheckoutMembership(graphene.Mutation):
     class Arguments:
         membership_id = graphene.ID(required=True)
-        method = graphene.String(required=True)
+        method_id = graphene.String(required=True)
         user_username = graphene.String()
 
     ok = graphene.Boolean()
     checkout_url = graphene.String()
 
-    def mutate(self, info, membership_id, method, user_username=None):
+    def mutate(self, info, membership_id, method_id, user_username=None):
         user = info.context.user
 
         if user_username and user.is_staff:
@@ -24,15 +24,18 @@ class CheckoutMembership(graphene.Mutation):
         membership_plan = MembershipPlan.objects.get(
             pk=from_global_id(membership_id)[1])
 
+        payment_method = PaymentMethod.objects.get(
+            pk=from_global_id(method_id)[1])
+
         payment = Payment.objects.create(
             user=user,
             description=_('Subscription creation'),
-            method=method,
+            method=payment_method,
             amount=membership_plan.price,
         )
 
         Membership.objects.create(
-            ref=method,
+            ref=payment_method.title,
             member=user.member,
             membership_plan=membership_plan,
             payment=payment,

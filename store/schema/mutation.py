@@ -1,5 +1,5 @@
 import graphene
-from bank.models import Payment
+from bank.models import Payment, PaymentMethod
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from graphql import GraphQLError
@@ -123,13 +123,13 @@ class DeleteFromCart(graphene.Mutation):
 
 class CheckoutCart(graphene.Mutation):
     class Arguments:
-        method = graphene.String(required=True)
+        method_id = graphene.String(required=True)
         user_username = graphene.String()
 
     ok = graphene.Boolean()
     checkout_url = graphene.String()
 
-    def mutate(self, info, method, user_username=None):
+    def mutate(self, info, method_id, user_username=None):
         user = info.context.user
         cart = info.context.user.carts.filter(checked_out=False).first()
 
@@ -142,10 +142,12 @@ class CheckoutCart(graphene.Mutation):
         if cart.items.count() == 0:
             raise GraphQLError(_('Cart is empty'))
 
+        payment_method = PaymentMethod.objects.get(
+            pk=from_global_id(method_id)[1])
         payment = Payment.objects.create(
             user=user,
             description=_('Store checkout created'),
-            method=method,
+            method=payment_method,
             amount=cart.get_total(),
         )
 

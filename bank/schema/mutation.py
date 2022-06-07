@@ -1,5 +1,5 @@
 import graphene
-from bank.models import Attachment, Payment
+from bank.models import Attachment, Payment, PaymentMethod
 from django.utils.translation import gettext as _
 from graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
@@ -9,7 +9,7 @@ from graphql_relay import from_global_id
 class CreatePayment(graphene.Mutation):
     class Arguments:
         amount = graphene.Float(required=True)
-        method = graphene.String(required=True)
+        method_id = graphene.ID(required=True)
         description = graphene.String(required=True)
         atttachment_title = graphene.String()
         attachment = Upload()
@@ -17,10 +17,12 @@ class CreatePayment(graphene.Mutation):
     payment = graphene.Field('bank.schema.nodes.PaymentNode')
     payment_created = graphene.Boolean()
 
-    def mutate(self, info, **kwargs):
+    def mutate(self, info, method_id, **kwargs):
+        payment_method = PaymentMethod.objects.get(
+            pk=from_global_id(method_id)[1])
         payment, created = Payment.objects.get_or_create(
             user=info.context.user,
-            method=kwargs.get('method'),
+            method=payment_method,
             amount=kwargs.get('amount'),
             description=kwargs.get('description'),
         )

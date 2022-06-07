@@ -1,6 +1,13 @@
 import graphene
-from bank.models import Attachment, Payment
+from bank.models import Attachment, Payment, PaymentMethod
 from graphene_django import DjangoObjectType
+
+
+class PaymentMethodNode(DjangoObjectType):
+    class Meta:
+        model = PaymentMethod
+        interfaces = (graphene.relay.Node,)
+        filter_fields = []
 
 
 class PaymentNode(DjangoObjectType):
@@ -12,7 +19,7 @@ class PaymentNode(DjangoObjectType):
         filter_fields = ['status']
 
     def resolve_method(self, info):
-        return self.get_method_display()
+        return self.method.name
 
 
 class PaymentPaginatedNode(graphene.ObjectType):

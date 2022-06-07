@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http.response import HttpResponse
 from memberships.models import Attachment, Membership
 
-from .models import Payment
+from .models import Payment, PaymentMethod
 
 
 def bank_webhook(request):
@@ -56,7 +56,7 @@ def bank_webhook(request):
 
                     payment = Payment.objects.create(
                         user=membership.member.user,
-                        method=Payment.STRIPE,
+                        method=PaymentMethod.objects.get(title='ST'),
                         amount=invoice['amount_paid'],
                         description=invoice['id'],
                     )
