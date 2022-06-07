@@ -76,6 +76,12 @@ class Movimentacao(models.Model):
                 self.resolver()
 
 
+class PaymentMethod(models.Model):
+    title = models.CharField(max_length=2)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+
 class Payment(models.Model):
     STRIPE = 'ST'
     PIX = 'PX'
@@ -86,7 +92,9 @@ class Payment(models.Model):
 
     user = models.ForeignKey(
         'auth.User', on_delete=models.CASCADE, related_name='payments')
-    method = models.CharField(max_length=2, choices=METHOD_CHOICES)
+    method = models.ForeignKey(
+        'PaymentMethod', on_delete=models.CASCADE, blank=True, null=True)
+    method_deprecated = models.CharField(max_length=2, choices=METHOD_CHOICES)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
     currency = models.CharField(max_length=3, default='BRL')
     status = models.CharField(max_length=50, default='PENDENTE')
