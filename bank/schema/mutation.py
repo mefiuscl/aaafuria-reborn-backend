@@ -1,5 +1,6 @@
 import graphene
 from bank.models import Attachment, Payment, PaymentMethod
+from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from graphene_file_upload.scalars import Upload
 from graphql import GraphQLError
@@ -13,15 +14,22 @@ class CreatePayment(graphene.Mutation):
         description = graphene.String(required=True)
         atttachment_title = graphene.String()
         attachment = Upload()
+        user_username = graphene.String()
 
     payment = graphene.Field('bank.schema.nodes.PaymentNode')
     payment_created = graphene.Boolean()
 
-    def mutate(self, info, method_id, **kwargs):
+    def mutate(self, info, method_id, user_username=None, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            raise GraphQLError(_('Unauthenticated.'))
+        if user.is_staff:
+            user = User.objects.get(username=user_username)
+
         payment_method = PaymentMethod.objects.get(
             pk=from_global_id(method_id)[1])
         payment, created = Payment.objects.get_or_create(
-            user=info.context.user,
+            user=user,
             method=payment_method,
             amount=kwargs.get('amount'),
             description=kwargs.get('description'),
