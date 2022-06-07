@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from .models import Attachment, Conta, Movimentacao, Payment
+from .models import Attachment, Conta, Movimentacao, Payment, PaymentMethod
 
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(PaymentMethod)
+class PaymentMethodAdmin(admin.ModelAdmin):
     pass
 
 
