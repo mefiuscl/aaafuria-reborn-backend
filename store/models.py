@@ -132,6 +132,7 @@ class CartItem(models.Model):
 
     ordered = models.BooleanField(default=False)
     checked_out = models.BooleanField(default=False)
+    delivered = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.item} - {self.quantity}'
@@ -163,8 +164,10 @@ class Cart(models.Model):
         'auth.User', on_delete=models.CASCADE, related_name='carts')
     payment = models.OneToOneField(
         'bank.Payment', on_delete=models.SET_NULL, blank=True, null=True, related_name='cart')
+
     ordered = models.BooleanField(default=False)
     checked_out = models.BooleanField(default=False)
+    delivered = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
