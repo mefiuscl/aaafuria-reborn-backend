@@ -16,6 +16,7 @@ class Item(models.Model):
     description = models.TextField()
     membership_price = models.FloatField(blank=True, null=True)
     staff_price = models.FloatField(blank=True, null=True)
+
     image = models.ImageField(
         upload_to='store/images/items', blank=True, null=True, help_text=_('Image proportions: 1:1'))
     stock = models.IntegerField(default=0)
@@ -29,6 +30,12 @@ class Item(models.Model):
     is_analog = models.BooleanField(
         default=True, help_text=_('Should this item be sold in person?'))
     is_active = models.BooleanField(default=True)
+
+    max_per_member = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text=_('Maximum number of items per member'),
+    )
 
     class Meta:
         ordering = ['is_variation']
@@ -64,17 +71,30 @@ class Item(models.Model):
                 title='membership_price')
             attach.content = self.membership_price
             attach.save()
+        else:
+            self.attachments.filter(title='membership_price').delete()
         if self.staff_price:
             attach, created = self.attachments.get_or_create(
                 title='staff_price')
             attach.content = self.staff_price
             attach.save()
-
+        else:
+            self.attachments.filter(title='staff_price').delete()
         if self.stock:
             attach, created = self.attachments.get_or_create(
                 title='stock')
             attach.content = self.stock
             attach.save()
+        else:
+            self.attachments.filter(title='stock').delete()
+
+        if self.max_per_member:
+            attach, created = self.attachments.get_or_create(
+                title='max_per_member')
+            attach.content = self.max_per_member
+            attach.save()
+        else:
+            self.attachments.filter(title='max_per_member').delete()
 
 
 @receiver(models.signals.post_save, sender=Item)
