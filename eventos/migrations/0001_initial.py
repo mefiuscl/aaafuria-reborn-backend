@@ -63,12 +63,6 @@ class Migration(migrations.Migration):
                 ('presencial', models.BooleanField(default=False)),
             ],
         ),
-        migrations.AddField(
-            model_name='evento',
-            name='participantes',
-            field=models.ManyToManyField(
-                blank=True, to='eventos.Participante'),
-        ),
         migrations.AlterField(
             model_name='evento',
             name='data_fim',
@@ -92,12 +86,6 @@ class Migration(migrations.Migration):
                 ('evento', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
                  related_name='evento', to='eventos.evento')),
             ],
-        ),
-        migrations.AddField(
-            model_name='evento',
-            name='convidados',
-            field=models.ManyToManyField(
-                blank=True, related_name='convidados', to='eventos.Convidado'),
         ),
         migrations.AlterField(
             model_name='convidado',
@@ -127,24 +115,6 @@ class Migration(migrations.Migration):
                 ('participante', models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE, to='eventos.participante')),
             ],
-        ),
-        migrations.CreateModel(
-            name='IngressoTransfer',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True,
-                 primary_key=True, serialize=False, verbose_name='ID')),
-                ('transfer_date', models.DateTimeField(blank=True, null=True)),
-                ('current_owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 related_name='received_ingressos', to='eventos.participante')),
-                ('ingresso', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 related_name='transfers', to='eventos.ingresso')),
-                ('previous_owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                 related_name='transfered_ingressos', to='eventos.participante')),
-            ],
-            options={
-                'verbose_name': 'transferência de ingresso',
-                'verbose_name_plural': 'transferências de ingressos',
-            },
         ),
         migrations.CreateModel(
             name='IngressoTransfer',
