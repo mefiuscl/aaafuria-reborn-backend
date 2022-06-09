@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'partnerships',
 
     # Refactored apps
+    'activities',
     'memberships',
     'members',
     'store'
