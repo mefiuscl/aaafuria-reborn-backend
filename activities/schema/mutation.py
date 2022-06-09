@@ -23,6 +23,9 @@ class ConfirmToSchedule(graphene.Mutation):
         if user.is_staff and user_username:
             user = User.objects.get(username=user_username)
 
+        if user.member.has_active_membership is False:
+            return ConfirmToSchedule(ok=False)
+
         schedule = Schedule.objects.get(id=from_global_id(schedule_id)[1])
         schedule.users_confirmed.add(user)
         schedule.refresh()
