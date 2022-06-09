@@ -5,19 +5,20 @@ from activities.models import Activity, Attachment, Category, Schedule
 
 @admin.register(Activity)
 class ActivityAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name', 'category', 'is_active']
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name']
 
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['activity', 'description', 'status', 'start_date', 'end_date',
+                    'location', 'cost', 'max_participants', 'min_participants', 'is_active']
 
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['schedule', 'title']

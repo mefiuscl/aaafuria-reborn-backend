@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 
@@ -8,10 +9,27 @@ class Activity(models.Model):
         'auth.User', blank=True)
     category = models.ForeignKey(
         'activities.Category', on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = _('activity')
+        verbose_name_plural = _('activities')
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = _('category')
+        verbose_name_plural = _('categories')
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Schedule(models.Model):
@@ -41,6 +59,14 @@ class Schedule(models.Model):
         'auth.User', blank=True, related_name='confirmed_schedules')
     users_present = models.ManyToManyField(
         'auth.User', blank=True, related_name='present_schedules')
+
+    class Meta:
+        verbose_name = _('schedule')
+        verbose_name_plural = _('schedules')
+        ordering = ['start_date']
+
+    def __str__(self):
+        return self.activity.name + ' - ' + timezone.localtime(self.start_date).strftime('%d/%m/%Y %H:%M')
 
     def get_cost(self):
         attach = self.attachments.filter(title='cost').first()
@@ -76,6 +102,11 @@ class Attachment(models.Model):
         upload_to='activity/attachments/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _('attachment')
+        verbose_name_plural = _('attachments')
+        ordering = ['title']
 
     def __str__(self) -> str:
         return self.title

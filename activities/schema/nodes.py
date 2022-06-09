@@ -28,6 +28,9 @@ class ActivityNode(DjangoObjectType):
                 cost += schedule.cost
             return cost
 
+    def resolve_schedules(self, info, **kwargs):
+        return self.schedules.exclude(start_date__lt=(timezone.now() - timezone.timedelta(hours=24)))
+
 
 class ScheduleNode(DjangoObjectType):
     status = graphene.String()
@@ -38,7 +41,7 @@ class ScheduleNode(DjangoObjectType):
 
     class Meta:
         model = Schedule
-        filter_fields = []
+        filter_fields = ['is_active']
         interfaces = (graphene.relay.Node, )
 
     def resolve_status(self, info):
