@@ -35,7 +35,7 @@ def bank_webhook(request):
                         title='stripe_subscription_id',
                         content=chechout_session['subscription'])
 
-                    payment.set_paid('Subscription creation')
+                    payment.set_paid('Subscription created')
 
                     return HttpResponse(status=200)
 
