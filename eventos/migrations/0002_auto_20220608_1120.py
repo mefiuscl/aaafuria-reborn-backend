@@ -10,14 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='evento',
-            name='convidados',
-            field=models.ManyToManyField(blank=True, related_name='convidados', to='eventos.Convidado'),
-        ),
-        migrations.AddField(
-            model_name='evento',
-            name='participantes',
-            field=models.ManyToManyField(blank=True, to='eventos.Participante'),
-        ),
+
     ]
