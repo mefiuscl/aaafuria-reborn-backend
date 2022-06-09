@@ -87,12 +87,6 @@ class Migration(migrations.Migration):
                  related_name='evento', to='eventos.evento')),
             ],
         ),
-        migrations.AlterField(
-            model_name='convidado',
-            name='evento',
-            field=models.ForeignKey(
-                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='evento', to='eventos.evento'),
-        ),
         migrations.AddField(
             model_name='evento',
             name='exclusivo_socios',
