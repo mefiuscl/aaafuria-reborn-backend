@@ -178,6 +178,10 @@ class CheckoutCart(graphene.Mutation):
             ]
         )
 
+        if checkout['url'] is None:
+            payment.delete()
+            raise GraphQLError(_('Checkout error'))
+
         cart.checkout(payment)
         cart.refresh()
         cart.save()

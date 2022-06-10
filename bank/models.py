@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from graphql_relay import to_global_id
 from memberships.models import Membership
 from store.models import Cart
@@ -145,10 +146,11 @@ class Payment(models.Model):
                 expires_at=timezone.now() + timezone.timedelta(minutes=60)
             )
 
-            attachment, created = self.attachments.get_or_create(
-                title='stripe_checkout_session_id')
-            attachment.content = checkout_session['id']
-            attachment.save()
+            if checkout_session['id'] is not None:
+                attachment, created = self.attachments.get_or_create(
+                    title='stripe_checkout_session_id')
+                attachment.content = checkout_session['id']
+                attachment.save()
 
             return {
                 'url': checkout_session['url']
