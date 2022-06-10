@@ -8,7 +8,7 @@ class Query(graphene.ObjectType):
     member_by_registration = graphene.Field(
         'members.schema.nodes.MemberNode', registration=graphene.String())
     check_member = graphene.Boolean(
-        registration=graphene.String(required=True))
+        registration=graphene.String())
 
     def resolve_member_by_registration(self, info,  **kwargs):
         if info.context.user.is_anonymous:
@@ -23,9 +23,8 @@ class Query(graphene.ObjectType):
 
         return Member.objects.get(registration=registration)
 
-    def resolve_check_member(self, info, registration):
-        try:
-            Member.objects.get(registration=registration)
-            return True
-        except:
+    def resolve_check_member(self, info, **kwargs):
+        registration = kwargs.get('registration')
+        if not registration:
             return False
+        return Member.objects.filter(registration=registration).exists()
