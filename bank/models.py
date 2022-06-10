@@ -177,17 +177,11 @@ class Payment(models.Model):
                 checkout_session = stripe.checkout.Session.retrieve(
                     stripe_checkout_id)
 
-                return {
-                    'url': checkout_session['url']
-                }
-            return {
-                'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
-            }
+                return checkout_session['url']
+            return f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
 
         def pix():
-            return {
-                'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
-            }
+            return f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
         refs = {
             'ST': stripe,
             'PX': pix
