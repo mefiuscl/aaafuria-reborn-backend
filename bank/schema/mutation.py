@@ -43,6 +43,17 @@ class CreatePayment(graphene.Mutation):
         return CreatePayment(payment=payment, payment_created=created)
 
 
+class CheckoutUrl(graphene.Mutation):
+    class Arguments:
+        payment_id = graphene.ID(required=True)
+
+    url = graphene.String()
+
+    def mutate(self, info, payment_id):
+        payment = Payment.objects.get(pk=from_global_id(payment_id)[1])
+        return CheckoutUrl(url=payment.get_checkout_url())
+
+
 class CreateAttachment(graphene.Mutation):
     class Arguments:
         payment_id = graphene.ID(required=True)
@@ -137,6 +148,7 @@ class CancelPayment(graphene.Mutation):
 
 class Mutation(graphene.ObjectType):
     create_payment = CreatePayment.Field()
+    checkout_url = CheckoutUrl.Field()
     create_attachment = CreateAttachment.Field()
     delete_attachment = DeleteAttachment.Field()
     confirm_payment = ConfirmPayment.Field()

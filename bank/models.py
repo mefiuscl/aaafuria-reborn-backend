@@ -130,7 +130,7 @@ class Payment(models.Model):
             cart.save()
 
     def checkout(self, mode, items, discounts):
-        def checkout_stripe():
+        def stripe():
             import stripe
             stripe.api_key = API_KEY
             checkout_session = stripe.checkout.Session.create(
@@ -145,20 +145,52 @@ class Payment(models.Model):
                 expires_at=timezone.now() + timezone.timedelta(minutes=60)
             )
 
-            self.description = checkout_session['id']
-            self.save()
+            attachment, created = self.attachments.get_or_create(
+                title='stripe_checkout_session_id')
+            attachment.content = checkout_session['id']
+            attachment.save()
 
             return {
                 'url': checkout_session['url']
             }
 
-        def checkout_pix():
+        def pix():
             return {
                 'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
             }
         refs = {
-            'ST': checkout_stripe,
-            'PX': checkout_pix
+            'ST': stripe,
+            'PX': pix
+        }
+
+        return refs[self.method.title]()
+
+    def get_checkout_url(self):
+        def stripe():
+            import stripe
+            stripe.api_key = API_KEY
+
+            attachment = Attachment.objects.filter(payment=self,
+                                                   title='stripe_checkout_session_id').first()
+            if attachment:
+                stripe_checkout_id = attachment.content
+                checkout_session = stripe.checkout.Session.retrieve(
+                    stripe_checkout_id)
+
+                return {
+                    'url': checkout_session['url']
+                }
+            return {
+                'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
+            }
+
+        def pix():
+            return {
+                'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
+            }
+        refs = {
+            'ST': stripe,
+            'PX': pix
         }
 
         return refs[self.method.title]()

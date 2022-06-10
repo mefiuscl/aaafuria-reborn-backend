@@ -1,9 +1,8 @@
 import stripe
 from django.conf import settings
 from django.http.response import HttpResponse
-from memberships.models import Attachment, Membership
 
-from .models import Payment, PaymentMethod
+from .models import Attachment, Payment, PaymentMethod
 
 
 def bank_webhook(request):
@@ -29,8 +28,8 @@ def bank_webhook(request):
 
             if chechout_session['mode'] == 'subscription':
                 if chechout_session['payment_status'] == 'paid':
-                    payment = Payment.objects.get(
-                        description=chechout_session['id'])
+                    payment = Attachment.objects.get(
+                        content=chechout_session['id']).payment
                     payment.membership.attachments.get_or_create(
                         title='stripe_subscription_id',
                         content=chechout_session['subscription'])
