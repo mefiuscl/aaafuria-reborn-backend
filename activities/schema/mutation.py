@@ -23,7 +23,7 @@ class ConfirmToSchedule(graphene.Mutation):
         if user.is_staff and user_username:
             user = User.objects.get(username=user_username)
 
-        if user.member.has_active_membership is False:
+        if user.member.has_active_membership is False and user.is_staff is False:
             return ConfirmToSchedule(ok=False)
 
         schedule = Schedule.objects.get(id=from_global_id(schedule_id)[1])
@@ -145,8 +145,85 @@ class UpdateSchedule(graphene.Mutation):
         return UpdateSchedule(ok=True, schedule=schedule)
 
 
+class DeleteSchedule(graphene.Mutation):
+    class Arguments:
+        schedule_id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, schedule_id):
+        user = info.context.user
+
+        if user.is_anonymous:
+            raise GraphQLError(_('Unauthenticated.'))
+        if user.is_staff is False:
+            raise GraphQLError(_('Unauthorized.'))
+
+        schedule = Schedule.objects.get(id=from_global_id(schedule_id)[1])
+        schedule.delete()
+
+        return DeleteSchedule(ok=True)
+
+
+class EndSchedule(graphene.Mutation):
+    class Arguments:
+        schedule_id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, schedule_id):
+        user = info.context.user
+
+        if user.is_anonymous:
+            raise GraphQLError(_('Unauthenticated.'))
+        if user.is_staff is False:
+            raise GraphQLError(_('Unauthorized.'))
+
+        schedule = Schedule.objects.get(id=from_global_id(schedule_id)[1])
+        schedule.status = Schedule.ENDED
+        schedule.is_active = False
+        schedule.save()
+
+        return EndSchedule(ok=True)
+
+
+class ToggleUserPresence(graphene.Mutation):
+    class Arguments:
+        schedule_id = graphene.ID(required=True)
+        user_id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+    presence = graphene.Boolean()
+
+    def mutate(self, info, schedule_id, user_id, **kwargs):
+        user = info.context.user
+
+        if user.is_anonymous:
+            raise GraphQLError(_('Unauthenticated.'))
+        if user.is_staff is False:
+            raise GraphQLError(_('Unauthorized.'))
+
+        schedule = Schedule.objects.get(id=from_global_id(schedule_id)[1])
+        user = User.objects.get(id=from_global_id(user_id)[1])
+
+        if user in schedule.users_present.all():
+            schedule.users_present.remove(user)
+            presence = False
+        else:
+            schedule.users_present.add(user)
+            presence = True
+
+        schedule.refresh()
+        schedule.save()
+
+        return ToggleUserPresence(ok=True, presence=presence)
+
+
 class Mutation(graphene.ObjectType):
     confirm_to_schedule = ConfirmToSchedule.Field()
     cancel_from_schedule = CancelFromSchedule.Field()
     create_schedule = CreateSchedule.Field()
     update_schedule = UpdateSchedule.Field()
+    delete_schedule = DeleteSchedule.Field()
+    end_schedule = EndSchedule.Field()
+    toggle_user_presence = ToggleUserPresence.Field()
