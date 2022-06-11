@@ -17,7 +17,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ['activity', 'description', 'status', 'start_date', 'end_date',
                     'location', 'cost', 'max_participants', 'min_participants', 'is_active']
-    filter_horizontal = ['users_confirmed, users_present']
+    filter_horizontal = ['users_confirmed', 'users_present']
 
 
 @admin.register(Attachment)
