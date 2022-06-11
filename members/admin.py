@@ -5,9 +5,12 @@ from members.models import Attachment, Member
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
+    list_display = ('name', 'nickname', 'email', 'phone',
+                    'rg', 'cpf', 'has_active_membership')
     search_fields = ('email', 'name', 'registration',)
 
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('member', 'title', 'content', 'file')
+    search_fields = ('mebmer__email', 'member__name', 'member__registration',)

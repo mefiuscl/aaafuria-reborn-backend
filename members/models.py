@@ -21,8 +21,13 @@ class Member(models.Model):
     rg = models.CharField(max_length=15, blank=True, null=True)
     cpf = models.CharField(max_length=15, blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'membro'
+        verbose_name_plural = 'membros'
+        ordering = ['name']
+
     def __str__(self):
-        return self.name
+        return f'({self.registration}) {self.name}'
 
     @property
     def has_active_membership(self):
