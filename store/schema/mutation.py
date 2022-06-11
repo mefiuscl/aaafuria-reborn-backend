@@ -179,8 +179,8 @@ class CheckoutCart(graphene.Mutation):
         )
 
         if checkout['url'] is None:
-            payment.delete()
-            raise GraphQLError(_('Checkout error'))
+            payment.set_expired('Checkout failed')
+            payment.save()
 
         cart.checkout(payment)
         cart.refresh()
