@@ -195,6 +195,19 @@ class Cart(models.Model):
     def __str__(self) -> str:
         return f'{self.user.username}'
 
+    def set_paid(self):
+        for item in self.items.all():
+            item.item.stock -= item.quantity
+            if item.item.ref_item:
+                item.item.ref_item.stock -= item.quantity
+                item.item.ref_item.save()
+            item.item.save()
+
+    def get_total(self):
+        total = 0
+        for item in self.items.all():
+            total += item.get_sub_total()
+
     def refresh(self):
         if self.payment and self.payment.paid:
             self.ordered = True

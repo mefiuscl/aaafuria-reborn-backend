@@ -26,11 +26,8 @@ class AddToCart(graphene.Mutation):
             user = User.objects.filter(username=user_username).first()
         if not item:
             raise GraphQLError(_('Item not found'))
-        '''
-        # stock check
         if item.is_available is False:
             raise GraphQLError(_('Item is not available'))
-        '''
 
         if user.member.has_active_membership:
             if item.max_per_member is not None:
@@ -150,6 +147,10 @@ class CheckoutCart(graphene.Mutation):
             raise GraphQLError(_('Cart not found'))
         if cart.items.count() == 0:
             raise GraphQLError(_('Cart is empty'))
+
+        for item in cart.items.all():
+            if item.item.is_available is False:
+                raise GraphQLError(_('Item is not available'))
 
         payment_method = PaymentMethod.objects.get(
             pk=from_global_id(method_id)[1])

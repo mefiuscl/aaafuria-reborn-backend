@@ -127,6 +127,7 @@ class Payment(models.Model):
             membership.refresh()
             membership.save()
         if cart:
+            cart.set_paid()
             cart.refresh()
             cart.save()
 
