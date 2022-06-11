@@ -31,7 +31,7 @@ class Query(graphene.ObjectType):
         if not info.context.user.is_staff:
             raise GraphQLError(_('Unauthorized.'))
 
-        qs = Payment.objects.all()
+        qs = Payment.objects.exclude(status='EXPIRADO')
         qs = qs.filter(status=kwargs.get('status')
                        ) if kwargs.get('status') else qs
         return get_paginator(qs, page_size, page, PaymentPaginatedNode)
