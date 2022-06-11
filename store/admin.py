@@ -15,7 +15,11 @@ class AttachmentAdmin(admin.ModelAdmin):
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('cart', 'item', 'description',
+                    'quantity', 'ordered', 'checked_out')
+    list_filter = ('cart', 'item', 'ordered')
+    search_fields = ('cart', 'item', 'cart__user__username',
+                     'cart__user__email')
 
 
 @admin.register(Cart)

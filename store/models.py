@@ -40,6 +40,9 @@ class Item(models.Model):
     class Meta:
         ordering = ['is_variation']
 
+    def __str__(self):
+        return self.name if not self.ref_item else f'{self.ref_item.name} ({self.name})'
+
     @property
     def is_digital_only(self):
         return self.is_digital and not self.is_analog
