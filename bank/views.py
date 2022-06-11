@@ -1,6 +1,7 @@
 import stripe
 from django.conf import settings
 from django.http.response import HttpResponse
+from django.utils.translation import gettext as _
 
 from .models import Attachment, Payment, PaymentMethod
 
@@ -34,14 +35,18 @@ def bank_webhook(request):
                         title='stripe_subscription_id',
                         content=chechout_session['subscription'])
 
-                    payment.set_paid('Subscription created')
+                    payment.set_paid(_('Subscription created'))
 
                     return HttpResponse(status=200)
 
             if chechout_session['mode'] == 'payment':
-                pass
+                if chechout_session['payment_status'] == 'paid':
+                    payment = Attachment.objects.get(
+                        content=chechout_session['id']).payment
+                    payment.set_paid(_('Payment completed'))
+                    return HttpResponse(status=200)
 
-            return HttpResponse(status=200)
+            return HttpResponse(status=204)
         except Exception as e:
             return HttpResponse(content=e, status=400)
 
@@ -67,7 +72,7 @@ def bank_webhook(request):
 
                     return HttpResponse(status=200)
 
-            return HttpResponse(status=200)
+            return HttpResponse(status=204)
         except Exception as e:
             return HttpResponse(content=e, status=400)
 
