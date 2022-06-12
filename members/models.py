@@ -1,4 +1,5 @@
 from django.db import models
+from django.dispatch import receiver
 
 
 def member_avatar_dir(instance, filename):
@@ -74,6 +75,41 @@ class Member(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+
+@receiver(models.signals.post_save, sender=Member)
+def create_stripe_profile(sender, instance, created, **kwargs):
+    import stripe
+    from django.conf import settings
+
+    stripe.api_key = settings.STRIPE_API_KEY
+
+    if not instance.attachments.filter(title='stripe_customer_id').exists():
+        customer = stripe.Customer.list(
+            limit=1,
+            email=instance.email,
+        )
+        if customer['data']:
+            instance.attachments.create(
+                title='stripe_customer_id',
+                content=customer['data'][0]['id'],
+            )
+        else:
+            customer = stripe.Customer.create(
+                email=instance.email,
+                description=f'{instance.name} - {instance.registration}',
+            )
+            instance.attachments.create(
+                title='stripe_customer_id',
+                content=customer['id'],
+            )
+    else:
+        customer = stripe.Customer.retrieve(
+            instance.attachments.filter(title='stripe_customer_id')[0].content
+        )
+        if customer['email'] != instance.email:
+            customer.email = instance.email
+            customer.save()
 
 
 class Attachment(models.Model):
