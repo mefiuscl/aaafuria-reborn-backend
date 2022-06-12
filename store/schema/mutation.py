@@ -171,11 +171,6 @@ class CheckoutCart(graphene.Mutation):
                     'amount': int(item.get_sub_total() * 100),
                     'tax_rates': ['txr_1KT7puH8nuTtWMpP8U05kbNZ']
                 } for item in cart.items.all()
-            ],
-            discounts=[
-                {} if info.context.user.member.memberships.all().count() > 0 else {
-                    'coupon': 'PRIMEIRAASSOCIACAO'
-                }
             ]
         )
 
