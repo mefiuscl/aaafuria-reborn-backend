@@ -21,7 +21,7 @@ class CreatePayment(graphene.Mutation):
 
     def mutate(self, info, method_id, atttachment_title, attachment, user_username=None, **kwargs):
         user = info.context.user
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff:
             user = User.objects.get(username=user_username)

@@ -17,7 +17,7 @@ class ConfirmToSchedule(graphene.Mutation):
         user = info.context.user
         user_username = kwargs.get('user_username')
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
         if user.is_staff and user_username:
@@ -45,7 +45,7 @@ class CancelFromSchedule(graphene.Mutation):
         user = info.context.user
         user_username = kwargs.get('user_username')
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
         if user.is_staff and user_username:
@@ -77,7 +77,7 @@ class CreateSchedule(graphene.Mutation):
     def mutate(self, info, activity_id, description, start_date, location, max_participants, min_participants, **kwargs):
         user = info.context.user
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
         if user.is_staff is False:
@@ -125,7 +125,7 @@ class UpdateSchedule(graphene.Mutation):
     def mutate(self, info, schedule_id, description, start_date, location, max_participants, min_participants, **kwargs):
         user = info.context.user
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
         if user.is_staff is False:
@@ -154,7 +154,7 @@ class DeleteSchedule(graphene.Mutation):
     def mutate(self, info, schedule_id):
         user = info.context.user
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff is False:
             raise GraphQLError(_('Unauthorized.'))
@@ -174,7 +174,7 @@ class EndSchedule(graphene.Mutation):
     def mutate(self, info, schedule_id):
         user = info.context.user
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff is False:
             raise GraphQLError(_('Unauthorized.'))
@@ -198,7 +198,7 @@ class ToggleUserPresence(graphene.Mutation):
     def mutate(self, info, schedule_id, user_id, **kwargs):
         user = info.context.user
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff is False:
             raise GraphQLError(_('Unauthorized.'))

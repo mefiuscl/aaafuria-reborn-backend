@@ -49,7 +49,7 @@ class Query(
 
     def resolve_user(self, info):
         user = info.context.user
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('You must be logged in to access this data'))
         return user
 

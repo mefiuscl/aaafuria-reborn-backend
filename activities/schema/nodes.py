@@ -55,7 +55,7 @@ class ScheduleNode(DjangoObjectType):
 
     def resolve_current_user_confirmed(self, info):
         user = info.context.user
-        if user.is_anonymous:
+        if not user.is_authenticated:
             return False
         return user in self.users_confirmed.all()
 

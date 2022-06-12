@@ -30,7 +30,7 @@ class Query(graphene.ObjectType):
 
     def resolve_cart(self, info, user_username=None):
         user = info.context.user
-        if user.is_anonymous:
+        if not user.is_authenticated:
             return None
         if user.is_staff and user_username is not None:
             user = User.objects.filter(username=user_username).first()

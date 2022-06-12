@@ -20,7 +20,7 @@ class AddToCart(graphene.Mutation):
         user = info.context.user
         item = Item.objects.filter(id=from_global_id(item_id)[1]).first()
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff and user_username is not None:
             user = User.objects.filter(username=user_username).first()
@@ -66,7 +66,7 @@ class RemoveFromCart(graphene.Mutation):
         user = info.context.user
         item = Item.objects.filter(id=from_global_id(item_id)[1]).first()
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff and user_username is not None:
             user = User.objects.filter(username=user_username).first()
@@ -104,7 +104,7 @@ class DeleteFromCart(graphene.Mutation):
         user = info.context.user
         item = Item.objects.filter(id=from_global_id(item_id)[1]).first()
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff and user_username is not None:
             user = User.objects.filter(username=user_username).first()
@@ -139,7 +139,7 @@ class CheckoutCart(graphene.Mutation):
         user = info.context.user
         cart = info.context.user.carts.filter(checked_out=False).first()
 
-        if user.is_anonymous:
+        if not user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if user.is_staff and user_username is not None:
             user = User.objects.filter(username=user_username).first()
