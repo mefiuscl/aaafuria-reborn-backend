@@ -131,7 +131,7 @@ class Payment(models.Model):
             cart.refresh()
             cart.save()
 
-    def checkout(self, mode, items, discounts):
+    def checkout(self, mode, items, discounts=[]):
         def stripe():
             import stripe
             stripe.api_key = API_KEY
