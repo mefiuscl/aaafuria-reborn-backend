@@ -97,7 +97,12 @@ def create_stripe_profile(sender, instance, created, **kwargs):
         else:
             customer = stripe.Customer.create(
                 email=instance.email,
+                name=instance.name,
                 description=f'{instance.name} - {instance.registration}',
+                metadata={
+                    'registration': instance.registration,
+                    'group': instance.group,
+                },
             )
             instance.attachments.create(
                 title='stripe_customer_id',
