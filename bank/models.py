@@ -198,9 +198,10 @@ class Payment(models.Model):
 def recycle_payments(sender, instance, created, **kwargs):
     for payment in Payment.objects.all():
         if payment.expired and not payment.paid and payment.updated_at < timezone.now() - timezone.timedelta(days=1):
-            if payment.cart:
-                if not payment.cart.ordered:
-                    payment.cart.delete()
+            cart = Cart.objects.filter(payment=payment).first()
+            if cart:
+                if not cart.ordered:
+                    cart.delete()
             payment.delete()
 
 
