@@ -147,8 +147,8 @@ class Payment(models.Model):
                 expires_at=timezone.now() + timezone.timedelta(minutes=60)
             )
 
-            attachment, created = self.attachments.get_or_create(
-                title='stripe_checkout_session_id')
+            attachment, created = Attachment.objects.get_or_create(
+                payment=self, title='stripe_checkout_session_id')
             attachment.content = checkout_session.id
             attachment.save()
 
