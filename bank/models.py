@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from graphql_relay import to_global_id
@@ -191,6 +192,15 @@ class Payment(models.Model):
         }
 
         return refs[self.method.title]()
+
+
+@receiver(models.signals.post_save, sender=Payment)
+def recycle_payments(sender, instance, created, **kwargs):
+    for payment in Payment.objects.all():
+        if payment.expired and not payment.paid and payment.updated_at < timezone.now() - timezone.timedelta(days=1):
+            if payment.cart and not payment.cart.ordered:
+                payment.cart.delete()
+            payment.delete()
 
 
 class Attachment(models.Model):
