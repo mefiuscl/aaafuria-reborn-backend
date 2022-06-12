@@ -5,7 +5,9 @@ from .models import Attachment, Conta, Movimentacao, Payment, PaymentMethod
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'method', 'amount', 'description', 'status')
+    search_fields = ('user__username', 'user__email',
+                     'user__member__name', 'method__title', 'description')
 
 
 @admin.register(PaymentMethod)
