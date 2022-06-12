@@ -13,4 +13,4 @@ class MemberAdmin(admin.ModelAdmin):
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ('member', 'title', 'content', 'file')
-    search_fields = ('mebmer__email', 'member__name', 'member__registration',)
+    search_fields = ('member__email', 'member__name', 'member__registration',)
