@@ -147,15 +147,10 @@ class Payment(models.Model):
                 expires_at=timezone.now() + timezone.timedelta(minutes=60)
             )
 
-            if checkout_session.id:
-                attachment, created = self.attachments.get_or_create(
-                    title='stripe_checkout_session_id')
-                attachment.content = checkout_session.id
-                attachment.save()
-            else:
-                return {
-                    'success': False,
-                }
+            attachment, created = self.attachments.get_or_create(
+                title='stripe_checkout_session_id')
+            attachment.content = checkout_session.id
+            attachment.save()
 
             return {
                 'url': checkout_session['url']
