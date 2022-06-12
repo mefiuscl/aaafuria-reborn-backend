@@ -186,8 +186,35 @@ class CheckoutCart(graphene.Mutation):
         return CheckoutCart(ok=ok, checkout_url=checkout['url'])
 
 
+class DeliverCart(graphene.Mutation):
+    class Arguments:
+        cart_id = graphene.ID(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, cart_id):
+        user = info.context.user
+        cart = Cart.objects.filter(id=from_global_id(cart_id)[1]).first()
+
+        if not user.is_authenticated:
+            raise GraphQLError(_('Unauthenticated.'))
+        if not user.is_staff:
+            raise GraphQLError(_('Unauthorized'))
+        if not cart:
+            raise GraphQLError(_('Cart not found'))
+        if cart.ordered is False:
+            raise GraphQLError(_('Cart is not ordered'))
+
+        cart.deliver()
+        cart.save()
+
+        ok = True
+        return DeliverCart(ok=ok)
+
+
 class Mutation(graphene.ObjectType):
     add_to_cart = AddToCart.Field()
     remove_from_cart = RemoveFromCart.Field()
     delete_from_cart = DeleteFromCart.Field()
     checkout_cart = CheckoutCart.Field()
+    deliver_cart = DeliverCart.Field()

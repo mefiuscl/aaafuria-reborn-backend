@@ -198,6 +198,12 @@ class Cart(models.Model):
     def __str__(self) -> str:
         return f'{self.user.username}'
 
+    def deliver(self):
+        self.delivered = True
+        for cart_item in self.items.all():
+            cart_item.delivered = True
+            cart_item.save()
+
     def set_paid(self):
         for item in self.items.all():
             item.item.stock -= item.quantity

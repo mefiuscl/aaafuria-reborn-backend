@@ -36,4 +36,12 @@ class CartNode(DjangoObjectType):
     class Meta:
         model = Cart
         interfaces = (graphene.relay.Node, )
-        filter_fields = ['ordered']
+        filter_fields = ['ordered', 'delivered']
+
+
+class CartPaginatedNode(graphene.ObjectType):
+    page = graphene.Int()
+    pages = graphene.Int()
+    has_next = graphene.Boolean()
+    has_prev = graphene.Boolean()
+    objects = graphene.List(CartNode)
