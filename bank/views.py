@@ -80,8 +80,8 @@ def bank_webhook(request):
         try:
             checkout_session = event['data']['object']
 
-            payment = Payment.objects.get(
-                description=checkout_session['id'])
+            payment = Attachment.objects.get(
+                content=checkout_session['id']).payment
             payment.set_expired('Session expired')
 
             return HttpResponse(status=200)
