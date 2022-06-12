@@ -11,7 +11,7 @@ class Query(graphene.ObjectType):
         registration=graphene.String())
 
     def resolve_member_by_registration(self, info,  **kwargs):
-        if info.context.user.is_anonymous:
+        if not info.context.user.is_authenticated:
             return GraphQLError(_('Unauthenticated.'))
         if not info.context.user.is_staff:
             return GraphQLError(_('Unauthorized.'))

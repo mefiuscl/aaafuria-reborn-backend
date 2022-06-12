@@ -26,7 +26,7 @@ class Query(graphene.ObjectType):
         return Payment.objects.get(id=global_id)
 
     def resolve_all_payments(self, info, page, page_size=10, **kwargs):
-        if info.context.user.is_anonymous:
+        if not info.context.user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
         if not info.context.user.is_staff:
             raise GraphQLError(_('Unauthorized.'))
@@ -37,13 +37,13 @@ class Query(graphene.ObjectType):
         return get_paginator(qs, page_size, page, PaymentPaginatedNode)
 
     def resolve_all_payment_methods(self, info, **kwargs):
-        if info.context.user.is_anonymous:
+        if not info.context.user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
         return PaymentMethod.objects.all()
 
     def resolve_my_payments(self, info, **kwargs):
-        if info.context.user.is_anonymous:
+        if not info.context.user.is_authenticated:
             raise GraphQLError(_('Unauthenticated.'))
 
         return Payment.objects.filter(user=info.context.user)
