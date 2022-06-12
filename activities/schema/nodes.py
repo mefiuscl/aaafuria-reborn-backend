@@ -25,7 +25,7 @@ class ActivityNode(DjangoObjectType):
             schedules = self.schedules.all()
             cost = 0
             for schedule in schedules:
-                cost += schedule.cost
+                cost += schedule.cost if schedule.cost is not None else 0
             return cost
 
     def resolve_schedules(self, info, **kwargs):
