@@ -147,11 +147,15 @@ class Payment(models.Model):
                 expires_at=timezone.now() + timezone.timedelta(minutes=60)
             )
 
-            if checkout_session['id'] is not None:
+            if checkout_session.id:
                 attachment, created = self.attachments.get_or_create(
                     title='stripe_checkout_session_id')
-                attachment.content = checkout_session['id']
+                attachment.content = checkout_session.id
                 attachment.save()
+            else:
+                return {
+                    'success': False,
+                }
 
             return {
                 'url': checkout_session['url']
@@ -161,6 +165,7 @@ class Payment(models.Model):
             return {
                 'url': f"https://aaafuria.site/bank/payment/{to_global_id('bank.schema.nodes.PaymentNode', self.pk)}"
             }
+
         refs = {
             'ST': stripe,
             'PX': pix

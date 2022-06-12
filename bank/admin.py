@@ -15,7 +15,9 @@ class PaymentMethodAdmin(admin.ModelAdmin):
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('payment', 'title', 'content', 'file')
+    search_fields = ('payment__user__member__email', 'payment__user__member__name',
+                     'payment__user__member__registration',)
 
 
 @admin.register(Conta)
