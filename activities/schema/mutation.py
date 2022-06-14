@@ -187,15 +187,15 @@ class EndSchedule(graphene.Mutation):
         return EndSchedule(ok=True)
 
 
-class ToggleUserPresence(graphene.Mutation):
+class SetUserPresence(graphene.Mutation):
     class Arguments:
         schedule_id = graphene.ID(required=True)
         user_id = graphene.ID(required=True)
+        is_present = graphene.Boolean(required=True)
 
     ok = graphene.Boolean()
-    presence = graphene.Boolean()
 
-    def mutate(self, info, schedule_id, user_id, **kwargs):
+    def mutate(self, info, schedule_id, user_id, is_present, **kwargs):
         user = info.context.user
 
         if not user.is_authenticated:
@@ -206,17 +206,15 @@ class ToggleUserPresence(graphene.Mutation):
         schedule = Schedule.objects.get(id=from_global_id(schedule_id)[1])
         user = User.objects.get(id=from_global_id(user_id)[1])
 
-        if user in schedule.users_present.all():
-            schedule.users_present.remove(user)
-            presence = False
-        else:
+        if is_present:
             schedule.users_present.add(user)
-            presence = True
+        else:
+            schedule.users_present.remove(user)
 
         schedule.refresh()
         schedule.save()
 
-        return ToggleUserPresence(ok=True, presence=presence)
+        return SetUserPresence(ok=True)
 
 
 class Mutation(graphene.ObjectType):
@@ -226,4 +224,4 @@ class Mutation(graphene.ObjectType):
     update_schedule = UpdateSchedule.Field()
     delete_schedule = DeleteSchedule.Field()
     end_schedule = EndSchedule.Field()
-    toggle_user_presence = ToggleUserPresence.Field()
+    set_user_presence = SetUserPresence.Field()
